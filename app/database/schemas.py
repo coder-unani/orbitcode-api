@@ -1,3 +1,5 @@
+from typing import Union, Optional
+
 from datetime import datetime
 
 from pydantic import BaseModel, Field
@@ -68,13 +70,15 @@ class ContentsVideo(BaseModel):
         from_attributes = True
 
 
-class ResponseContentsVideos(BaseModel):
+class ResContentsVideos(BaseModel):
     status: str = "success"
     message: str = ""
+    total: int = 0
+    page: int = 0
     data: list[ContentsVideo] = []
     
 
-class ResponseContentsVideo(BaseModel):
+class ResContentsVideo(BaseModel):
     status: str = "success"
     message: str = ""
     data: ContentsVideo = None
