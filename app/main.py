@@ -1,6 +1,7 @@
-import uvicorn
 from fastapi import FastAPI
-# from routes import index, auth, external
+from fastapi_pagination import add_pagination
+
+from app.routes import contents
 
 def create_app():
 
@@ -10,17 +11,11 @@ def create_app():
     # Middleware 정의
 
     # Router 정의
-    # app.include_router(index.router)
-    # app.include_router(auth.router, tags=["Authentication"], prefix="/auth")
-    # app.include_router(external.router, prefix="/external")
-    @app.get("/")
-    async def root():
-        return {"message": "Hello World"}
+    app.include_router(contents.router, prefix="/contents")
 
+    # App 반환
     return app
 
 app = create_app()
-
-# for test
-# if __name__ == "__main__":
-    # uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
+# Pagination
+add_pagination(app)
