@@ -49,3 +49,11 @@ async def contents_videos_by_id(video_id: int, db: Session = Depends(get_db)):
         return {"status": "fail", "message": "Video not found"}
     
     return {"data": video}
+
+@router.post("/videos", response_model=schemas.ResContentsVideo)
+async def contents_videos_create(video: schemas.ReqContentsVideo, db: Session = Depends(get_db)):
+    pass
+
+@router.put("/videos/{video_id}", response_model=schemas.ResContentsVideo)
+async def contents_videos_update(video_id: int, video: schemas.ReqContentsVideo, db: Session = Depends(get_db)):
+    pass
