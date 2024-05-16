@@ -69,6 +69,8 @@ class ContentsVideo(BaseModel):
     class Config:
         from_attributes = True
 
+class ReqContentsVideo(BaseModel):
+    pass;
 
 class ResContentsVideos(BaseModel):
     status: str = "success"
