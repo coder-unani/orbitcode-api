@@ -1,5 +1,4 @@
 from fastapi import FastAPI
-from fastapi_pagination import add_pagination
 
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -27,5 +26,3 @@ def create_app():
     return app
 
 app = create_app()
-# Pagination
-add_pagination(app)
