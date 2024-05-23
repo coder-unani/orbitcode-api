@@ -1,78 +1,113 @@
 from typing import Union
-from sqlalchemy import Column, Integer, String, Boolean, DateTime, ForeignKey
+from sqlalchemy import Table, ForeignKey, Column, Integer, String, Float, Boolean, DateTime
 from sqlalchemy.orm import relationship
 
 from pydantic import BaseModel
 from app.database.database import Base 
 
-class ContentsVideo(Base):
-    __tablename__ = 'contents_video'
+content_video_genre = Table(
+    'content_video_genre',
+    Base.metadata,
+    Column('video_id', Integer, ForeignKey('content_video.id')),
+    Column('genre_id', Integer, ForeignKey('content_genre.id'))
+)
+
+content_video_actor = Table(
+    'content_video_actor',
+    Base.metadata,
+    Column('video_id', Integer, ForeignKey('content_video.id')),
+    Column('actor_id', Integer, ForeignKey('content_actor.id'))
+)
+
+content_video_staff = Table(
+    'content_video_staff',
+    Base.metadata,
+    Column('video_id', Integer, ForeignKey('content_video.id')),
+    Column('staff_id', Integer, ForeignKey('content_staff.id'))
+)
+
+
+class Video(Base):
+    __tablename__ = 'content_video'
     
     id = Column(Integer, primary_key=True, index=True)
+    type = Column(String)
     title = Column(String, index=True)
     synopsis = Column(String)
     release = Column(String)
-    notice_age = Column(String)
     runtime = Column(String)
+    notice_age = Column(String)
+    grade = Column(Float)
+    like_count = Column(Integer)
+    view_count = Column(Integer)
     platform_code = Column(String)
     platform_id = Column(String)
     is_confirm = Column(Boolean)
     is_delete = Column(Boolean)
     created_at = Column(DateTime)
     updated_at = Column(DateTime)
+    genre = relationship("Genre", secondary=content_video_genre, back_populates="video")
+    actor = relationship("Actor", secondary=content_video_actor, back_populates="video")
+    staff = relationship("Staff", secondary=content_video_staff, back_populates="video")
+    watch = relationship("VideoWatch", back_populates="video")
+    thumbnail = relationship("VideoThumbnail", back_populates="video")
 
-    watchs = relationship("ContentsVideoWatch", back_populates="video")
-    genres = relationship("ContentsVideoGenre", back_populates="video")
-    staffs = relationship("ContentsVideoStaff", back_populates="video")
-    attachs = relationship("ContentsVideoAttach", back_populates="video")
 
-class ContentsVideoWatch(Base):
-    __tablename__ = 'contents_video_watch'
-
-    id = Column(Integer, primary_key=True, index=True)
-    watch_type = Column(String)
-    watch_url = Column(String)
-    sort = Column(Integer)
-    is_delete = Column(Boolean)
-    created_at = Column(DateTime)
-    updated_at = Column(DateTime)
-    video_id = Column(Integer, ForeignKey('contents_video.id'))
-    video = relationship("ContentsVideo", back_populates="watchs")
-
-class ContentsVideoGenre(Base):
-    __tablename__ = 'contents_video_genre'
+class Genre(Base):
+    __tablename__ = 'content_genre'
 
     id = Column(Integer, primary_key=True, index=True)
-    genre = Column(String)
-    sort = Column(Integer)
-    is_delete = Column(Boolean)
+    name = Column(String)
     created_at = Column(DateTime)
     updated_at = Column(DateTime)
-    video_id = Column(Integer, ForeignKey('contents_video.id'))
-    video = relationship("ContentsVideo", back_populates="genres")
+    video = relationship("Video", secondary=content_video_genre, back_populates="genre")
 
-class ContentsVideoStaff(Base):
-    __tablename__ = 'contents_video_staff'
+
+class Actor(Base):
+    __tablename__ = 'content_actor'
 
     id = Column(Integer, primary_key=True, index=True)
-    staff_type = Column(String)
-    staff_name = Column(String)
-    sort = Column(Integer)
-    is_delete = Column(Boolean)
+    name = Column(String)
+    picture = Column(String, nullable=True)
+    profile = Column(String, nullable=True)
     created_at = Column(DateTime)
     updated_at = Column(DateTime)
-    video_id = Column(Integer, ForeignKey('contents_video.id'))
-    video = relationship("ContentsVideo", back_populates="staffs")
+    video = relationship("Video", secondary=content_video_actor, back_populates="actor")
 
-class ContentsVideoAttach(Base):
-    __tablename__ = 'contents_video_attach'
+
+class Staff(Base):
+    __tablename__ = 'content_staff'
 
     id = Column(Integer, primary_key=True, index=True)
-    attach_type = Column(String)
-    attach_url = Column(String)
-    sort = Column(Integer)
-    is_delete = Column(Boolean)
+    name = Column(String)
+    picture = Column(String, nullable=True)
+    profile = Column(String, nullable=True)
     created_at = Column(DateTime)
     updated_at = Column(DateTime)
-    video_id = Column(Integer, ForeignKey('contents_video.id'))
-    video = relationship("ContentsVideo", back_populates="attachs")
+    video = relationship("Video", secondary=content_video_staff, back_populates="staff")
+
+
+class VideoWatch(Base):
+    __tablename__ = 'content_video_watch'
+
+    id = Column(Integer, primary_key=True, index=True)
+    type = Column(String)
+    url = Column(String)
+    created_at = Column(DateTime)
+    updated_at = Column(DateTime)
+    video_id = Column(Integer, ForeignKey('content_video.id'))
+    video = relationship("Video", back_populates="watch")
+
+
+class VideoThumbnail(Base):
+    __tablename__ = 'content_video_thumbnail'
+
+    id = Column(Integer, primary_key=True, index=True)
+    type = Column(String)
+    url = Column(String)
+    extension = Column(String)
+    size = Column(Integer)
+    created_at = Column(DateTime)
+    updated_at = Column(DateTime)
+    video_id = Column(Integer, ForeignKey('content_video.id'))
+    video = relationship("Video", back_populates="thumbnail")
