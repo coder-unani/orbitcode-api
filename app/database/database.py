@@ -7,6 +7,7 @@ from sqlalchemy.ext.declarative import declarative_base
 
 from app.config.settings import settings
 
+
 engine = create_engine(
     URL.create(
         drivername=settings.DB_DRIVER,
@@ -20,6 +21,7 @@ engine = create_engine(
 session = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 Base.metadata.bind = engine
+
 
 def get_db():
     db = session()
