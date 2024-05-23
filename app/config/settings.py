@@ -5,6 +5,7 @@ ENV_NAME = "development"
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 load_dotenv(os.path.join(BASE_DIR, f".env.{ENV_NAME}"))
 
+
 class Settings:
     # Default
     APP_NAME: str = "ORBITCODE APIs"
@@ -30,7 +31,8 @@ class Settings:
         "http://localhost:3000",
         "http://localhost:8000",
     ]
-    
+
+
 settings = Settings()
 
     
