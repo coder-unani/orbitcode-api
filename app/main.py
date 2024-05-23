@@ -1,28 +1,27 @@
 from fastapi import FastAPI
-
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.routes import contents
 from app.config.settings import settings
 
-def create_app():
 
-    # FastAPI initialize
-    app = FastAPI()
+# FastAPI initialize
+def create_api() -> FastAPI:
+    api = FastAPI()
 
     # Middleware 정의
-    app.add_middleware(
+    api.add_middleware(
         CORSMiddleware,
         allow_origins=settings.CORS_ORIGINS,
-        allow_credentials=True, # cross-origin request에서 cookie를 허용
-        allow_methods=["*"], # 모든 HTTP 메서드 허용
-        allow_headers=["*"], # 모든 HTTP 헤더 허용
+        allow_credentials=True,  # cross-origin request에서 cookie를 허용
+        allow_methods=["*"],  # 모든 HTTP 메서드 허용
+        allow_headers=["*"],  # 모든 HTTP 헤더 허용
     )
 
     # Router 정의
-    app.include_router(contents.router, prefix="/contents")
+    api.include_router(contents.router, prefix="/contents")
 
-    # App 반환
-    return app
+    return api
 
-app = create_app()
+
+app: FastAPI = create_api()
