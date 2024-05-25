@@ -2,6 +2,7 @@ aiosignal==1.3.1
 annotated-types==0.6.0
 anyio==4.3.0
 attrs==23.2.0
+bcrypt==4.1.3
 boto3==1.34.102
 botocore==1.34.102
 certifi==2024.2.2
@@ -23,11 +24,14 @@ markdown-it-py==3.0.0
 MarkupSafe==2.1.5
 mdurl==0.1.2
 multidict==6.0.5
+mysql==0.0.3
+mysqlclient==2.2.4
 orjson==3.10.3
 packaging==24.0
 pydantic==2.7.1
 pydantic_core==2.18.2
 Pygments==2.18.0
+PyJWT==2.8.0
 python-dateutil==2.9.0.post0
 python-dotenv==1.0.1
 python-multipart==0.0.9
