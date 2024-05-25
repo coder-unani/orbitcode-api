@@ -3,6 +3,7 @@ import logging
 from botocore.exceptions import ClientError
 from app.config.settings import settings
 
+
 class S3Client:
     def __init__(self, region=None):
         self._aws_access_key_id = settings.AWS_ACCESS_KEY_ID
@@ -22,7 +23,7 @@ class S3Client:
         destination = destination + file_name
         print(f"Uploading {file_path} to {self._aws_bucket_name}/{destination}")
         try:
-            self._response = self._client.upload_file(file_path, self._aws_bucket_name, destination)
+            self._client.upload_file(file_path, self._aws_bucket_name, destination)
             print(f"File uploaded to {self._aws_bucket_name}/{destination}")
             return destination
         
@@ -42,11 +43,6 @@ class S3Client:
             logging.error(e)
             return None
         return response
-    
-    def create_presigned_urls(self, contents, expiration=3600):
-        
-        
-        return contents
 
     def close(self):
         self._client.close()
