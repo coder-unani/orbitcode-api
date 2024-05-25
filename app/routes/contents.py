@@ -1,14 +1,21 @@
-from fastapi import APIRouter, Depends
-from fastapi.encoders import jsonable_encoder
+from typing import Annotated
 
+from fastapi import APIRouter, HTTPException, Depends
+from fastapi.encoders import jsonable_encoder
+from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 
 from app.database.database import get_db
 from app.database import queryset
-from app.database.schemas import Response, ResponseVideo, ResponseVideos, ReuqestVideo
+from app.database.schemas import ResponseModel, ResponseVideo, ResponseVideos, ReuqestVideo
 from app.utils.s3client import S3Client
+from app.utils.generator import make_response
 
 router = APIRouter()
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+
+token: Annotated[str, Depends(oauth2_scheme)]
 
 
 # 비디오 목록 조회
@@ -28,14 +35,15 @@ async def content_videos(
         return {"status": "fail", "message": "Keyword must be at least 2 characters"}
 
     # get videos
-    status, message, total, videos = queryset.read_videos(db, page, is_delete, is_confirm, keyword)
+    status, code, total, count, videos = queryset.read_videos(db, page, is_delete, is_confirm, keyword)
 
     # return videos
-    return {"status": status, "message": message, "data": {"total": total, "page": page, "list": videos}}
+    data = {"total": total, "count": count, "page": page, "list": videos}
+    return make_response(status, code, data)
 
 
 # 비디오 생성
-@router.post("/videos", response_model=Response)
+@router.post("/videos", response_model=ResponseModel)
 async def create_video(video: ReuqestVideo, db: Session = Depends(get_db)):
     status, message = queryset.create_video(db, video=jsonable_encoder(video))
     return {"status": status, "message": message}
@@ -61,14 +69,14 @@ async def read_video(video_id: int, db: Session = Depends(get_db)):
 
 
 # 비디오 업데이트
-@router.put("/videos/{video_id}", response_model=Response)
+@router.put("/videos/{video_id}", response_model=ResponseModel)
 async def update_video(video_id: int, video: ReuqestVideo, db: Session = Depends(get_db)):
     status, message = queryset.update_video(db, video_id=video_id, video=video)
     return {"status": status, "message": message}
 
 
 # 비디오 삭제
-@router.delete("/videos/{video_id}", response_model=Response)
+@router.delete("/videos/{video_id}", response_model=ResponseModel)
 async def delete_video(video_id: int, db: Session = Depends(get_db)):
     status, message = queryset.delete_video(db, video_id=video_id)
     return {"status": status, "message": message}
