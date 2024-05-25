@@ -3,6 +3,58 @@ from datetime import datetime
 from pydantic import BaseModel
 
 
+class AccessLog(BaseModel):
+    id: int
+    status: int
+    path: str
+    ip: str
+    user_id: int
+    message: str
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
+
+
+class User(BaseModel):
+    id: int
+    type: str
+    email: str
+    password: str
+    nickname: str
+    picture: str
+    profile: str
+    is_active: bool
+    is_admin: bool
+    is_agree: bool
+    token: str
+    created_at: datetime
+    updated_at: datetime
+
+    class Config:
+        from_attributes = True
+
+
+class UserToken(BaseModel):
+    id: int
+    email: str
+
+
+class UserLogin(UserToken):
+    type: str
+    nickname: str
+    picture: str | None = None
+    profile: str | None = None
+    is_agree: bool
+    access_token: str
+    refresh_token: str
+
+
+class UserMe(UserLogin):
+    created_at: datetime
+    updated_at: datetime
+
+
 class Genre(BaseModel):
     id: int
     name: str
@@ -86,6 +138,31 @@ class Video(BaseModel):
         from_attributes = True
 
 
+class RequestUserCreate(BaseModel):
+    type: str = None
+    email: str = None
+    password: str = None
+    is_active: Optional[bool] = False
+    is_agree: Optional[bool] = False
+    nickname: Optional[str] = None
+    picture: Optional[str] = None
+    profile: Optional[str] = None
+    token: Optional[str] = None
+
+
+class RequestUser(BaseModel):
+    nickname: str
+    password: str
+    picture: str
+    profile: str
+    is_agree: bool
+
+
+class RequestUserLogin(BaseModel):
+    email: str
+    password: str
+
+
 class ReuqestVideo(BaseModel):
     type: Optional[str] = None
     title: Optional[str] = None
@@ -106,20 +183,30 @@ class ReuqestVideo(BaseModel):
 
 class Videos(BaseModel):
     total: int = 0
+    count: int = 0
     page: int = 0
     list: List[Video] = []
 
 
-class Response(BaseModel):
+class ResponseModel(BaseModel):
     status: str = "success"
+    code: str = ""
     message: str = ""
 
 
-class ResponseVideo(Response):
+class ResponseUserLogin(ResponseModel):
+    data: UserLogin | None = None
+
+
+class ResponseUserMe(ResponseModel):
+    data: UserMe | None = None
+
+
+class ResponseVideo(ResponseModel):
     data: Video | None = None
 
 
-class ResponseVideos(Response):
+class ResponseVideos(ResponseModel):
     data: Videos | None = None
 
 
