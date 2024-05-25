@@ -1,3 +1,4 @@
+import datetime
 from typing import Union
 from sqlalchemy import Table, ForeignKey, Column, Integer, String, Float, Boolean, DateTime
 from sqlalchemy.orm import relationship
@@ -25,6 +26,37 @@ content_video_staff = Table(
     Column('video_id', Integer, ForeignKey('content_video.id')),
     Column('staff_id', Integer, ForeignKey('content_staff.id'))
 )
+
+
+class AccessLog(Base):
+    __tablename__ = 'access_log'
+
+    id = Column(Integer, primary_key=True, index=True)
+    status = Column(Integer, nullable=False)
+    path = Column(String, nullable=False)
+    ip = Column(String, nullable=False)
+    user_id = Column(Integer, nullable=True)
+    message = Column(String)
+    created_at = Column(DateTime)
+
+
+class User(Base):
+    __tablename__ = 'user'
+
+    id = Column(Integer, primary_key=True, index=True)
+    type = Column(String)
+    email = Column(String, unique=True, index=True)
+    password = Column(String)
+    nickname = Column(String)
+    picture = Column(String, nullable=True)
+    profile = Column(String, nullable=True)
+    is_active = Column(Boolean, default=True)
+    is_admin = Column(Boolean, default=False)
+    is_agree = Column(Boolean, default=False)
+    token = Column(String, nullable=True)
+
+    created_at = Column(DateTime, default=datetime.datetime.now)
+    updated_at = Column(DateTime, default=datetime.datetime.now)
 
 
 class Video(Base):
