@@ -1,13 +1,16 @@
-from fastapi import FastAPI, APIRouter, Request, Depends
+from fastapi import FastAPI
+from fastapi import APIRouter, Request, Depends
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.routes import users, contents
 from app.config.settings import settings
+from app.security.verifier import verify_access_token_user
+
 
 SWAGGER_HEADERS = {
     "title": settings.APP_NAME,
     "version": "0.1.0",
-    "description": "라라라라라라"
+    "description": "ORBITCODE API<br/><a href='https://www.orbitcode.kr' target='_blank'>www.orbitcode.kr</a>"
 }
 
 
@@ -39,7 +42,7 @@ def create_api() -> FastAPI:
 
     # Router 정의
     api.include_router(users.router, prefix="/users")
-    api.include_router(contents.router, prefix="/contents")
+    api.include_router(contents.router, prefix="/contents", dependencies=[Depends(verify_access_token_user)])
 
     return api
 
