@@ -66,19 +66,10 @@ class JWTManager:
 
     @classmethod
     def verify_access_token_expire(cls, payload: dict):
-        try:
-            now = datetime.timestamp(datetime.now(settings.TIME_ZONE))
-            if payload['exp'] < now:
-                raise HTTPException(
-                    status_code=status.HTTP_401_UNAUTHORIZED,
-                    detail="Token expired",
-                    headers={"WWW-Authenticate": "Bearer"}
-                )
-
-            return True
-
-        except HTTPException as e:
-            raise e
+        now = datetime.timestamp(datetime.now(settings.TIME_ZONE))
+        if payload['exp'] < now:
+            return False
+        return True
 
     @classmethod
     def verify_access_token(cls, user: dict, token: str):
@@ -116,48 +107,6 @@ class JWTManager:
 
         except HTTPException as e:
             raise e
-
-
-def get_access_token(request: Request):
-    authorization = request.headers.get("Authorization")
-    schema, token = get_authorization_scheme_param(authorization)
-    return token
-
-
-def verify_access_user(request: Request, db: Session = Depends(get_db)):
-    # 토큰 검증
-    is_token, code, token = JWTManager.get_access_token(request)
-    if not is_token or not token:
-        return False
-    # 토큰 정합성 검증
-    decoded_token = JWTManager.decode_access_token(token)
-    if not decoded_token:
-        return False
-    # 토큰 만료 검증
-    is_expire = JWTManager.verify_access_token_expire(decoded_token)
-    if not is_expire:
-        return False
-    # 토큰 유저 검증
-    is_user, code, user = read_user_by_id(db, decoded_token['user']['id'])
-    if not is_user or not user:
-        return False
-    user = jsonable_encoder(user)
-    if user['email'] != decoded_token['user']['email']:
-        return False
-    # 토큰 정보 정합성 검증
-    # is_verify, code = JWTManager.verify_access_token(token, user['email'])
-    # if not is_verify:
-    #     return False
-
-    return user
-#
-#
-# class TokenAuthentication(HTTPBearer):
-#     def __call__(
-#         self,
-#         db: Session = Depends(get_db),
-#         auth: Annotated[JWTManager, None] = Depends(JWTManager)
-#     ):
 
 
 
