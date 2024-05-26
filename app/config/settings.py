@@ -14,6 +14,18 @@ class Settings:
     BASE_DIR: str = BASE_DIR
     TIME_ZONE = ZoneInfo(os.getenv('TIME_ZONE'))
 
+    # Upload
+    FILE_DIR = os.path.join(BASE_DIR, "static/uploads/")
+    FILE_DIR_TEMP = os.path.join(FILE_DIR, "temp/")
+    FILE_UPLOAD_TYPE_ALLOWED = [
+        "image/jpeg",
+        "image/jpg",
+        "image/webp",
+        "image/png",
+        "image/gif",
+        "image/bmp",
+    ]
+
     # Security
     SECRET_KEY: str = os.getenv('SECRET_KEY')
     ALGORITHM: str = os.getenv('ALGORITHM')
@@ -43,11 +55,13 @@ class Settings:
     DB_USER_PASSWORD: str = os.getenv('DB_USER_PASSWORD')
 
     # AWS S3
-    AWS_BUCKET_REGION: str = os.getenv('AWS_BUCKET_REGION')
-    AWS_BUCKET_NAME: str = os.getenv('AWS_BUCKET_NAME')
-    AWS_ACCESS_KEY_ID: str = os.getenv('AWS_ACCESS_KEY_ID')
-    AWS_SECRET_ACCESS_KEY: str = os.getenv('AWS_SECRET_ACCESS_KEY')
-    
+    AWS_S3_BUCKET_REGION: str = os.getenv('AWS_S3_BUCKET_REGION')
+    AWS_S3_BUCKET_NAME: str = os.getenv('AWS_S3_BUCKET_NAME')
+    AWS_S3_ACCESS_KEY_ID: str = os.getenv('AWS_S3_ACCESS_KEY_ID')
+    AWS_S3_SECRET_ACCESS_KEY: str = os.getenv('AWS_S3_SECRET_ACCESS_KEY')
+
+    AWS_S3_PATH_USER_PROFILE_IMAGE = "users/profile/images/"
+
     # CORS origins
     CORS_ORIGINS: list = [
         "http://localhost",
