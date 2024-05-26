@@ -1,18 +1,26 @@
-from typing import Annotated
-from fastapi import Request, APIRouter, Depends
-from fastapi.security import HTTPBearer
-from fastapi.encoders import jsonable_encoder
-from fastapi.security import APIKeyHeader, OAuth2PasswordBearer
+import uuid
 
+from fastapi import APIRouter, Depends, UploadFile, status
+from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import Session
 
+from app.config.settings import settings
+from app.security import verifier, validator
+from app.security.verifier import verify_access_token_user
+from app.security.password import Password
+from app.security.token import JWTManager
+from app.utils.generator import make_response
+from app.utils.file import File
 from app.database.database import get_db
 from app.database import queryset
-from app.database.schemas import UserMe, ResponseModel, ResponseUserLogin, ResponseUserMe, RequestUserCreate, RequestUserLogin
-from app.security.password import Password
-from app.security.token import JWTManager, verify_access_user
-from app.utils.generator import make_response
-from app.utils import validator
+from app.database.schemas import (
+    UserMe,
+    RequestUserCreate,
+    RequestUserLogin,
+    ResponseModel,
+    ResponseUserLogin,
+    ResponseUserMe
+)
 
 
 router = APIRouter()
@@ -22,7 +30,7 @@ router = APIRouter()
 #     return [{"username": "Rick"}, {"username": "Morty"}]
 
 
-@router.post("/create", response_model=ResponseModel)
+@router.post("/create", status_code=status.HTTP_201_CREATED, response_model=ResponseModel)
 async def create_user(
     user: RequestUserCreate,
     db: Session = Depends(get_db)
@@ -74,15 +82,14 @@ async def login_user(
     # 유저 정보 가져오기
     get_user = queryset.read_user_by_email(db, user.email)
     # 유저 등록정보 확인
-    if not get_user:
+    if not verifier.verify_user(get_user):
         return make_response(False, "USER_VERIFY_FAIL")
     # 유저 비밀번호 확인
-    if not Password.verify_password(user.password, get_user.password):
+    if not verifier.verify_user_password(user.password, get_user.password):
         return make_response(False, "USER_VERIFY_FAIL")
     # 유저 활성화 확인
-    if not get_user.is_active:
+    if not verifier.verify_user_active(get_user):
         return make_response(False, "USER_VERIFY_FAIL")
-
     # 토큰 생성
     access_token = JWTManager.create_access_token(jsonable_encoder(get_user))
     refresh_token = JWTManager.create_refresh_token(jsonable_encoder(get_user))
@@ -92,7 +99,7 @@ async def login_user(
         "email": get_user.email,
         "type": get_user.type,
         "nickname": get_user.nickname,
-        "picture": get_user.picture,
+        "profile_image": get_user.profile_image,
         "profile": get_user.profile,
         "is_agree": get_user.is_agree,
         "access_token": access_token,
@@ -102,23 +109,82 @@ async def login_user(
     return make_response(True, "USER_VERIFY_SUCC", return_user)
 
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/users/login")
-
-
-@router.get("/me")
+@router.get("/me", response_model=ResponseUserMe)
 async def read_user(
-    request: Request,
-    user: UserMe = Depends(verify_access_user),
-    db: Session = Depends(get_db)
+    user: UserMe = Depends(verify_access_token_user),
 ):
-    return {"status": "success", "message": "User has been read successfully."}
+    result = False
+    user_me = dict()
+    if user:
+        user_me = {
+            "id": user['id'],
+            "email": user['email'],
+            "type": user['type'],
+            "nickname": user['nickname'],
+            "profile_image": user['profile_image'],
+            "profile": user['profile'],
+            "is_agree": user['is_agree'],
+            "is_admin": user['is_admin'],
+            "created_at": user['created_at'],
+            "updated_at": user['updated_at'],
+        }
+
+    return make_response(result, "USER_READ_SUCC", user_me)
 
 
-@router.get("/update")
+@router.put("/update")
 async def update_user():
     return {"status": "success", "message": "User has been updated successfully."}
 
 
-@router.get("/terminate")
+@router.delete("/terminate")
 async def delete_user():
     return {"status": "success", "message": "User has been deleted successfully."}
+
+
+@router.patch("/{user_id}/password")
+async def update_password():
+    return {"status": "success", "message": "User password has been updated successfully."}
+
+
+@router.patch("/{user_id}/nickname")
+async def update_nickname():
+    return {"status": "success", "message": "User nickname has been updated successfully."}
+
+
+@router.patch("/{user_id}/profile/image", response_model=ResponseModel)
+async def update_profile_image(
+    file: UploadFile = None,
+    db: Session = Depends(get_db),
+    user: UserMe = Depends(verify_access_token_user)
+):
+    if not file:
+        return make_response(False, "FILE_NOT_FOUND")
+
+    if file.content_type not in settings.FILE_UPLOAD_TYPE_ALLOWED:
+        return make_response(False, "FILE_TYPE_ERR")
+
+    read_file = await file.read()
+    file_path = File.store(settings.FILE_DIR_TEMP, file.filename, read_file)
+    if not file_path:
+        return make_response(False, "FILE_STORE_FAIL")
+
+    file.file.close()
+
+    s3_uploaded_file = File.update_to_s3(file_path, settings.AWS_S3_PATH_USER_PROFILE_IMAGE)
+    if not s3_uploaded_file:
+        return False
+
+    result, code = queryset.update_user_profile_image(db, user['id'], s3_uploaded_file)
+
+    return make_response(result, code)
+
+
+@router.patch("/{user_id}/agree")
+async def update_agree():
+    return {"status": "success", "message": "User profile has been updated successfully."}
+
+
+@router.patch("/{user_id}/profile")
+async def update_profile():
+    return {"status": "success", "message": "User profile has been updated successfully."}
