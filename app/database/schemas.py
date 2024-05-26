@@ -22,7 +22,7 @@ class User(BaseModel):
     email: str
     password: str
     nickname: str
-    picture: str
+    profile_image: str
     profile: str
     is_active: bool
     is_admin: bool
@@ -40,19 +40,25 @@ class UserToken(BaseModel):
     email: str
 
 
-class UserLogin(UserToken):
+class UserDisp(BaseModel):
+    id: int
+    email: str
     type: str
     nickname: str
-    picture: str | None = None
+    profile_image: str | None = None
     profile: str | None = None
-    is_agree: bool
-    access_token: str
-    refresh_token: str
+    is_agree: bool = False
 
 
-class UserMe(UserLogin):
+class UserMe(UserDisp):
+    is_admin: bool
     created_at: datetime
     updated_at: datetime
+
+
+class UserLogin(UserDisp):
+    access_token: str
+    refresh_token: str
 
 
 class Genre(BaseModel):
