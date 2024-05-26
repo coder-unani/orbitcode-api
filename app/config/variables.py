@@ -1,11 +1,15 @@
 from app.config.settings import settings
 
+
 messages = dict()
 
 # 공통
 messages[True] = "success"
 messages[False] = "fail"
 messages['EXCEPTION'] = "알 수 없는 오류가 발생했습니다. 잠시 후 다시 시도해 주세요."
+messages['FILE_NOT_FOUND'] = "파일을 찾을 수 없습니다."
+messages['FILE_STORE_FAIL'] = "파일 저장에 실패하였습니다."
+messages['FILE_TYPE_ERR'] = "지원하지 않는 파일 형식입니다."
 
 # access token 관련
 messages['ACCESS_TOKEN_FOUND'] = "토큰은 찾았습니다."
@@ -20,11 +24,18 @@ messages['USER_CREATE_FAIL'] = "회원가입에 실패하였습니다."
 messages['USER_TYPE_SUCC'] = "유효한 회원 유형입니다."
 messages['USER_TYPE_ERR'] = "유효하지 않은 회원 유형입니다."
 
+messages['USER_VERIFY_SUCC'] = "로그인에 성공하였습니다."
+messages['USER_VERIFY_FAIL'] = "로그인에 실패하였습니다."
+messages['USER_READ_SUCC'] = "회원 정보 조회에 성공하였습니다."
+
 messages['NICKNAME_DOES_NOT_EXIST'] = "사용 가능한 닉네임입니다."
 messages['NICKNAME_ALREADY_EXIST'] = "이미 존재하는 닉네임입니다."
 
 messages['EMAIL_DOES_NOT_EXIST'] = "사용 가능한 이메일 주소입니다."
 messages['EMAIL_ALREADY_EXIST'] = "이미 존재하는 이메일 주소입니다."
+
+messages['USER_UPDATE_PROFILE_IMAGE_SUCC'] = "사용자의 프로필 이미지 업데이트에 성공했습니다."
+messages['USER_UPDATE_PROFILE_IMAGE_FAIL'] = "사용자의 프로필 이미지 업데이트에 실패했습니다."
 
 messages['VALID_EMAIL_SUCC'] = "유효한 이메일 주소입니다."
 messages['VALID_EMAIL_REQUIRE_ERR'] = "이메일은 필수 입력사항 입니다."
@@ -43,9 +54,6 @@ messages['VALID_PWD_NOT_INC_LOWER_ERR'] = "비밀번호는 반드시 소문자�
 
 messages['VALID_NICK_SUCC'] = "유효한 닉네임입니다."
 messages['VALID_NICK_REQUIRE_ERR'] = "닉네임은 필수 입력사항 입니다."
-
-messages['USER_VERIFY_SUCC'] = "로그인에 성공하였습니다."
-messages['USER_VERIFY_FAIL'] = "로그인에 실패하였습니다."
 
 # Video Create, Read, Update, Delete 관련
 messages['VIDEO_CREATE_SUCC'] = "동영상이 성공적으로 생성되었습니다."
