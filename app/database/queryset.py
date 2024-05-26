@@ -1,6 +1,6 @@
 from sqlalchemy import func
 from sqlalchemy.orm import Session
-from sqlalchemy.sql.expression import select, exists, insert
+from sqlalchemy.sql.expression import select, insert, update, delete, exists
 
 from app.database.models import User, Video
 from app.database.schemas import RequestUserLogin
@@ -36,6 +36,17 @@ def read_user_by_id(db: Session, id: int):
     except Exception as e:
         print(e)
         return False, "", None
+
+
+def update_user_profile_image(db: Session, user_id: int, profile_image: str):
+    try:
+        stmt = update(User).where(User.id == user_id).values(profile_image=profile_image)
+        db.execute(stmt)
+        db.commit()
+        return True, "USER_UPDATE_PROFILE_IMAGE_SUCC"
+    except Exception as e:
+        print(e)
+        return False, "EXCEPTION"
 
 
 def read_videos(
