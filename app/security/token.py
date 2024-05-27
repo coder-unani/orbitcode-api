@@ -1,14 +1,8 @@
 import jwt
-from typing import Annotated
 from datetime import datetime, timedelta
-from fastapi import Request, HTTPException, status, Depends
-from fastapi.security import HTTPBearer
+from fastapi import Request, HTTPException, status
 from fastapi.security.utils import get_authorization_scheme_param
-from sqlalchemy.orm import Session
-from fastapi.encoders import jsonable_encoder
 from app.config.settings import settings
-from app.database.database import get_db
-from app.database.queryset import read_user_by_id
 
 
 class JWTEncoder:
