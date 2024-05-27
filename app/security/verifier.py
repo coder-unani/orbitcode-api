@@ -2,11 +2,11 @@ from fastapi import Request, Depends, HTTPException
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import Session
 
-from app.database.schemas import User
+from app.database.schema.users import User
 from app.security.password import Password
 from app.security.token import JWTManager
 from app.database.database import get_db
-from app.database.queryset import read_user_by_id
+from app.database.queryset.users import read_user_by_id
 
 
 def verify_user(user: dict):
