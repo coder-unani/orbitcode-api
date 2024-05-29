@@ -42,7 +42,8 @@ def create_api() -> FastAPI:
 
     # Router 정의
     api.include_router(users.router, prefix="/users")
-    api.include_router(contents.router, prefix="/contents", dependencies=[Depends(verify_access_token_user)])
+    api.include_router(contents.router, prefix="/contents")
+    # api.include_router(review.router, prefix="/reviews")
 
     return api
 
