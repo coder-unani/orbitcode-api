@@ -15,7 +15,7 @@ def create_video(db: Session, video: dict):
         return False, "EXCEPTION"
 
 
-def read_video(db: Session, video_id: int):
+def read_video_by_id(db: Session, video_id: int):
     try:
         video: Video = db.get(Video, video_id)
         return True, "VIDEO_READ_SUCC", video
@@ -67,9 +67,7 @@ def read_video_list(
 
         total = db.execute(select(func.count()).select_from(stmt)).scalar()
         videos = db.execute(stmt.offset(offset).limit(unit_per_page)).scalars()
-        count = len(videos)
-
-        return True, "VIDEO_READ_SUCC", total, count, videos
+        return True, "VIDEO_READ_SUCC", total, videos
 
     except Exception as e:
         print(e)

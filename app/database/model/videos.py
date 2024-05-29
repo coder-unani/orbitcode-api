@@ -5,29 +5,29 @@ from app.database.database import Base
 
 
 content_video_genre = Table(
-    'content_video_genre',
+    'rvvs_video_genre',
     Base.metadata,
-    Column('video_id', Integer, ForeignKey('content_video.id')),
-    Column('genre_id', Integer, ForeignKey('content_genre.id'))
+    Column('video_id', Integer, ForeignKey('rvvs_video.id')),
+    Column('genre_id', Integer, ForeignKey('rvvs_genre.id'))
 )
 
 content_video_actor = Table(
-    'content_video_actor',
+    'rvvs_video_actor',
     Base.metadata,
-    Column('video_id', Integer, ForeignKey('content_video.id')),
-    Column('actor_id', Integer, ForeignKey('content_actor.id'))
+    Column('video_id', Integer, ForeignKey('rvvs_video.id')),
+    Column('actor_id', Integer, ForeignKey('rvvs_actor.id'))
 )
 
 content_video_staff = Table(
-    'content_video_staff',
+    'rvvs_video_staff',
     Base.metadata,
-    Column('video_id', Integer, ForeignKey('content_video.id')),
-    Column('staff_id', Integer, ForeignKey('content_staff.id'))
+    Column('video_id', Integer, ForeignKey('rvvs_video.id')),
+    Column('staff_id', Integer, ForeignKey('rvvs_staff.id'))
 )
 
 
 class Video(Base):
-    __tablename__ = 'content_video'
+    __tablename__ = 'rvvs_video'
 
     id = Column(Integer, primary_key=True, index=True)
     type = Column(String)
@@ -53,7 +53,7 @@ class Video(Base):
 
 
 class Genre(Base):
-    __tablename__ = 'content_genre'
+    __tablename__ = 'rvvs_genre'
 
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String)
@@ -63,7 +63,7 @@ class Genre(Base):
 
 
 class Actor(Base):
-    __tablename__ = 'content_actor'
+    __tablename__ = 'rvvs_actor'
 
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String)
@@ -75,7 +75,7 @@ class Actor(Base):
 
 
 class Staff(Base):
-    __tablename__ = 'content_staff'
+    __tablename__ = 'rvvs_staff'
 
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String)
@@ -87,19 +87,19 @@ class Staff(Base):
 
 
 class VideoWatch(Base):
-    __tablename__ = 'content_video_watch'
+    __tablename__ = 'rvvs_video_watch'
 
     id = Column(Integer, primary_key=True, index=True)
     type = Column(String)
     url = Column(String)
     created_at = Column(DateTime)
     updated_at = Column(DateTime)
-    video_id = Column(Integer, ForeignKey('content_video.id'))
+    video_id = Column(Integer, ForeignKey('rvvs_video.id'))
     video = relationship("Video", back_populates="watch")
 
 
 class VideoThumbnail(Base):
-    __tablename__ = 'content_video_thumbnail'
+    __tablename__ = 'rvvs_video_thumbnail'
 
     id = Column(Integer, primary_key=True, index=True)
     type = Column(String)
@@ -108,5 +108,5 @@ class VideoThumbnail(Base):
     size = Column(Integer)
     created_at = Column(DateTime)
     updated_at = Column(DateTime)
-    video_id = Column(Integer, ForeignKey('content_video.id'))
+    video_id = Column(Integer, ForeignKey('rvvs_video.id'))
     video = relationship("Video", back_populates="thumbnail")
