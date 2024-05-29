@@ -5,7 +5,7 @@ from app.database.database import Base
 
 
 class AccessLog(Base):
-    __tablename__ = 'access_log'
+    __tablename__ = 'rvvs_access_log'
 
     id = Column(Integer, primary_key=True, index=True)
     status = Column(Integer, nullable=False)
