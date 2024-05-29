@@ -47,11 +47,11 @@ def delete_video(db: Session, video_id: int):
 
 
 def read_video_list(
-        db: Session,
-        page: int,
-        is_delete: bool | None = None,
-        is_confirm: bool | None = None,
-        keyword: str | None = None
+    db: Session,
+    page: int,
+    keyword: str | None = None,
+    is_delete: bool = False,
+    is_confirm: bool = True,
 ):
     unit_per_page = 20
     offset = (page - 1) * unit_per_page

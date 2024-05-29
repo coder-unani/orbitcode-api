@@ -36,7 +36,7 @@ class Video(Base):
     release = Column(String)
     runtime = Column(String)
     notice_age = Column(String)
-    grade = Column(Float)
+    rating = Column(Float)
     like_count = Column(Integer)
     view_count = Column(Integer)
     platform_code = Column(String)

@@ -13,7 +13,7 @@ class BaseVideo(BaseModel):
     release: str
     runtime: str
     notice_age: str
-    grade: float
+    rating: float
     like_count: int
     view_count: int
 

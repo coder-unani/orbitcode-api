@@ -28,8 +28,6 @@ router = APIRouter()
 @router.get("/videos", response_model=ResponsePublicVideos)
 async def content_videos(
         page: int = 1,
-        is_delete: bool | None = None,
-        is_confirm: bool | None = None,
         keyword: str | None = None,
         db: Session = Depends(get_db)
 ):
@@ -40,10 +38,13 @@ async def content_videos(
     if keyword and len(keyword.strip()) < 2:
         return make_response(False, "INVALID_PARAM_KEYWORD")
     # get videos
-    status, code, total, videos = queryset.read_video_list(db, page, is_delete, is_confirm, keyword)
+    status, code, total, videos = queryset.read_video_list(db, page, keyword)
     videos = list(videos)
+    count = len(videos)
+    if count < 1:
+        return make_response(False, "VIDEO_NOT_FOUND")
     # return videos
-    data = {"total": total, "count": len(videos), "page": page, "list": videos}
+    data = {"total": total, "count": count, "page": page, "list": videos}
     return make_response(status, code, data)
 
 
