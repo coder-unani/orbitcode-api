@@ -60,13 +60,19 @@ messages['VALID_NICK_REQUIRE_ERR'] = "닉네임은 필수 입력사항 입니다
 
 messages['VALID_EMAIL_SUCC'] = "유효한 이메일 주소입니다."
 messages['VALID_EMAIL_REQUIRE_ERR'] = "이메일은 필수 입력사항 입니다."
-messages['VALID_EMAIL_LENGTH_ERR'] = "이메일 주소는 {}자리 이상 {}자리 이하여야 합니다.".format(settings.USER_EMAIL_LENGTH_MIN, settings.USER_EMAIL_LENGTH_MAX)
+messages['VALID_EMAIL_LENGTH_ERR'] = "이메일 주소는 {}자리 이상 {}자리 이하여야 합니다.".format(
+    settings.USER_EMAIL_LENGTH_MIN,
+    settings.USER_EMAIL_LENGTH_MAX
+)
 messages['VALID_EMAIL_PATTERN_ERR'] = "유효하지 않은 이메일 주소입니다."
 
 messages['VALID_PWD_SUCC'] = "유효한 비밀번호입니다."
 messages['VALID_PWD_REQUIRE_ERR'] = "비밀번호는 필수 입력사항 입니다."
 messages['VALID_PWD_INCLUDE_SPACE_ERR'] = "비밀번호에 공백을 포함할 수 없습니다."
-messages['VALID_PWD_LENGTH_ERR'] = "비밀번호는 {}자리 이상 {}자리 이하여야 합니다.".format(settings.USER_PASSWORD_LENGTH_MIN, settings.USER_PASSWORD_LENGTH_MAX)
+messages['VALID_PWD_LENGTH_ERR'] = "비밀번호는 {}자리 이상 {}자리 이하여야 합니다.".format(
+    settings.USER_PASSWORD_LENGTH_MIN,
+    settings.USER_PASSWORD_LENGTH_MAX
+)
 messages['VALID_PWD_NOT_INC_WORD_ERR'] = "비밀번호는 반드시 문자를 포함해야 합니다."
 messages['VALID_PWD_NOT_INC_NUMBER_ERR'] = "비밀번호는 반드시 숫자를 포함해야 합니다."
 messages['VALID_PWD_NOT_INC_SIMBOL_ERR'] = "비밀번호는 반드시 특수문자를 포함해야 합니다."
@@ -74,16 +80,29 @@ messages['VALID_PWD_NOT_INC_UPPER_ERR'] = "비밀번호는 반드시 대문자�
 messages['VALID_PWD_NOT_INC_LOWER_ERR'] = "비밀번호는 반드시 소문자를 포함해야 합니다."
 
 # Video Create, Read, Update, Delete 관련
-messages['VIDEO_CREATE_SUCC'] = "동영상이 성공적으로 생성되었습니다."
-messages['VIDEO_CREATE_FAIL'] = "동영상 생성에 실패하였습니다."
+messages['INVALID_PARAM_PAGE'] = "유효하지 않은 페이지 번호입니다."
+messages['INVALID_PARAM_KEYWORD'] = "유효하지 않은 검색어입니다."
 
-messages['VIDEO_READ_SUCC'] = "동영상 조회에 성공하였습니다."
-messages['VIDEO_READ_FAIL'] = "동영상 조회에 실패하였습니다."
+messages['VIDEO_CREATE_SUCC'] = "컨텐츠 생성에 성공하였습니다."
+messages['VIDEO_CREATE_FAIL'] = "컨텐츠 생성에 실패하였습니다."
 
-messages['VIDEO_UPDATE_SUCC'] = "동영상이 성공적으로 수정되었습니다."
-messages['VIDEO_UPDATE_FAIL'] = "동영상 수정에 실패하였습니다."
+messages['VIDEO_READ_SUCC'] = "컨텐츠 조회에 성공하였습니다."
+messages['VIDEO_READ_FAIL'] = "컨텐츠 조회에 실패하였습니다."
 
-messages['VIDEO_DELETE_SUCC'] = "동영상이 성공적으로 삭제되었습니다."
-messages['VIDEO_DELETE_FAIL'] = "동영상 삭제에 실패하였습니다."
+messages['VIDEO_UPDATE_SUCC'] = "컨텐츠 수정에 성공하였습니다."
+messages['VIDEO_UPDATE_FAIL'] = "컨텐츠 수정에 실패하였습니다."
+
+messages['VIDEO_DELETE_SUCC'] = "컨텐츠가 삭제되었습니다."
+messages['VIDEO_DELETE_FAIL'] = "컨텐츠 삭제에 실패하였습니다."
+
+messages['REVIEW_READ_LIST_SUCC'] = "리뷰 조회에 성공하였습니다."
+messages['REVIEW_CREATE_SUCC'] = "리뷰 등록에 성공했습니다."
+messages['REVIEW_READ_SUCC'] = "리뷰 조회에 성공했습니다."
+messages['REVIEW_UPDATE_SUCC'] = "리뷰 수정에 성공했습니다."
+messages['REVIEW_UPDATE_FAIL'] = "리뷰 수정에 실패했습니다."
+messages['REVIEW_UPDATE_PERMISSION_ERR'] = "리뷰 수정 권한이 없습니다."
+messages['REVIEW_DELETE_SUCC'] = "리뷰 삭제에 성공했습니다."
+messages['REVIEW_DELETE_FAIL'] = "리뷰 삭제에 실패했습니다."
+messages['REVIEW_DELETE_PERMISSION_ERR'] = "리뷰 삭제 권한이 없습니다."
 
 
