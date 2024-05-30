@@ -68,14 +68,18 @@ def verify_access_token_user(request: Request, db: Session = Depends(get_db)):
                 detail="Authentication failed"
             )
         # 토큰 유저 일치 검증
-        user = jsonable_encoder(user)
-        if user['email'] != decoded_token['user']['email']:
+        if user.email != decoded_token['user']['email']:
             raise HTTPException(
                 status_code=401,
                 detail="Authentication failed"
             )
-
-        return user
+        # 유저 출력 정보 가공
+        if user.created_at:
+            user.created_at = user.created_at.strftime('%Y-%m-%d %H:%M:%S')
+        if user.updated_at:
+            user.updated_at = user.updated_at.strftime('%Y-%m-%d %H:%M:%S')
+        # 결과 출력
+        return jsonable_encoder(user)
 
     except HTTPException as e:
         raise e
