@@ -97,6 +97,8 @@ messages['VIDEO_UPDATE_FAIL'] = "컨텐츠 수정에 실패하였습니다."
 messages['VIDEO_DELETE_SUCC'] = "컨텐츠가 삭제되었습니다."
 messages['VIDEO_DELETE_FAIL'] = "컨텐츠 삭제에 실패하였습니다."
 
+messages['VIDEO_VIEW_INSERT_SUCC'] = "컨텐츠 조회수를 갱신하였습니다."
+
 messages['REVIEW_READ_LIST_SUCC'] = "리뷰 조회에 성공하였습니다."
 messages['REVIEW_CREATE_SUCC'] = "리뷰 등록에 성공했습니다."
 messages['REVIEW_READ_SUCC'] = "리뷰 조회에 성공했습니다."
