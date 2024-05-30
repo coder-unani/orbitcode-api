@@ -23,3 +23,12 @@ class Review(Base):
     video_title = Column(String)
     created_at = Column(DateTime, default=datetime.now)
     updated_at = Column(DateTime, default=datetime.now)
+
+
+class ReviewLikeLog(Base):
+    __tablename__ = 'rvvs_review_like_log'
+
+    id = Column(Integer, primary_key=True, index=True)
+    review_id = Column(Integer, nullable=False, index=True)
+    user_id = Column(Integer, nullable=False, index=True)
+    created_at = Column(DateTime, default=datetime.now)
