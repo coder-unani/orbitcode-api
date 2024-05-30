@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import Optional
 from datetime import datetime
 from pydantic import BaseModel
 
@@ -42,7 +42,7 @@ class UserDisp(BaseModel):
 class UserMe(UserDisp):
     is_admin: bool
     created_at: datetime
-    updated_at: datetime
+    updated_at: datetime | None = None
 
 
 class UserLogin(UserDisp):
@@ -54,12 +54,10 @@ class RequestUserCreate(BaseModel):
     type: str = None
     email: str = None
     password: str = None
-    is_active: Optional[bool] = False
     is_agree: Optional[bool] = False
     nickname: Optional[str] = None
     picture: Optional[str] = None
     profile: Optional[str] = None
-    token: Optional[str] = None
 
 
 class RequestUser(BaseModel):

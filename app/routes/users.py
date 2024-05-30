@@ -1,3 +1,4 @@
+from datetime import datetime
 from fastapi import APIRouter, Depends, UploadFile, status
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import Session
@@ -124,6 +125,7 @@ async def read_user(
             "created_at": auth_user['created_at'],
             "updated_at": auth_user['updated_at'],
         }
+    # 유저 정보 비교
     # 결과 출력
     return make_response(result, "USER_READ_SUCC", me_user)
 
