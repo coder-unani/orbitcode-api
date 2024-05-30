@@ -2,7 +2,7 @@ from sqlalchemy import func
 from sqlalchemy.orm import Session
 from sqlalchemy.sql.expression import select, insert, update, delete
 
-from app.database.model.videos import Video
+from app.database.model.videos import Video, VideoViewLog
 
 
 def create_video(db: Session, video: dict):
@@ -44,6 +44,26 @@ def delete_video(db: Session, video_id: int):
     except Exception as e:
         print(e)
         return False, "EXCEPTION"
+
+
+def insert_video_view(db: Session, video_id: int, user_id: int | None = None):
+    try:
+        with ((db.begin())):
+            if user_id:
+                stmt_insert = insert(VideoViewLog).values(video_id=video_id, user_id=user_id)
+            else:
+                stmt_insert = insert(VideoViewLog).values(video_id=video_id)
+            db.add(stmt_insert)
+            stmt_update = update(Video).where(Video.id == video_id).values(view_count=Video.view_count + 1).returning(
+                Video.view_count
+            )
+            db.add(stmt_update)
+            db.commit()
+        view_count = db.execute(select(Video.view_count).where(Video.id == video_id)).scalar()
+        return True, "VIDEO_VIEW_INSERT_SUCC", view_count
+    except Exception as e:
+        print(e)
+        return False, "EXCEPTION", -1
 
 
 def read_video_list(

@@ -8,7 +8,7 @@ from app.database.database import get_db
 from app.security.verifier import verify_access_token_user
 from app.database.queryset import videos as queryset
 from app.database.queryset import reviews as review_queryset
-from app.database.schema.default import ResponseModel
+from app.database.schema.default import ResponseModel, ResponseDataModel
 from app.database.schema.users import UserMe
 from app.database.schema.videos import (
     ResponsePublicVideo,
@@ -86,6 +86,21 @@ async def update_video(video_id: int, video: ReuqestVideo, db: Session = Depends
 async def delete_video(video_id: int, db: Session = Depends(get_db)):
     status, message = queryset.delete_video(db, video_id=video_id)
     return {"status": status, "message": message}
+
+
+# 비디오 조회
+@router.post("/videos/{video_id}/view", response_model=ResponseDataModel)
+async def insert_video_view(video_id: int, db: Session = Depends(get_db)):
+    status, code, view_count = queryset.insert_video_view(db, video_id)
+    return make_response(status, code, {"view_count": view_count})
+
+
+# 비디오 좋아요 토글
+@router.post("/videos/{video_id}/like", response_model=ResponseModel)
+async def toggle_video_like(video_id: int, db: Session = Depends(get_db), auth_user: UserMe = Depends(verify_access_token_user)):
+    # status, code = queryset.toggle_video_like(db, video_id, auth_user['id'])
+    # return make_response(status, code)
+    pass
 
 
 # 비디오 리뷰 조회 (리스트)

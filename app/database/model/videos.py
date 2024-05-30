@@ -1,3 +1,4 @@
+from datetime import datetime
 from sqlalchemy import Table, ForeignKey, Column, Integer, String, Float, Boolean, DateTime
 from sqlalchemy.orm import relationship
 
@@ -43,8 +44,8 @@ class Video(Base):
     platform_id = Column(String)
     is_confirm = Column(Boolean)
     is_delete = Column(Boolean)
-    created_at = Column(DateTime)
-    updated_at = Column(DateTime)
+    created_at = Column(DateTime, default=datetime.now)
+    updated_at = Column(DateTime, nullable=True)
     genre = relationship("Genre", secondary=content_video_genre, back_populates="video")
     actor = relationship("Actor", secondary=content_video_actor, back_populates="video")
     staff = relationship("Staff", secondary=content_video_staff, back_populates="video")
@@ -57,8 +58,8 @@ class Genre(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String)
-    created_at = Column(DateTime)
-    updated_at = Column(DateTime)
+    created_at = Column(DateTime, default=datetime.now)
+    updated_at = Column(DateTime, nullable=True)
     video = relationship("Video", secondary=content_video_genre, back_populates="genre")
 
 
@@ -69,8 +70,8 @@ class Actor(Base):
     name = Column(String)
     picture = Column(String, nullable=True)
     profile = Column(String, nullable=True)
-    created_at = Column(DateTime)
-    updated_at = Column(DateTime)
+    created_at = Column(DateTime, default=datetime.now)
+    updated_at = Column(DateTime, nullable=True)
     video = relationship("Video", secondary=content_video_actor, back_populates="actor")
 
 
@@ -81,8 +82,8 @@ class Staff(Base):
     name = Column(String)
     picture = Column(String, nullable=True)
     profile = Column(String, nullable=True)
-    created_at = Column(DateTime)
-    updated_at = Column(DateTime)
+    created_at = Column(DateTime, default=datetime.now)
+    updated_at = Column(DateTime, nullable=True)
     video = relationship("Video", secondary=content_video_staff, back_populates="staff")
 
 
@@ -92,8 +93,8 @@ class VideoWatch(Base):
     id = Column(Integer, primary_key=True, index=True)
     type = Column(String)
     url = Column(String)
-    created_at = Column(DateTime)
-    updated_at = Column(DateTime)
+    created_at = Column(DateTime, default=datetime.now)
+    updated_at = Column(DateTime, nullable=True)
     video_id = Column(Integer, ForeignKey('rvvs_video.id'))
     video = relationship("Video", back_populates="watch")
 
@@ -106,7 +107,26 @@ class VideoThumbnail(Base):
     url = Column(String)
     extension = Column(String)
     size = Column(Integer)
-    created_at = Column(DateTime)
-    updated_at = Column(DateTime)
+    created_at = Column(DateTime, default=datetime.now)
+    updated_at = Column(DateTime, nullable=True)
     video_id = Column(Integer, ForeignKey('rvvs_video.id'))
     video = relationship("Video", back_populates="thumbnail")
+
+
+class VideoLikeLog(Base):
+    __tablename__ = 'rvvs_video_like_log'
+
+    id = Column(Integer, primary_key=True, index=True)
+    video_id = Column(Integer, nullable=False, index=True)
+    video_title = Column(String, nullable=False)
+    user_id = Column(Integer, nullable=False, index=True)
+    created_at = Column(DateTime, default=datetime.now)
+
+
+class VideoViewLog(Base):
+    __tablename__ = 'rvvs_video_view_log'
+
+    id = Column(Integer, primary_key=True, index=True)
+    video_id = Column(Integer, nullable=False, index=True)
+    user_id = Column(Integer, nullable=False, index=True)
+    created_at = Column(DateTime, default=datetime.now)
