@@ -1,10 +1,14 @@
 from fastapi import FastAPI
-from fastapi import APIRouter, Request, Depends
+from fastapi import APIRouter, Depends
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.routes import users, contents
+from app.routes.v1 import (
+    defaults as defaults_v1,
+    users as users_v1,
+    contents as contents_v1,
+    reviews as reviews_v1
+)
 from app.config.settings import settings
-from app.security.verifier import verify_access_token_user
 
 
 SWAGGER_HEADERS = {
@@ -38,12 +42,11 @@ def create_api() -> FastAPI:
         allow_headers=["*"],  # 모든 HTTP 헤더 허용
     )
 
-    router = APIRouter()
-
     # Router 정의
-    api.include_router(users.router, prefix="/users")
-    api.include_router(contents.router, prefix="/contents")
-    # api.include_router(review.router, prefix="/reviews")
+    api.include_router(defaults_v1.router, prefix="/v1")
+    api.include_router(users_v1.router, prefix="/v1")
+    api.include_router(contents_v1.router, prefix="/v1")
+    # api.include_router(review_v1.router, prefix="/v1")
 
     return api
 
