@@ -1,6 +1,9 @@
 from datetime import datetime
-from sqlalchemy import Table, ForeignKey, Column, Integer, String, Float, Boolean, DateTime
-from sqlalchemy.orm import relationship
+from typing import List
+from sqlalchemy import (
+    Table, ForeignKey, Column, Integer, String, Float, Boolean, DateTime
+)
+from sqlalchemy.orm import relationship, Mapped, mapped_column
 
 from app.database.database import Base
 
@@ -30,27 +33,30 @@ content_video_staff = Table(
 class Video(Base):
     __tablename__ = 'rvvs_video'
 
-    id = Column(Integer, primary_key=True, index=True)
-    type = Column(String)
-    title = Column(String, index=True)
-    synopsis = Column(String)
-    release = Column(String)
-    runtime = Column(String)
-    notice_age = Column(String)
-    rating = Column(Float)
-    like_count = Column(Integer)
-    view_count = Column(Integer)
-    platform_code = Column(String)
-    platform_id = Column(String)
-    is_confirm = Column(Boolean)
-    is_delete = Column(Boolean)
-    created_at = Column(DateTime, default=datetime.now)
-    updated_at = Column(DateTime, nullable=True)
-    genre = relationship("Genre", secondary=content_video_genre, back_populates="video")
-    actor = relationship("Actor", secondary=content_video_actor, back_populates="video")
-    staff = relationship("Staff", secondary=content_video_staff, back_populates="video")
-    watch = relationship("VideoWatch", back_populates="video")
-    thumbnail = relationship("VideoThumbnail", back_populates="video")
+    id: Mapped[int] = mapped_column(primary_key=True, index=True)
+    type: Mapped[str]
+    title: Mapped[str] = mapped_column(index=True)
+    synopsis: Mapped[str]
+    release: Mapped[str]
+    runtime: Mapped[str]
+    notice_age: Mapped[str]
+    rating: Mapped[float]
+    like_count: Mapped[int]
+    view_count: Mapped[int]
+    platform_code: Mapped[str]
+    platform_id: Mapped[str]
+    is_confirm: Mapped[bool]
+    is_delete: Mapped[bool]
+    created_at: Mapped[datetime] = mapped_column(default=datetime.now)
+    updated_at: Mapped[datetime] = mapped_column(nullable=True)
+    genre: Mapped[List['Genre']] = relationship(secondary=content_video_genre, back_populates="video")
+    actor: Mapped[List['Actor']] = relationship(secondary=content_video_actor, back_populates="video")
+    staff: Mapped[List['Staff']] = relationship(secondary=content_video_staff, back_populates="video")
+    watch: Mapped[List['VideoWatch']] = relationship(back_populates="video")
+    thumbnail: Mapped[List['VideoThumbnail']] = relationship(back_populates="video")
+
+    class Config:
+        from_attributes = True
 
 
 class Genre(Base):
@@ -60,7 +66,7 @@ class Genre(Base):
     name = Column(String)
     created_at = Column(DateTime, default=datetime.now)
     updated_at = Column(DateTime, nullable=True)
-    video = relationship("Video", secondary=content_video_genre, back_populates="genre")
+    video: Mapped[List['Video']] = relationship(secondary=content_video_genre, back_populates="genre")
 
 
 class Actor(Base):
@@ -72,7 +78,7 @@ class Actor(Base):
     profile = Column(String, nullable=True)
     created_at = Column(DateTime, default=datetime.now)
     updated_at = Column(DateTime, nullable=True)
-    video = relationship("Video", secondary=content_video_actor, back_populates="actor")
+    video: Mapped[List['Video']] = relationship(secondary=content_video_actor, back_populates="actor")
 
 
 class Staff(Base):
@@ -84,7 +90,7 @@ class Staff(Base):
     profile = Column(String, nullable=True)
     created_at = Column(DateTime, default=datetime.now)
     updated_at = Column(DateTime, nullable=True)
-    video = relationship("Video", secondary=content_video_staff, back_populates="staff")
+    video: Mapped[List['Video']] = relationship(secondary=content_video_staff, back_populates="staff")
 
 
 class VideoWatch(Base):
@@ -95,8 +101,8 @@ class VideoWatch(Base):
     url = Column(String)
     created_at = Column(DateTime, default=datetime.now)
     updated_at = Column(DateTime, nullable=True)
-    video_id = Column(Integer, ForeignKey('rvvs_video.id'))
-    video = relationship("Video", back_populates="watch")
+    video_id: Mapped[int] = mapped_column(ForeignKey('rvvs_video.id'))
+    video: Mapped['Video'] = relationship(back_populates="watch")
 
 
 class VideoThumbnail(Base):
@@ -109,8 +115,8 @@ class VideoThumbnail(Base):
     size = Column(Integer)
     created_at = Column(DateTime, default=datetime.now)
     updated_at = Column(DateTime, nullable=True)
-    video_id = Column(Integer, ForeignKey('rvvs_video.id'))
-    video = relationship("Video", back_populates="thumbnail")
+    video_id: Mapped[int] = mapped_column(ForeignKey('rvvs_video.id'))
+    video: Mapped['Video'] = relationship(back_populates="thumbnail")
 
 
 class VideoLikeLog(Base):
