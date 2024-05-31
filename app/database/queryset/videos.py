@@ -1,8 +1,12 @@
+from fastapi.encoders import jsonable_encoder
 from sqlalchemy import func
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 from sqlalchemy.sql.expression import select, insert, update, delete
 
-from app.database.model.videos import Video, VideoViewLog
+from app.database.model.videos import (
+    Video,
+    VideoViewLog
+)
 
 
 def create_video(db: Session, video: dict):
@@ -71,7 +75,7 @@ def read_video_list(
     page: int,
     keyword: str | None = None,
     is_delete: bool = False,
-    is_confirm: bool = True,
+    is_confirm: bool = False,
 ):
     unit_per_page = 20
     offset = (page - 1) * unit_per_page
@@ -86,7 +90,8 @@ def read_video_list(
             stmt = stmt.filter(Video.title.contains(keyword, autoescape=True))
 
         total = db.execute(select(func.count()).select_from(stmt)).scalar()
-        videos = db.execute(stmt.offset(offset).limit(unit_per_page)).scalars()
+        result = db.execute(stmt.offset(offset).limit(unit_per_page))
+        videos = result.scalars().all()
         return True, "VIDEO_READ_SUCC", total, videos
 
     except Exception as e:
