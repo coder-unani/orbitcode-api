@@ -2,7 +2,7 @@ from typing import Optional
 from datetime import datetime
 from pydantic import BaseModel
 
-from app.database.schema.default import ResponseModel
+from app.database.schema.default import Response
 
 
 class User(BaseModel):
@@ -24,28 +24,24 @@ class User(BaseModel):
         from_attributes = True
 
 
-class UserToken(BaseModel):
+class PublicUser(BaseModel):
     id: int
     email: str
-
-
-class UserDisp(BaseModel):
-    id: int
-    email: str
-    type: str
     nickname: str
     profile_image: str | None = None
+
+
+class UserMe(PublicUser):
+    type: str
     profile: str | None = None
     is_agree: bool = False
-
-
-class UserMe(UserDisp):
-    is_admin: bool
+    is_admin: bool = False
     created_at: datetime
     updated_at: datetime | None = None
 
 
-class UserLogin(UserDisp):
+class UserLogin(BaseModel):
+    user: UserMe
     access_token: str
     refresh_token: str
 
@@ -56,14 +52,14 @@ class RequestUserCreate(BaseModel):
     password: str = None
     is_agree: Optional[bool] = False
     nickname: Optional[str] = None
-    picture: Optional[str] = None
+    profile_image: Optional[str] = None
     profile: Optional[str] = None
 
 
 class RequestUser(BaseModel):
     nickname: str
     password: str
-    picture: str
+    profile_image: str
     profile: str
     is_agree: bool
 
@@ -89,9 +85,9 @@ class RequestUserAgree(BaseModel):
     is_agree: bool
 
 
-class ResponseUserLogin(ResponseModel):
+class ResponseUserLogin(Response):
     data: UserLogin | None = None
 
 
-class ResponseUserMe(ResponseModel):
+class ResponseUserMe(Response):
     data: UserMe | None = None

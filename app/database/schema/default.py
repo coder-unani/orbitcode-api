@@ -3,16 +3,20 @@ from datetime import datetime
 from pydantic import BaseModel
 
 
-class ResponseModel(BaseModel):
-    status: str = "success"
-    code: str = ""
+class Token(BaseModel):
+    access_token: str
+
+
+class Response(BaseModel):
     message: str = ""
 
 
-class ResponseDataModel(ResponseModel):
-    data: dict | None = None
+class ResponseData(Response):
+    data: dict | list | None = None
 
 
+# class ResponseToken(ResponseData):
+#     data: Token | None = None
 
 
 

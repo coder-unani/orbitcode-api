@@ -1,11 +1,101 @@
 from typing import List, Optional
 from datetime import datetime
 from pydantic import BaseModel
+from typing import Sequence
 
-from app.database.schema.default import ResponseModel
+from app.database.schema.default import Response
 
 
-class BaseVideo(BaseModel):
+class Genre(BaseModel):
+    id: int
+    name: str
+
+    class Config:
+        from_attributes = True
+
+
+class GenreAdmin(Genre):
+    created_at: datetime
+    updated_at: datetime
+
+    class Config:
+        from_attributes = True
+
+
+class Actor(BaseModel):
+    id: int
+    name: str
+    picture: str
+    profile: str
+
+    class Config:
+        from_attributes = True
+
+
+class ActorAdmin(Actor):
+    created_at: datetime
+    updated_at: datetime
+
+    class Config:
+        from_attributes = True
+
+
+class Staff(BaseModel):
+    id: int
+    name: str
+    picture: str
+    profile: str
+
+    class Config:
+        from_attributes = True
+
+
+class StaffAdmin(Staff):
+    created_at: datetime
+    updated_at: datetime
+
+    class Config:
+        from_attributes = True
+
+
+class VideoWatch(BaseModel):
+    id: int
+    type: str
+    url: str
+
+    class Config:
+        from_attributes = True
+
+
+class VideoWatchAdmin(VideoWatch):
+    created_at: datetime
+    updated_at: datetime
+
+    class Config:
+        from_attributes = True
+
+
+class VideoThumbnail(BaseModel):
+    id: int
+    type: str
+    url: str
+
+    class Config:
+        from_attributes = True
+
+
+class VideoThumbnailAdmin(VideoThumbnail):
+    id: int
+    type: str
+    url: str
+    created_at: datetime
+    updated_at: datetime
+
+    class Config:
+        from_attributes = True
+
+
+class Video(BaseModel):
     id: int
     type: str
     title: str
@@ -16,115 +106,40 @@ class BaseVideo(BaseModel):
     rating: float
     like_count: int
     view_count: int
-
-
-class PublicGenre(BaseModel):
-    id: int
-    name: str
-
-
-class PublicActor(BaseModel):
-    id: int
-    name: str
-    picture: str
-    profile: str
-
-
-class PublicStaff(BaseModel):
-    id: int
-    name: str
-    picture: str
-    profile: str
-
-
-class PublicVideoWatch(BaseModel):
-    id: int
-    type: str
-    url: str
-
-
-class PublicVideoThumbnail(BaseModel):
-    id: int
-    type: str
-    url: str
-
-
-class PublicVideo(BaseVideo):
-    genre: list[PublicGenre] = []
-    actor: list[PublicActor] = []
-    staff: list[PublicStaff] = []
-    watch: list[PublicVideoWatch] = []
-    thumbnail: list[PublicVideoThumbnail] = []
-
-
-class Genre(PublicGenre):
-    created_at: datetime
-    updated_at: datetime
-
-    class Config:
-        from_attributes = True
-
-
-class Actor(PublicActor):
-    created_at: datetime
-    updated_at: datetime
-
-    class Config:
-        from_attributes = True
-
-
-class Staff(PublicStaff):
-    created_at: datetime
-    updated_at: datetime
-
-    class Config:
-        from_attributes = True
-
-
-class VideoWatch(PublicVideoWatch):
-    created_at: datetime
-    updated_at: datetime
-
-    class Config:
-        from_attributes = True
-
-
-class VideoThumbnail(PublicVideoThumbnail):
-    id: int
-    type: str
-    url: str
-    created_at: datetime
-    updated_at: datetime
-
-    class Config:
-        from_attributes = True
-
-
-class Video(BaseVideo):
-    platform_code: str
-    platform_id: str
-    is_confirm: bool
-    is_delete: bool
     genre: list[Genre] = []
     actor: list[Actor] = []
     staff: list[Staff] = []
     watch: list[VideoWatch] = []
     thumbnail: list[VideoThumbnail] = []
-    created_at: datetime
-    updated_at: datetime
 
     class Config:
         from_attributes = True
 
 
-class PublicVideos(BaseModel):
-    total: int = 0
-    count: int = 0
-    page: int = 0
-    list: List[PublicVideo] = []
+class VideoAdmin(BaseModel):
+    id: int
+    type: str
+    title: str
+    synopsis: str
+    release: str
+    runtime: str
+    notice_age: str
+    rating: float
+    like_count: int
+    view_count: int
+    platform_code: str
+    platform_id: str
+    genre: list[GenreAdmin] = []
+    actor: list[ActorAdmin] = []
+    staff: list[StaffAdmin] = []
+    watch: list[VideoWatchAdmin] = []
+    thumbnail: list[VideoThumbnailAdmin] = []
+
+    class Config:
+        from_attributes = True
 
 
-class ReuqestVideo(BaseModel):
+class ReqVideo(BaseModel):
     type: Optional[str] = None
     title: Optional[str] = None
     synopsis: Optional[str] = None
@@ -142,10 +157,20 @@ class ReuqestVideo(BaseModel):
     thumbnail: Optional[list[VideoThumbnail]] = []
 
 
-class ResponsePublicVideo(ResponseModel):
-    data: PublicVideo | None = None
+class ResVideo(Response):
+    data: Video | None = None
 
 
-class ResponsePublicVideos(ResponseModel):
-    data: PublicVideos | None = None
+class ResVideoAdmin(Response):
+    data: VideoAdmin | None = None
 
+
+class ResVideos(Response):
+    total: int
+    count: int
+    page: int
+    data: List[Video] | None = None
+
+
+class ResVideosAdmin(Response):
+    data: List[VideoAdmin] | None = None
