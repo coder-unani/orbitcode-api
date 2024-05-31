@@ -28,7 +28,8 @@ class JWTManager:
         data = {
             "user": {
                 "id": user['id'],
-                "email": user['email']
+                "email": user['email'],
+                "is_admin": user['is_admin']
             },
             "exp": exp
         }
