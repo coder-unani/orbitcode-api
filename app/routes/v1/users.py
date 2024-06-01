@@ -30,7 +30,11 @@ from app.database.schema.users import (
 router = APIRouter()
 
 
-@router.post("/create", response_model=Response)
+PREFIX = "/users"
+ADMIN_PREFIX = "/admin" + PREFIX
+
+
+@router.post(PREFIX + "/create", response_model=Response)
 async def create_user(
     in_user: RequestUserCreate,
     db: Session = Depends(get_db)
@@ -70,7 +74,7 @@ async def create_user(
     return json_response(status.HTTP_201_CREATED, code)
 
 
-@router.post("/login", response_model=UserLogin)
+@router.post(PREFIX + "/login", response_model=UserLogin)
 async def login_user(
     in_user: RequestUserLogin,
     db: Session = Depends(get_db)
@@ -107,7 +111,7 @@ async def login_user(
     return json_response(status.HTTP_200_OK, "USER_LOGIN_SUCC", response_data)
 
 
-@router.post("/me", response_model=ResponseUserMe)
+@router.post(PREFIX + "/me", response_model=ResponseUserMe)
 async def read_user_me(
     db: Session = Depends(get_db),
     auth_user: UserMe = Depends(verify_access_token_user)
@@ -121,7 +125,7 @@ async def read_user_me(
     return json_response(status.HTTP_200_OK, "USER_READ_SUCC", response_user)
 
 
-@router.get("/{user_id}", response_model=ResponseUserMe)
+@router.get(PREFIX + "/{user_id}", response_model=ResponseUserMe)
 async def read_user(
     user_id: int,
     db: Session = Depends(get_db),
@@ -138,7 +142,7 @@ async def read_user(
     return json_response(status.HTTP_200_OK, "USER_READ_SUCC", get_user)
 
 
-@router.put("/{user_id}", response_model=Response)
+@router.put(PREFIX + "/{user_id}", response_model=Response)
 async def update_user(
     user_id: int,
     in_user: RequestUser,
@@ -156,7 +160,7 @@ async def update_user(
     return json_response(status.HTTP_200_OK, code)
 
 
-@router.delete("/{user_id}", response_model=Response)
+@router.delete(PREFIX + "/{user_id}", response_model=Response)
 async def delete_user(
     user_id: int,
     db: Session = Depends(get_db),
@@ -170,7 +174,7 @@ async def delete_user(
     return json_response(status.HTTP_200_OK, code)
 
 
-@router.patch("/{user_id}/password", response_model=Response)
+@router.patch(PREFIX + "/{user_id}/password", response_model=Response)
 async def update_password(
     user_id: int,
     in_user: RequestUserPassword,
@@ -194,7 +198,7 @@ async def update_password(
     return json_response(status.HTTP_200_OK, code)
 
 
-@router.patch("/{user_id}/nickname", response_model=Response)
+@router.patch(PREFIX + "/{user_id}/nickname", response_model=Response)
 async def update_nickname(
     user_id: int,
     in_user: RequestUserNickname,
@@ -220,7 +224,7 @@ async def update_nickname(
     return json_response(status.HTTP_200_OK, code)
 
 
-@router.patch("/{user_id}/profile", response_model=Response)
+@router.patch(PREFIX + "/{user_id}/profile", response_model=Response)
 async def update_profile(
     user_id: int,
     in_user: RequestUserProfile,
@@ -238,7 +242,7 @@ async def update_profile(
     return json_response(status.HTTP_200_OK, code)
 
 
-@router.patch("/{user_id}/profile/image", response_model=Response)
+@router.patch(PREFIX + "/{user_id}/profile/image", response_model=Response)
 async def update_profile_image(
     file: UploadFile = None,
     db: Session = Depends(get_db),
@@ -269,7 +273,7 @@ async def update_profile_image(
     return json_response(status.HTTP_200_OK, code)
 
 
-@router.patch("/{user_id}/agree", response_model=Response)
+@router.patch(PREFIX + "/{user_id}/agree", response_model=Response)
 async def update_agree(
         user_id: int,
         in_user: RequestUserAgree,
