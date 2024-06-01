@@ -64,6 +64,10 @@ class RequestUser(BaseModel):
     is_agree: bool
 
 
+class ReqUserId(BaseModel):
+    id: int
+
+
 class RequestUserLogin(BaseModel):
     email: str
     password: str

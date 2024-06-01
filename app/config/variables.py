@@ -20,7 +20,7 @@ messages['ACCESS_TOKEN_INVALID'] = "유효하지 않은 토큰입니다."
 messages['ACCESS_TOKEN_REQUIRE'] = "토큰은 필수 입력사항 입니다."
 
 
-messages['USER_NOT_MATCH'] = "토큰 유저가 일치하지 않습니다."
+messages['USER_NOT_MATCH'] = "유저 정보가 일치하지 않습니다."
 messages['USER_NOT_FOUND'] = "유저를 찾을 수 없습니다."
 messages['USER_NOT_ADMIN'] = "관리자 권한이 없습니다."
 # User Create, Read, Update, Delete, Login, User Check 관련

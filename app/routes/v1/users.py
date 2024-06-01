@@ -1,3 +1,4 @@
+import secrets
 from fastapi import APIRouter, Depends, UploadFile, status
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import Session
@@ -23,7 +24,8 @@ from app.database.schema.users import (
     RequestUserAgree,
     RequestUserNickname,
     RequestUserPassword,
-    ResponseUserMe
+    ResponseUserMe,
+    ReqUserId
 )
 
 
@@ -113,11 +115,15 @@ async def login_user(
 
 @router.post(PREFIX + "/me", response_model=ResponseUserMe)
 async def read_user_me(
+    user: ReqUserId,
     db: Session = Depends(get_db),
     auth_user: UserMe = Depends(verify_access_token_user)
 ):
+    # 유저 정보 일치 확인
+    if not user.id == auth_user['id']:
+        return json_response(status.HTTP_401_UNAUTHORIZED, "USER_NOT_MATCH")
     # 유저 정보 가져오기
-    result, get_user = queryset.read_user_by_id(db, auth_user['id'])
+    result, get_user = queryset.read_user_by_id(db, user.id)
     if not result:
         return json_response(status.HTTP_401_UNAUTHORIZED, "USER_READ_FAIL")
     response_user = jsonable_encoder(UserMe(**get_user.__dict__))
