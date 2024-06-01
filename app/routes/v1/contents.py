@@ -32,7 +32,12 @@ ADMIN_PREFIX = "/admin" + PREFIX
 
 # 비디오 목록 조회
 @router.get(PREFIX + "/videos", response_model=ResVideos)
-@router.get(ADMIN_PREFIX + "/videos", response_model=ResVideosAdmin, dependencies=[Depends(verify_access_token_admin)])
+@router.get(
+    ADMIN_PREFIX + "/videos",
+    response_model=ResVideosAdmin,
+    dependencies=[Depends(verify_access_token_admin)],
+    include_in_schema=False
+)
 async def content_videos(
     page: int = 1,
     keyword: str | None = None,
@@ -58,7 +63,7 @@ async def content_videos(
 
 
 # 비디오 생성
-@router.post("/videos", response_model=Response)
+@router.post(PREFIX + "/videos", response_model=Response)
 async def create_video(video: ReqVideo, db: Session = Depends(get_db)):
     result, code = queryset.create_video(db, video=jsonable_encoder(video))
     if not result:
@@ -67,7 +72,7 @@ async def create_video(video: ReqVideo, db: Session = Depends(get_db)):
 
 
 # 비디오 조회
-@router.get("/videos/{video_id}", response_model=ResVideo)
+@router.get(PREFIX + "/videos/{video_id}", response_model=ResVideo)
 async def read_video(video_id: int, db: Session = Depends(get_db)):
     result, code, video = queryset.read_video_by_id(db, video_id=video_id)
     if not result:
@@ -86,7 +91,7 @@ async def read_video(video_id: int, db: Session = Depends(get_db)):
 
 
 # 비디오 업데이트
-@router.put("/videos/{video_id}", response_model=Response)
+@router.put(PREFIX + "/videos/{video_id}", response_model=Response)
 async def update_video(video_id: int, video: ReqVideo, db: Session = Depends(get_db)):
     result, code = queryset.update_video(db, video_id=video_id, video=video)
     if not result:
@@ -95,7 +100,7 @@ async def update_video(video_id: int, video: ReqVideo, db: Session = Depends(get
 
 
 # 비디오 삭제
-@router.delete("/videos/{video_id}", response_model=Response)
+@router.delete(PREFIX + "/videos/{video_id}", response_model=Response)
 async def delete_video(video_id: int, db: Session = Depends(get_db)):
     result, code = queryset.delete_video(db, video_id=video_id)
     if not result:
@@ -104,7 +109,7 @@ async def delete_video(video_id: int, db: Session = Depends(get_db)):
 
 
 # 비디오 조회
-@router.post("/videos/{video_id}/view", response_model=ResponseData)
+@router.post(PREFIX + "/videos/{video_id}/view", response_model=ResponseData)
 async def insert_video_view(video_id: int, db: Session = Depends(get_db)):
     result, code, view_count = queryset.insert_video_view(db, video_id)
     if not result:
@@ -113,7 +118,7 @@ async def insert_video_view(video_id: int, db: Session = Depends(get_db)):
 
 
 # 비디오 좋아요 토글
-@router.post("/videos/{video_id}/like", response_model=Response)
+@router.post(PREFIX + "/videos/{video_id}/like", response_model=Response)
 async def toggle_video_like(video_id: int, db: Session = Depends(get_db), auth_user: UserMe = Depends(verify_access_token_user)):
     # status, code = queryset.toggle_video_like(db, video_id, auth_user['id'])
     # return make_response(status, code)
@@ -121,7 +126,7 @@ async def toggle_video_like(video_id: int, db: Session = Depends(get_db), auth_u
 
 
 # 비디오 리뷰 조회 (리스트)
-@router.get("/videos/{video_id}/reviews", response_model=ResponseReviews)
+@router.get(PREFIX + "/videos/{video_id}/reviews", response_model=ResponseReviews)
 async def read_video_review_list(video_id: int, page: int = 1, db: Session = Depends(get_db)):
     result, code, total, reviews = review_queryset.read_video_review_list(db, video_id, page)
     if not result:
@@ -132,7 +137,7 @@ async def read_video_review_list(video_id: int, page: int = 1, db: Session = Dep
 
 
 # 비디오 리뷰 등록
-@router.post("/videos/{video_id}/reviews", response_model=Response)
+@router.post(PREFIX + "/videos/{video_id}/reviews", response_model=Response)
 async def create_video_review(
     video_id: int,
     review: RequestReview,
@@ -146,7 +151,7 @@ async def create_video_review(
 
 
 # 비디오 리뷰 수정
-@router.put("/videos/{video_id}/reviews/{review_id}", response_model=Response)
+@router.put(PREFIX + "/videos/{video_id}/reviews/{review_id}", response_model=Response)
 async def update_video_review(
     video_id: int,
     review_id: int,
@@ -161,7 +166,7 @@ async def update_video_review(
 
 
 # 비디오 리뷰 삭제
-@router.delete("/videos/{video_id}/reviews/{review_id}", response_model=Response)
+@router.delete(PREFIX + "/videos/{video_id}/reviews/{review_id}", response_model=Response)
 async def delete_video_review(
     video_id: int,
     review_id: int,
