@@ -4,6 +4,7 @@ from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import Session
 
 from app.config.settings import settings
+from app.config.variables import messages
 from app.utils.formatter import format_datetime
 from app.utils.file import File
 from app.network.response import json_response
@@ -16,16 +17,16 @@ from app.database.queryset import users as queryset
 from app.database.schema.default import Response
 from app.database.schema.users import (
     UserMe,
-    UserLogin,
-    RequestUser,
-    RequestUserCreate,
-    RequestUserLogin,
-    RequestUserProfile,
-    RequestUserAgree,
-    RequestUserNickname,
-    RequestUserPassword,
-    ResponseUserMe,
-    ReqUserId
+    ReqUserCreate,
+    ReqUserLogin,
+    ReqUserUpdate,
+    ReqUserProfile,
+    ReqUserAgree,
+    ReqUserNickname,
+    ReqUserPassword,
+    ReqUserId,
+    ResUserLogin,
+    ResUserMe
 )
 
 
@@ -38,7 +39,7 @@ ADMIN_PREFIX = "/admin" + PREFIX
 
 @router.post(PREFIX + "/create", response_model=Response)
 async def create_user(
-    in_user: RequestUserCreate,
+    in_user: ReqUserCreate,
     db: Session = Depends(get_db)
 ):
     # 이메일 유효성 검사
@@ -76,9 +77,9 @@ async def create_user(
     return json_response(status.HTTP_201_CREATED, code)
 
 
-@router.post(PREFIX + "/login", response_model=UserLogin)
+@router.post(PREFIX + "/login", response_model=ResUserLogin)
 async def login_user(
-    in_user: RequestUserLogin,
+    in_user: ReqUserLogin,
     db: Session = Depends(get_db)
 ):
     # 유저 정보 가져오기
@@ -99,21 +100,19 @@ async def login_user(
     get_user.created_at = format_datetime(get_user.created_at)
     if get_user.updated_at:
         get_user.updated_at = format_datetime(get_user.updated_at)
-    response_user = jsonable_encoder(UserMe(**get_user.__dict__))
     # 토큰 생성
-    access_token = JWTManager.create_access_token(response_user)
-    refresh_token = JWTManager.create_refresh_token(response_user)
-    # 리턴 유저 정보 생성
-    response_data = {
-        "user": response_user,
+    access_token = JWTManager.create_access_token(jsonable_encoder(get_user))
+    refresh_token = JWTManager.create_refresh_token(jsonable_encoder(get_user))
+    # 결과 출력
+    return {
+        "message": messages["USER_LOGIN_SUCC"],
+        "data": get_user,
         "access_token": access_token,
         "refresh_token": refresh_token
     }
-    # 결과 출력
-    return json_response(status.HTTP_200_OK, "USER_LOGIN_SUCC", response_data)
 
 
-@router.post(PREFIX + "/me", response_model=ResponseUserMe)
+@router.post(PREFIX + "/me", response_model=ResUserMe)
 async def read_user_me(
     user: ReqUserId,
     db: Session = Depends(get_db),
@@ -126,12 +125,11 @@ async def read_user_me(
     result, get_user = queryset.read_user_by_id(db, user.id)
     if not result:
         return json_response(status.HTTP_401_UNAUTHORIZED, "USER_READ_FAIL")
-    response_user = jsonable_encoder(UserMe(**get_user.__dict__))
     # 결과 출력
-    return json_response(status.HTTP_200_OK, "USER_READ_SUCC", response_user)
+    return {"message": messages["USER_READ_SUCC"], "data": get_user}
 
 
-@router.get(PREFIX + "/{user_id}", response_model=ResponseUserMe)
+@router.get(PREFIX + "/{user_id}", response_model=ResUserMe)
 async def read_user(
     user_id: int,
     db: Session = Depends(get_db),
@@ -145,21 +143,21 @@ async def read_user(
     if not result:
         return json_response(status.HTTP_401_UNAUTHORIZED, "USER_READ_FAIL")
     # 결과 출력
-    return json_response(status.HTTP_200_OK, "USER_READ_SUCC", get_user)
+    return {"message": messages['USER_READ_SUCC'], "data": get_user}
 
 
 @router.put(PREFIX + "/{user_id}", response_model=Response)
 async def update_user(
     user_id: int,
-    in_user: RequestUser,
+    req_user: ReqUserUpdate,
     db: Session = Depends(get_db),
     auth_user: UserMe = Depends(verify_access_token_user)
 ):
     # 유저 정보 입력 확인
-    if not in_user:
+    if not req_user:
         return json_response(status.HTTP_400_BAD_REQUEST, "USER_UPDATE_NOT_FOUND")
     # 유저 정보 업데이트
-    result, code = queryset.update_user(db, user_id, in_user)
+    result, code = queryset.update_user(db, user_id, req_user)
     # 결과 출력
     if not result:
         return json_response(status.HTTP_500_INTERNAL_SERVER_ERROR, code)
@@ -183,21 +181,21 @@ async def delete_user(
 @router.patch(PREFIX + "/{user_id}/password", response_model=Response)
 async def update_password(
     user_id: int,
-    in_user: RequestUserPassword,
+    req_user: ReqUserPassword,
     db: Session = Depends(get_db),
     auth_user: UserMe = Depends(verify_access_token_user)
 ):
     # 비밀번호 입력 확인
-    if not in_user.password:
+    if not req_user.password:
         return json_response(status.HTTP_400_BAD_REQUEST, "USER_UPDATE_PASSWORD_NOT_FOUND")
     # 비밀번호 유효성 검사
-    valid_result, valid_code = validator.validate_password(in_user.password)
+    valid_result, valid_code = validator.validate_password(req_user.password)
     if not valid_result:
         return json_response(status.HTTP_400_BAD_REQUEST, valid_code)
     # 비밀번호 암호화
-    in_user.password = Password.create_password_hash(in_user.password)
+    req_user.password = Password.create_password_hash(req_user.password)
     # 비밀번호 업데이트
-    result, code = queryset.update_user_password(db, user_id, in_user.password)
+    result, code = queryset.update_user_password(db, user_id, req_user.password)
     # 결과 출력
     if not result:
         return json_response(status.HTTP_500_INTERNAL_SERVER_ERROR, code)
@@ -207,23 +205,23 @@ async def update_password(
 @router.patch(PREFIX + "/{user_id}/nickname", response_model=Response)
 async def update_nickname(
     user_id: int,
-    in_user: RequestUserNickname,
+    req_user: ReqUserNickname,
     db: Session = Depends(get_db),
     auth_user: UserMe = Depends(verify_access_token_user)
 ):
     # 닉네임 입력 확인
-    if not in_user.nickname:
+    if not req_user.nickname:
         return json_response(status.HTTP_400_BAD_REQUEST, "USER_UPDATE_NICKNAME_NOT_FOUND")
     # 닉네임 유효성 검사
-    valid_result, valid_code = validator.validate_nickname(in_user.nickname)
+    valid_result, valid_code = validator.validate_nickname(req_user.nickname)
     if not valid_result:
         return json_response(status.HTTP_400_BAD_REQUEST, valid_code)
     # 닉네임 중복 체크
-    check_nick_result, check_nick_code = queryset.check_exist_nickname(db, nickname=in_user.nickname)
+    check_nick_result, check_nick_code = queryset.check_exist_nickname(db, nickname=req_user.nickname)
     if not check_nick_result:
         return json_response(status.HTTP_400_BAD_REQUEST, check_nick_code)
     # 닉네임 업데이트
-    result, code = queryset.update_user_nickname(db, user_id, in_user.nickname)
+    result, code = queryset.update_user_nickname(db, user_id, req_user.nickname)
     # 결과 출력
     if not result:
         return json_response(status.HTTP_500_INTERNAL_SERVER_ERROR, code)
@@ -233,15 +231,15 @@ async def update_nickname(
 @router.patch(PREFIX + "/{user_id}/profile", response_model=Response)
 async def update_profile(
     user_id: int,
-    in_user: RequestUserProfile,
+    req_user: ReqUserProfile,
     db: Session = Depends(get_db),
     auth_user: UserMe = Depends(verify_access_token_user)
 ):
     # 프로필 입력 확인
-    if not in_user.profile:
+    if not req_user.profile:
         return json_response(status.HTTP_400_BAD_REQUEST, "USER_UPDATE_PROFILE_NOT_FOUND")
     # 프로필 업데이트
-    result, code = queryset.update_user_profile(db, user_id, in_user.profile)
+    result, code = queryset.update_user_profile(db, user_id, req_user.profile)
     # 결과 출력
     if not result:
         return json_response(status.HTTP_500_INTERNAL_SERVER_ERROR, code)
@@ -282,15 +280,15 @@ async def update_profile_image(
 @router.patch(PREFIX + "/{user_id}/agree", response_model=Response)
 async def update_agree(
         user_id: int,
-        in_user: RequestUserAgree,
+        req_user: ReqUserAgree,
         db: Session = Depends(get_db),
         auth_user: UserMe = Depends(verify_access_token_user)
 ):
     # 광고수신 동의 입력 확인
-    if not in_user.is_agree:
+    if not req_user.is_agree:
         return json_response(status.HTTP_400_BAD_REQUEST, "USER_UPDATE_AGREE_NOT_FOUND")
     # 광고수신 동의 업데이트
-    result, code = queryset.update_user_isagree(db, user_id, in_user.is_agree)
+    result, code = queryset.update_user_isagree(db, user_id, req_user.is_agree)
     # 결과 출력
     if not result:
         return json_response(status.HTTP_500_INTERNAL_SERVER_ERROR, code)

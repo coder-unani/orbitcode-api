@@ -7,11 +7,16 @@ from app.database.schema.default import Response
 
 class User(BaseModel):
     id: int
-    type: str
     email: str
-    password: str
     nickname: str
-    profile_image: str
+    profile_image: str | None = None
+
+    class Config:
+        from_attributes = True
+
+
+class UserAdmin(User):
+    type: str
     profile: str
     is_active: bool
     is_admin: bool
@@ -24,39 +29,25 @@ class User(BaseModel):
         from_attributes = True
 
 
-class PublicUser(BaseModel):
-    id: int
-    email: str
-    nickname: str
-    profile_image: str | None = None
-
-
-class UserMe(PublicUser):
+class UserMe(User):
     type: str
     profile: str | None = None
     is_agree: bool = False
     is_admin: bool = False
     created_at: datetime
-    updated_at: datetime | None = None
 
 
-class UserLogin(BaseModel):
-    user: UserMe
-    access_token: str
-    refresh_token: str
-
-
-class RequestUserCreate(BaseModel):
-    type: str = None
-    email: str = None
-    password: str = None
-    is_agree: Optional[bool] = False
-    nickname: Optional[str] = None
+class ReqUserCreate(BaseModel):
+    email: str
+    password: str
+    nickname: str
     profile_image: Optional[str] = None
     profile: Optional[str] = None
+    type: Optional[str] = "10"
+    is_agree: Optional[bool] = False
 
 
-class RequestUser(BaseModel):
+class ReqUserUpdate(BaseModel):
     nickname: str
     password: str
     profile_image: str
@@ -68,30 +59,32 @@ class ReqUserId(BaseModel):
     id: int
 
 
-class RequestUserLogin(BaseModel):
+class ReqUserLogin(BaseModel):
     email: str
     password: str
 
 
-class RequestUserProfile(BaseModel):
+class ReqUserProfile(BaseModel):
     profile: str
 
 
-class RequestUserNickname(BaseModel):
+class ReqUserNickname(BaseModel):
     nickname: str
 
 
-class RequestUserPassword(BaseModel):
+class ReqUserPassword(BaseModel):
     password: str
 
 
-class RequestUserAgree(BaseModel):
+class ReqUserAgree(BaseModel):
     is_agree: bool
 
 
-class ResponseUserLogin(Response):
-    data: UserLogin | None = None
+class ResUserLogin(Response):
+    data: UserMe
+    access_token: str
+    refresh_token: str
 
 
-class ResponseUserMe(Response):
+class ResUserMe(Response):
     data: UserMe | None = None
