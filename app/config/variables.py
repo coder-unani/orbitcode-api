@@ -7,16 +7,22 @@ messages = dict()
 messages[True] = "success"
 messages[False] = "fail"
 messages['EXCEPTION'] = "알 수 없는 오류가 발생했습니다. 잠시 후 다시 시도해 주세요."
+messages['NO_PERMISSION'] = "권한이 없습니다."
 messages['FILE_NOT_FOUND'] = "파일을 찾을 수 없습니다."
 messages['FILE_STORE_FAIL'] = "파일 저장에 실패하였습니다."
 messages['FILE_TYPE_ERR'] = "지원하지 않는 파일 형식입니다."
 
 # access token 관련
+messages['ACCESS_TOKEN_VERIFY'] = "토큰 검증에 성공하였습니다."
 messages['ACCESS_TOKEN_FOUND'] = "토큰은 찾았습니다."
 messages['ACCESS_TOKEN_EXPIRED'] = "토근이 만료되었습니다."
 messages['ACCESS_TOKEN_INVALID'] = "유효하지 않은 토큰입니다."
 messages['ACCESS_TOKEN_REQUIRE'] = "토큰은 필수 입력사항 입니다."
 
+
+messages['USER_NOT_MATCH'] = "토큰 유저가 일치하지 않습니다."
+messages['USER_NOT_FOUND'] = "유저를 찾을 수 없습니다."
+messages['USER_NOT_ADMIN'] = "관리자 권한이 없습니다."
 # User Create, Read, Update, Delete, Login, User Check 관련
 messages['USER_CREATE_SUCC'] = "회원가입이 완료되었습니다."
 messages['USER_CREATE_FAIL'] = "회원가입에 실패하였습니다."
@@ -28,6 +34,9 @@ messages['USER_LOGIN_SUCC'] = "로그인에 성공하였습니다."
 messages['USER_LOGIN_FAIL'] = "로그인에 실패하였습니다."
 
 messages['USER_READ_SUCC'] = "회원 정보 조회에 성공하였습니다."
+messages['USER_READ_FAIL'] = "회원 정보 조회에 실패하였습니다."
+
+messages['USER_BLOCKED'] = "사용이 제한된 계정입니다."
 
 messages['NICKNAME_DOES_NOT_EXIST'] = "사용 가능한 닉네임입니다."
 messages['NICKNAME_ALREADY_EXIST'] = "이미 존재하는 닉네임입니다."
@@ -108,5 +117,3 @@ messages['REVIEW_UPDATE_PERMISSION_ERR'] = "리뷰 수정 권한이 없습니다
 messages['REVIEW_DELETE_SUCC'] = "리뷰 삭제에 성공했습니다."
 messages['REVIEW_DELETE_FAIL'] = "리뷰 삭제에 실패했습니다."
 messages['REVIEW_DELETE_PERMISSION_ERR'] = "리뷰 삭제 권한이 없습니다."
-
-
