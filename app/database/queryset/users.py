@@ -2,6 +2,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy.sql.expression import select, insert, update, delete, exists
 
 from app.database.model.users import User
+from app.database.schema.users import UserMe
 
 
 def create_user(db: Session, user: dict):
@@ -21,7 +22,7 @@ def create_user(db: Session, user: dict):
 def read_user_by_email(db: Session, email: str):
     try:
         stmt = select(User).filter_by(email=email)
-        user: User = db.execute(stmt).scalar()
+        user: UserMe = db.execute(stmt).scalar()
         return user
     except Exception as e:
         print(e)
@@ -31,10 +32,10 @@ def read_user_by_email(db: Session, email: str):
 def read_user_by_id(db: Session, user_id: int):
     try:
         user: User = db.get(User, user_id)
-        return True, "", user
+        return True, user
     except Exception as e:
         print(e)
-        return False, "", None
+        return False, None
 
 
 def update_user(db: Session, user_id: int, user: dict):
