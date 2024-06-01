@@ -104,7 +104,7 @@ def verify_access_token(request: Request):
         return token
     except HTTPException as e:
         raise e
-    except Exception as e:
+    except Exception:
         raise HTTPException(
             status_code=401,
             detail="Authentication failed"
@@ -132,7 +132,7 @@ def verify_access_token_user(request: Request, db: Session = Depends(get_db)):
             user.updated_at = format_datetime(user.updated_at)
         # 결과 출력
         return jsonable_encoder(user)
-    except HTTPException as e:
+    except HTTPException:
         return json_response(status.HTTP_500_INTERNAL_SERVER_ERROR, "EXCEPTION")
 
 
@@ -151,11 +151,8 @@ def verify_access_docs(credentials: HTTPBasicCredentials = Depends(security)):
     ):
         return credentials.username
 
-    # 인증에 실패하면 HTTP 401 Unauthorized 예외를 발생시킵니다.
     raise HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Invalid credentials",
         headers={"WWW-Authenticate": "Basic"},
     )
-
-
