@@ -1,8 +1,10 @@
 import secrets
 from fastapi import Request, Depends, HTTPException, status
 from fastapi.encoders import jsonable_encoder
+from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from sqlalchemy.orm import Session
 
+from app.config.settings import settings
 from app.network.response import json_response
 from app.utils.formatter import format_datetime
 from app.security.password import Password
@@ -10,6 +12,9 @@ from app.security.token import JWTManager
 from app.database.schema.users import User
 from app.database.database import get_db
 from app.database.queryset.users import read_user_by_id
+
+
+security = HTTPBasic()
 
 
 def verify_user(user: dict):
@@ -137,5 +142,20 @@ def verify_access_token_admin(request: Request, db: Session = Depends(get_db)):
     if not user['is_admin']:
         return json_response(status.HTTP_401_UNAUTHORIZED, "USER_NOT_ADMIN")
     return user
+
+
+def verify_access_docs(credentials: HTTPBasicCredentials = Depends(security)):
+    if (
+        secrets.compare_digest(credentials.username, settings.DOCS_USER)
+        and secrets.compare_digest(credentials.password, settings.DOCS_PASSWORD)
+    ):
+        return credentials.username
+
+    # 인증에 실패하면 HTTP 401 Unauthorized 예외를 발생시킵니다.
+    raise HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Invalid credentials",
+        headers={"WWW-Authenticate": "Basic"},
+    )
 
 

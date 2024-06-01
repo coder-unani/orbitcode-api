@@ -13,6 +13,8 @@ class Settings:
     APP_NAME: str = os.getenv('APP_NAME')
     BASE_DIR: str = BASE_DIR
     TIME_ZONE = ZoneInfo(os.getenv('TIME_ZONE'))
+    DOCS_USER: bool = os.getenv('DOCS_USER')
+    DOCS_PASSWORD: str = os.getenv('DOCS_PASSWORD')
 
     # Upload
     FILE_DIR = os.path.join(BASE_DIR, "static/uploads/")
