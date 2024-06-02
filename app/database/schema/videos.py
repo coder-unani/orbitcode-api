@@ -3,7 +3,7 @@ from datetime import datetime
 from pydantic import BaseModel
 from typing import Sequence
 
-from app.database.schema.default import Response
+from app.database.schema.default import Res
 
 
 class Genre(BaseModel):
@@ -157,20 +157,20 @@ class ReqVideo(BaseModel):
     thumbnail: Optional[list[VideoThumbnail]] = []
 
 
-class ResVideo(Response):
+class ResVideo(Res):
     data: Video | None = None
 
 
-class ResVideoAdmin(Response):
+class ResVideoAdmin(Res):
     data: VideoAdmin | None = None
 
 
-class ResVideos(Response):
+class ResVideos(Res):
     total: int
     count: int
     page: int
     data: List[Video] | None = None
 
 
-class ResVideosAdmin(Response):
+class ResVideosAdmin(Res):
     data: List[VideoAdmin] | None = None

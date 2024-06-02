@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends
-from app.database.schema.default import ResponseData
+from app.database.schema.default import ResData
 from app.security.verifier import verify_access_token
 from app.network.response import json_response
 
@@ -7,7 +7,7 @@ from app.network.response import json_response
 router = APIRouter()
 
 
-@router.post("/token", response_model=ResponseData)
+@router.get("/token", response_model=ResData)
 async def token(
     access_token: str = Depends(verify_access_token)
 ):

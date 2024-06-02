@@ -7,11 +7,12 @@ class Token(BaseModel):
     access_token: str
 
 
-class Response(BaseModel):
+class Res(BaseModel):
+    code: str = ""
     message: str = ""
 
 
-class ResponseData(Response):
+class ResData(Res):
     data: dict | list | None = None
 
 

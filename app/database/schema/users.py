@@ -2,7 +2,7 @@ from typing import Optional
 from datetime import datetime
 from pydantic import BaseModel
 
-from app.database.schema.default import Response
+from app.database.schema.default import Res
 
 
 class User(BaseModel):
@@ -80,11 +80,11 @@ class ReqUserAgree(BaseModel):
     is_agree: bool
 
 
-class ResUserLogin(Response):
-    data: UserMe
+class ResUserLogin(Res):
+    user: UserMe
     access_token: str
     refresh_token: str
 
 
-class ResUserMe(Response):
+class ResUserMe(Res):
     data: UserMe | None = None
