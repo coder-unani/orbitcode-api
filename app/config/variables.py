@@ -4,8 +4,6 @@ from app.config.settings import settings
 messages = dict()
 
 # 공통
-messages[True] = "success"
-messages[False] = "fail"
 messages['EXCEPTION'] = "알 수 없는 오류가 발생했습니다. 잠시 후 다시 시도해 주세요."
 messages['NO_PERMISSION'] = "권한이 없습니다."
 messages['FILE_NOT_FOUND'] = "파일을 찾을 수 없습니다."
@@ -19,6 +17,11 @@ messages['ACCESS_TOKEN_EXPIRED'] = "토근이 만료되었습니다."
 messages['ACCESS_TOKEN_INVALID'] = "유효하지 않은 토큰입니다."
 messages['ACCESS_TOKEN_REQUIRE'] = "토큰은 필수 입력사항 입니다."
 
+messages['USER_LOGIN_SUCC'] = "로그인에 성공하였습니다."
+messages['USER_LOGIN_FAIL'] = "로그인에 실패하였습니다."
+messages['USER_LOGIN_AUTH_FAIL'] = "사용자 인증 정보가 올바르지 않습니다."
+messages['USER_LOGIN_EMAIL_REQUIRED'] = "이메일을 입력해주세요"
+messages['USER_LOGIN_PASSWORD_REQUIRED'] = "비밀번호를 입력해주세요"
 
 messages['USER_NOT_MATCH'] = "유저 정보가 일치하지 않습니다."
 messages['USER_NOT_FOUND'] = "유저를 찾을 수 없습니다."
@@ -29,9 +32,6 @@ messages['USER_CREATE_FAIL'] = "회원가입에 실패하였습니다."
 
 messages['USER_TYPE_SUCC'] = "유효한 회원 유형입니다."
 messages['USER_TYPE_ERR'] = "유효하지 않은 회원 유형입니다."
-
-messages['USER_LOGIN_SUCC'] = "로그인에 성공하였습니다."
-messages['USER_LOGIN_FAIL'] = "로그인에 실패하였습니다."
 
 messages['USER_READ_SUCC'] = "회원 정보 조회에 성공하였습니다."
 messages['USER_READ_FAIL'] = "회원 정보 조회에 실패하였습니다."
