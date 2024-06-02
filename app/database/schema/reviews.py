@@ -2,7 +2,7 @@ from typing import List, Optional
 from datetime import datetime
 from pydantic import BaseModel
 
-from app.database.schema.default import Response
+from app.database.schema.default import Res
 
 
 class PublicReview(BaseModel):
@@ -47,10 +47,10 @@ class RequestReviewLike(BaseModel):
     is_like: bool
 
 
-class ResponseReview(Response):
+class ResponseReview(Res):
     data: PublicReview
 
 
-class ResponseReviews(Response):
+class ResponseReviews(Res):
     data: PublicReviews
 
