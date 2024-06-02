@@ -1,5 +1,5 @@
 import secrets
-from fastapi import APIRouter, Depends, UploadFile, status
+from fastapi import APIRouter, Depends, UploadFile, status, Response
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import Session
 
@@ -14,7 +14,7 @@ from app.security.verifier import verify_access_token_user
 from app.security.password import Password
 from app.database.database import get_db
 from app.database.queryset import users as queryset
-from app.database.schema.default import Response
+from app.database.schema.default import Res
 from app.database.schema.users import (
     UserMe,
     ReqUserCreate,
@@ -37,7 +37,7 @@ PREFIX = "/users"
 ADMIN_PREFIX = "/admin" + PREFIX
 
 
-@router.post(PREFIX + "/create", response_model=Response)
+@router.post(PREFIX + "/create", tags=['users'], response_model=Res)
 async def create_user(
     in_user: ReqUserCreate,
     db: Session = Depends(get_db)
@@ -77,18 +77,24 @@ async def create_user(
     return json_response(status.HTTP_201_CREATED, code)
 
 
-@router.post(PREFIX + "/login", response_model=ResUserLogin)
+@router.post(PREFIX + "/login", tags=['users'], response_model=ResUserLogin)
 async def login_user(
-    in_user: ReqUserLogin,
+    req_user: ReqUserLogin,
+    response: Response,
     db: Session = Depends(get_db)
 ):
+    # 유저 정보 입력 확인
+    if not req_user.email:
+        return json_response(status.HTTP_400_BAD_REQUEST, "USER_LOGIN_EMAIL_REQUIRED")
+    if not req_user.password:
+        return json_response(status.HTTP_400_BAD_REQUEST, "USER_LOGIN_PASSWORD_REQUIRED")
     # 유저 정보 가져오기
-    get_user = queryset.read_user_by_email(db, in_user.email)
+    get_user = queryset.read_user_by_email(db, req_user.email)
     # 유저 등록정보 확인
     if not verifier.verify_user(get_user):
         return json_response(status.HTTP_401_UNAUTHORIZED, "USER_LOGIN_FAIL")
     # 유저 비밀번호 확인
-    if not verifier.verify_user_password(in_user.password, get_user.password):
+    if not verifier.verify_user_password(req_user.password, get_user.password):
         return json_response(status.HTTP_401_UNAUTHORIZED, "USER_LOGIN_FAIL")
     # 유저 활성화 확인
     if not verifier.verify_user_active(get_user):
@@ -104,15 +110,17 @@ async def login_user(
     access_token = JWTManager.create_access_token(jsonable_encoder(get_user))
     refresh_token = JWTManager.create_refresh_token(jsonable_encoder(get_user))
     # 결과 출력
+    response.headers['code'] = "USER_LOGIN_SUCC"
     return {
+        "code": "USER_LOGIN_SUCC",
         "message": messages["USER_LOGIN_SUCC"],
-        "data": get_user,
+        "user": get_user,
         "access_token": access_token,
         "refresh_token": refresh_token
     }
 
 
-@router.post(PREFIX + "/me", response_model=ResUserMe)
+@router.post(PREFIX + "/me", tags=['users'], response_model=ResUserMe)
 async def read_user_me(
     user: ReqUserId,
     db: Session = Depends(get_db),
@@ -129,7 +137,7 @@ async def read_user_me(
     return {"message": messages["USER_READ_SUCC"], "data": get_user}
 
 
-@router.get(PREFIX + "/{user_id}", response_model=ResUserMe)
+@router.get(PREFIX + "/{user_id}", tags=['users'], response_model=ResUserMe)
 async def read_user(
     user_id: int,
     db: Session = Depends(get_db),
@@ -146,7 +154,7 @@ async def read_user(
     return {"message": messages['USER_READ_SUCC'], "data": get_user}
 
 
-@router.put(PREFIX + "/{user_id}", response_model=Response)
+@router.put(PREFIX + "/{user_id}", tags=['users'], response_model=Res)
 async def update_user(
     user_id: int,
     req_user: ReqUserUpdate,
@@ -164,7 +172,7 @@ async def update_user(
     return json_response(status.HTTP_200_OK, code)
 
 
-@router.delete(PREFIX + "/{user_id}", response_model=Response)
+@router.delete(PREFIX + "/{user_id}", tags=['users'], response_model=Res)
 async def delete_user(
     user_id: int,
     db: Session = Depends(get_db),
@@ -178,7 +186,7 @@ async def delete_user(
     return json_response(status.HTTP_200_OK, code)
 
 
-@router.patch(PREFIX + "/{user_id}/password", response_model=Response)
+@router.patch(PREFIX + "/{user_id}/password", tags=['users'], response_model=Res)
 async def update_password(
     user_id: int,
     req_user: ReqUserPassword,
@@ -202,7 +210,7 @@ async def update_password(
     return json_response(status.HTTP_200_OK, code)
 
 
-@router.patch(PREFIX + "/{user_id}/nickname", response_model=Response)
+@router.patch(PREFIX + "/{user_id}/nickname", tags=['users'], response_model=Res)
 async def update_nickname(
     user_id: int,
     req_user: ReqUserNickname,
@@ -228,7 +236,7 @@ async def update_nickname(
     return json_response(status.HTTP_200_OK, code)
 
 
-@router.patch(PREFIX + "/{user_id}/profile", response_model=Response)
+@router.patch(PREFIX + "/{user_id}/profile", tags=['users'], response_model=Res)
 async def update_profile(
     user_id: int,
     req_user: ReqUserProfile,
@@ -246,7 +254,7 @@ async def update_profile(
     return json_response(status.HTTP_200_OK, code)
 
 
-@router.patch(PREFIX + "/{user_id}/profile/image", response_model=Response)
+@router.patch(PREFIX + "/{user_id}/profile/image", tags=['users'], response_model=Res)
 async def update_profile_image(
     file: UploadFile = None,
     db: Session = Depends(get_db),
@@ -277,7 +285,7 @@ async def update_profile_image(
     return json_response(status.HTTP_200_OK, code)
 
 
-@router.patch(PREFIX + "/{user_id}/agree", response_model=Response)
+@router.patch(PREFIX + "/{user_id}/agree", tags=['users'], response_model=Res)
 async def update_agree(
         user_id: int,
         req_user: ReqUserAgree,
