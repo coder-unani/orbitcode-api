@@ -87,4 +87,4 @@ class ResUserLogin(Res):
 
 
 class ResUserMe(Res):
-    data: UserMe | None = None
+    user: UserMe | None = None
