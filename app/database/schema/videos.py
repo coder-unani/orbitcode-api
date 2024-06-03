@@ -85,9 +85,6 @@ class VideoThumbnail(BaseModel):
 
 
 class VideoThumbnailAdmin(VideoThumbnail):
-    id: int
-    type: str
-    url: str
     created_at: datetime
     updated_at: datetime
 
@@ -95,7 +92,7 @@ class VideoThumbnailAdmin(VideoThumbnail):
         from_attributes = True
 
 
-class Video(BaseModel):
+class VideoSimple(BaseModel):
     id: int
     type: str
     title: str
@@ -105,12 +102,29 @@ class Video(BaseModel):
     notice_age: str
     rating: float
     like_count: int
+    review_count: int
     view_count: int
+    thumbnail: list[VideoThumbnail] = []
+
+    class Config:
+        from_attributes = True
+
+
+class VideoSimpleAdmin(VideoSimple):
+    platform_code: str
+    platform_id: str
+    is_confirm: bool
+    is_delete: bool
+
+    class Config:
+        from_attributes = True
+
+
+class Video(VideoSimple):
     genre: list[Genre] = []
     actor: list[Actor] = []
     staff: list[Staff] = []
     watch: list[VideoWatch] = []
-    thumbnail: list[VideoThumbnail] = []
 
     class Config:
         from_attributes = True
@@ -126,6 +140,7 @@ class VideoAdmin(BaseModel):
     notice_age: str
     rating: float
     like_count: int
+    review_count: int
     view_count: int
     platform_code: str
     platform_id: str
@@ -134,6 +149,8 @@ class VideoAdmin(BaseModel):
     staff: list[StaffAdmin] = []
     watch: list[VideoWatchAdmin] = []
     thumbnail: list[VideoThumbnailAdmin] = []
+    created_at: datetime
+    updated_at: datetime
 
     class Config:
         from_attributes = True
@@ -169,8 +186,11 @@ class ResVideos(Res):
     total: int
     count: int
     page: int
-    data: List[Video] | None = None
+    data: List[VideoSimple] | None = None
 
 
 class ResVideosAdmin(Res):
-    data: List[VideoAdmin] | None = None
+    total: int
+    count: int
+    page: int
+    data: List[VideoSimpleAdmin] | None = None

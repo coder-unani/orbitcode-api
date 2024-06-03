@@ -43,6 +43,7 @@ class Video(Base):
     rating: Mapped[float]
     like_count: Mapped[int]
     view_count: Mapped[int]
+    review_count: Mapped[int]
     platform_code: Mapped[str]
     platform_id: Mapped[str]
     is_confirm: Mapped[bool]
