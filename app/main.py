@@ -10,24 +10,36 @@ from app.routes.v1 import (
     defaults as defaults_v1,
     users as users_v1,
     contents as contents_v1,
-    reviews as reviews_v1
+    reviews as reviews_v1,
+    admins as admins_v1
 )
 
+description = """
+오르빗코드(Orbitcode) API 서버입니다.
 
+## users
+- **/users/create**: 회원가입
+- **/users/login**: 로그인
+- **/users/me**: 내 정보 조회
+- **/users/me/update**: 내 정보 수정
+
+## contents
+"""
 SWAGGER_HEADERS = {
     "title": settings.APP_NAME,
     "version": "0.1.0",
-    "description": "ORBITCODE API<br/><a href='https://www.orbitcode.kr' target='_blank'>www.orbitcode.kr</a>"
-}
-
-
-# FastAPI initialize
-def create_api() -> FastAPI:
-    api = FastAPI(
-        docs_url=None,
-        redoc_url=None,
-        openapi_url=None,
-        swagger_ui_parameters={
+    "description": description,
+    "terms_of_service": "http://example.com/terms/",
+    "contact": {
+        "name": "ORBITCODE",
+        "url": "https://www.orbitcode.kr",
+        "email": "info@orbitcode.kr",
+    },
+    "license": {
+        "name": "MIT",
+        "url": "https://opensource.org/licenses/MIT",
+    },
+    "swagger_ui_parameters": {
             "deepLinking": "true",
             "displayRequestDuration": "true",
             "docExpansion": "none",
@@ -35,8 +47,29 @@ def create_api() -> FastAPI:
             "filter": True,
             "tagsSorter": "alpha",
             "syntaxHighlight.theme": "tomorrow-night",
+    },
+    "openapi_tags": [
+        {
+            "name": "users",
+            "description": "Operations with users. The **login** logic is also here.",
         },
-        **SWAGGER_HEADERS
+        {
+            "name": "contents",
+            "description": "Operations with contents. The **videos** logic is also here.",
+        }
+    ],
+}
+
+
+# FastAPI initialize
+def create_api() -> FastAPI:
+    api = FastAPI(
+        description=description,
+        title=SWAGGER_HEADERS['title'],
+        docs_url=None,
+        redoc_url=None,
+        openapi_url=None,
+
     )
 
     # Middleware 정의
@@ -53,6 +86,7 @@ def create_api() -> FastAPI:
     api.include_router(users_v1.router, prefix="/v1")
     api.include_router(contents_v1.router, prefix="/v1")
     # api.include_router(review_v1.router, prefix="/v1")
+    api.include_router(admins_v1.router, prefix="/v1/admins")
 
     return api
 

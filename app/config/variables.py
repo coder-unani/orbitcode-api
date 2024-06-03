@@ -91,12 +91,15 @@ messages['VALID_PWD_NOT_INC_LOWER_ERR'] = "비밀번호는 반드시 소문자�
 # Video Create, Read, Update, Delete 관련
 messages['INVALID_PARAM_PAGE'] = "유효하지 않은 페이지 번호입니다."
 messages['INVALID_PARAM_KEYWORD'] = "유효하지 않은 검색어입니다."
+messages['INVALID_PARAM_TYPE'] = "유효하지 않은 타입입니다."
+messages['INVALID_PARAM_ORDER_BY'] = "유효하지 않은 정렬 조건입니다."
 
 messages['VIDEO_NOT_FOUND'] = "비디오를 찾을 수 없습니다."
 
 messages['VIDEO_CREATE_SUCC'] = "컨텐츠 생성에 성공하였습니다."
 messages['VIDEO_CREATE_FAIL'] = "컨텐츠 생성에 실패하였습니다."
 
+messages['VIDEO_SEARCH_SUCC'] = "컨텐츠 검색에 성공하였습니다."
 messages['VIDEO_READ_SUCC'] = "컨텐츠 조회에 성공하였습니다."
 messages['VIDEO_READ_FAIL'] = "컨텐츠 조회에 실패하였습니다."
 

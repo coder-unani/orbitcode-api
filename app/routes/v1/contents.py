@@ -27,18 +27,10 @@ router = APIRouter()
 
 
 PREFIX = "/contents"
-ADMIN_PREFIX = "/admin" + PREFIX
 
 
 # 비디오 목록 조회
 @router.get(PREFIX + "/videos", tags=['contents'], response_model=ResVideos)
-@router.get(
-    ADMIN_PREFIX + "/videos",
-    tags=['contents'],
-    response_model=ResVideosAdmin,
-    dependencies=[Depends(verify_access_token_admin)],
-    include_in_schema=False
-)
 async def content_videos(
     page: int = 1,
     keyword: str | None = None,

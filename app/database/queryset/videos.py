@@ -97,3 +97,82 @@ def read_video_list(
     except Exception as e:
         print(e)
         return False, "EXCEPTION", 0, 0, []
+
+
+def search_video_list(
+    db: Session,
+    page: int = 1,
+    type: str | None = None,
+    keyword: str | None = None,
+    video_id: int | None = None,
+    actor_id: int | None = None,
+    staff_id: int | None = None,
+    genre_id: int | None = None,
+    platform_id: str | None = None,
+    is_delete: bool | None = None,
+    is_confirm: bool | None = None,
+    order_by: str | None = None,
+):
+    unit_per_page = 20
+    offset = (page - 1) * unit_per_page
+
+    print("search_video_list")
+
+    try:
+        stmt = select(Video)
+        if video_id is not None:
+            stmt = stmt.filter_by(id=video_id)
+        if type is not None:
+            stmt = stmt.filter_by(type=type)
+        if platform_id is not None:
+            stmt = stmt.filter_by(platform_id=platform_id)
+        if is_delete is not None:
+            stmt = stmt.filter_by(is_delete=is_delete)
+        if is_confirm is not None:
+            stmt = stmt.filter_by(is_confirm=is_confirm)
+        if keyword is not None:
+            stmt = stmt.filter(Video.title.contains(keyword, autoescape=True))
+        if actor_id is not None:
+            stmt = stmt.join(Video.actor).filter_by(id=actor_id)
+        if staff_id is not None:
+            stmt = stmt.join(Video.staff).filter_by(id=staff_id)
+        if genre_id is not None:
+            stmt = stmt.join(Video.genre).filter_by(id=genre_id)
+        if order_by is not None:
+            if order_by == "view_desc":
+                stmt = stmt.order_by(Video.view_count.desc())
+            elif order_by == "view_asc":
+                stmt = stmt.order_by(Video.view_count.asc())
+            elif order_by == "like_desc":
+                stmt = stmt.order_by(Video.like_count.desc())
+            elif order_by == "like_asc":
+                stmt = stmt.order_by(Video.like_count.asc())
+            elif order_by == "new_desc":
+                stmt = stmt.order_by(Video.created_at.desc())
+            elif order_by == "new_desc":
+                stmt = stmt.order_by(Video.created_at.asc())
+            elif order_by == "updated_desc":
+                stmt = stmt.order_by(Video.updated_at.desc())
+            elif order_by == "updated_asc":
+                stmt = stmt.order_by(Video.updated_at.asc())
+            elif order_by == "title_desc":
+                stmt = stmt.order_by(Video.title.desc())
+            elif order_by == "title_asc":
+                stmt = stmt.order_by(Video.title.asc())
+            elif order_by == "rating_desc":
+                stmt = stmt.order_by(Video.rating.desc())
+            elif order_by == "rating_asc":
+                stmt = stmt.order_by(Video.rating.asc())
+
+        total = db.execute(select(func.count()).select_from(stmt)).scalar()
+        result = db.execute(stmt.offset(offset).limit(unit_per_page))
+        videos = result.scalars().all()
+        return True, "VIDEO_SEARCH_SUCC", total, videos
+
+    except Exception as e:
+        print("exexex")
+        print(e)
+        return False, "EXCEPTION", 0, []
+
+
+
