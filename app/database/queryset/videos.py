@@ -2,11 +2,13 @@ from fastapi.encoders import jsonable_encoder
 from sqlalchemy import func
 from sqlalchemy.orm import Session, joinedload
 from sqlalchemy.sql.expression import select, insert, update, delete
-
 from app.database.model.videos import (
     Video,
     VideoViewLog
 )
+
+# 메모리 누수 테스트
+from memory_profiler import profile
 
 
 def create_video(db: Session, video: dict):
@@ -99,9 +101,11 @@ def read_video_list(
         return False, "EXCEPTION", 0, 0, []
 
 
+@profile
 def search_video_list(
     db: Session,
     page: int = 1,
+    page_size: int = 20,
     type: str | None = None,
     keyword: str | None = None,
     video_id: int | None = None,
@@ -113,7 +117,7 @@ def search_video_list(
     is_confirm: bool | None = None,
     order_by: str | None = None,
 ):
-    unit_per_page = 20
+    unit_per_page = page_size
     offset = (page - 1) * unit_per_page
 
     print("search_video_list")

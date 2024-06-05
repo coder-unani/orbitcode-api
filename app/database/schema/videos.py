@@ -96,7 +96,6 @@ class VideoSimple(BaseModel):
     id: int
     type: str
     title: str
-    synopsis: str
     release: str
     runtime: str
     notice_age: str

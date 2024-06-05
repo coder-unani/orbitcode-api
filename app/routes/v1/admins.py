@@ -6,13 +6,18 @@ from app.security.verifier import verify_access_token_admin
 from app.network.response import json_response
 from app.database.database import get_db
 from app.database.queryset import videos as queryset
+from app.database.schema.default import Res
 from app.database.schema.videos import (
-    ResVideosAdmin
+    ReqVideo,
+    ResVideosAdmin,
 )
+
+#
+from memory_profiler import profile
 
 router = APIRouter()
 
-
+@profile
 @router.get(
     "/videos",
     response_model=ResVideosAdmin,
@@ -20,7 +25,8 @@ router = APIRouter()
     include_in_schema=False
 )
 async def admin_content_videos(
-    page: int = 1,  # 페이지 번호
+    p: int = 1,  # 페이지 번호
+    ps: int = 20,  # 페이지 당 데이터 수
     q: str = None,  # 검색 키워드
     t: str = None,  # 비디오 타입
     vid: int = None,  # 비디오 ID
@@ -34,8 +40,10 @@ async def admin_content_videos(
     db: Session = Depends(get_db)
 ):
     # page 파라메터 정합성 체크
-    if page and page < 1:
+    if p and p < 1:
         return json_response(status.HTTP_400_BAD_REQUEST, "INVALID_PARAM_PAGE")
+    if ps and ps < 5:
+        return json_response(status.HTTP_400_BAD_REQUEST, "INVALID_PARAM_PAGE_SIZE")
     # type 파라메터 정합성 체크
     if t and len(t) < 2:
         return json_response(status.HTTP_400_BAD_REQUEST, "INVALID_PARAM_TYPE")
@@ -61,7 +69,8 @@ async def admin_content_videos(
     # 비디오 목록 조회
     result, code, total, videos = queryset.search_video_list(
         db,
-        page=page,
+        page=p,
+        page_size=ps,
         type=t,
         keyword=q,
         video_id=vid,
@@ -83,4 +92,22 @@ async def admin_content_videos(
     if count < 1:
         return json_response(status.HTTP_200_OK, "VIDEO_NOT_FOUND")
     # 성공 응답 반환
-    return {"message": "", "total": total, "count": count, "page": page, "data": videos}
+    return {"message": "", "total": total, "count": count, "page": p, "data": videos}
+
+
+# 비디오 업데이트
+@router.put("/videos/{video_id}", tags=['contents'], response_model=Res)
+async def update_video(video_id: int, video: ReqVideo, db: Session = Depends(get_db)):
+    result, code = queryset.update_video(db, video_id=video_id, video=video)
+    if not result:
+        return json_response(status.HTTP_500_INTERNAL_SERVER_ERROR, code)
+    return json_response(status.HTTP_200_OK, code)
+
+
+# 비디오 삭제
+@router.delete("/videos/{video_id}", tags=['contents'], response_model=Res)
+async def delete_video(video_id: int, db: Session = Depends(get_db)):
+    result, code = queryset.delete_video(db, video_id=video_id)
+    if not result:
+        return json_response(status.HTTP_500_INTERNAL_SERVER_ERROR, code)
+    return json_response(status.HTTP_200_OK, code)

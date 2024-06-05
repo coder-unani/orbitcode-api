@@ -90,6 +90,7 @@ messages['VALID_PWD_NOT_INC_LOWER_ERR'] = "비밀번호는 반드시 소문자�
 
 # Video Create, Read, Update, Delete 관련
 messages['INVALID_PARAM_PAGE'] = "유효하지 않은 페이지 번호입니다."
+messages['INVALID_PARAM_PAGE_SIZE'] = "유효하지 않은 페이지 크기입니다."
 messages['INVALID_PARAM_KEYWORD'] = "유효하지 않은 검색어입니다."
 messages['INVALID_PARAM_TYPE'] = "유효하지 않은 타입입니다."
 messages['INVALID_PARAM_ORDER_BY'] = "유효하지 않은 정렬 조건입니다."

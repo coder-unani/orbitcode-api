@@ -83,24 +83,6 @@ async def read_video(video_id: int, db: Session = Depends(get_db)):
     return json_response(status.HTTP_200_OK, code, video)
 
 
-# 비디오 업데이트
-@router.put(PREFIX + "/videos/{video_id}", tags=['contents'], response_model=Res)
-async def update_video(video_id: int, video: ReqVideo, db: Session = Depends(get_db)):
-    result, code = queryset.update_video(db, video_id=video_id, video=video)
-    if not result:
-        return json_response(status.HTTP_500_INTERNAL_SERVER_ERROR, code)
-    return json_response(status.HTTP_200_OK, code)
-
-
-# 비디오 삭제
-@router.delete(PREFIX + "/videos/{video_id}", tags=['contents'], response_model=Res)
-async def delete_video(video_id: int, db: Session = Depends(get_db)):
-    result, code = queryset.delete_video(db, video_id=video_id)
-    if not result:
-        return json_response(status.HTTP_500_INTERNAL_SERVER_ERROR, code)
-    return json_response(status.HTTP_200_OK, code)
-
-
 # 비디오 조회
 @router.post(PREFIX + "/videos/{video_id}/view", tags=['contents'], response_model=ResData)
 async def insert_video_view(video_id: int, db: Session = Depends(get_db)):

@@ -14,6 +14,7 @@ from app.routes.v1 import (
     admins as admins_v1
 )
 
+
 description = """
 오르빗코드(Orbitcode) API 서버입니다.
 
@@ -105,3 +106,11 @@ async def openapi():
         title=SWAGGER_HEADERS['title'],
         version=SWAGGER_HEADERS['version'],
         routes=app.routes)
+
+
+# 메모리 누수 테스트
+# 테스트 필요한 곳에 @profile 데코레이터 추가
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)
+# python3 -m memory_profiler app/main.py
