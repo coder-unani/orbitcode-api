@@ -13,12 +13,9 @@ from app.database.schema.videos import (
     ResVideosAdmin,
 )
 
-#
-from memory_profiler import profile
-
 router = APIRouter()
 
-@profile
+
 @router.get(
     "/videos",
     response_model=ResVideosAdmin,

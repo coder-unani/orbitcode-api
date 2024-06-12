@@ -7,9 +7,6 @@ from app.database.model.videos import (
     VideoViewLog
 )
 
-# 메모리 누수 테스트
-from memory_profiler import profile
-
 
 def create_video(db: Session, video: dict):
     try:
@@ -101,7 +98,6 @@ def read_video_list(
         return False, "EXCEPTION", 0, 0, []
 
 
-@profile
 def search_video_list(
     db: Session,
     page: int = 1,
