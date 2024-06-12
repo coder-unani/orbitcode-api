@@ -26,5 +26,8 @@ LOG_LEVEL=${LOG_LEVEL:-info}
 #     echo "There is no script $PRE_START_PATH"
 # fi
 
+# Activate Python virtual environment
+source .venv/bin/activate
+
 # Start Uvicorn with live reload
-exec uvicorn --reload --host $HOST --port $PORT --log-level $LOG_LEVEL "$APP_MODULE"
+exec nohup uvicorn --reload --host $HOST --port $PORT --log-level $LOG_LEVEL "$APP_MODULE" &
