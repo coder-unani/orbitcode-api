@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 from sqlalchemy.sql.expression import select, insert, update, delete, exists
 
-from app.database.model.users import User
+from app.database.model.users import User, UserLoginLog
 from app.database.schema.users import UserMe
 
 
@@ -138,5 +138,32 @@ def check_exist_nickname(db: Session, nickname: str):
         print(e)
         return False, "EXCEPTION"
 
+
+def insert_user_login_log(
+    db: Session,
+    status,
+    code,
+    path,
+    message,
+    input_id,
+    client_ip,
+    client_host,
+    user_agent
+):
+    try:
+        stmt = insert(UserLoginLog).values(
+            status=status,
+            code=code,
+            path=path,
+            message=message,
+            input_id=input_id,
+            client_ip=client_ip,
+            client_host=client_host,
+            user_agent=user_agent
+        )
+        db.execute(stmt)
+        db.commit()
+    except Exception as e:
+        print(e)
 
 
