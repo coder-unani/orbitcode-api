@@ -50,11 +50,11 @@ class Video(Base):
     is_delete: Mapped[bool]
     created_at: Mapped[datetime] = mapped_column(default=datetime.now)
     updated_at: Mapped[datetime] = mapped_column(nullable=True)
-    genre: Mapped[List['Genre']] = relationship(secondary=content_video_genre, back_populates="video")
-    actor: Mapped[List['Actor']] = relationship(secondary=content_video_actor, back_populates="video")
-    staff: Mapped[List['Staff']] = relationship(secondary=content_video_staff, back_populates="video")
-    watch: Mapped[List['VideoWatch']] = relationship(back_populates="video")
-    thumbnail: Mapped[List['VideoThumbnail']] = relationship(back_populates="video")
+    genre: Mapped[List['Genre']] = relationship(secondary=content_video_genre, back_populates="video", lazy="selectin")
+    actor: Mapped[List['Actor']] = relationship(secondary=content_video_actor, back_populates="video", lazy="selectin")
+    staff: Mapped[List['Staff']] = relationship(secondary=content_video_staff, back_populates="video", lazy="selectin")
+    watch: Mapped[List['VideoWatch']] = relationship(back_populates="video", lazy="selectin")
+    thumbnail: Mapped[List['VideoThumbnail']] = relationship(back_populates="video", lazy="selectin")
 
     class Config:
         from_attributes = True
@@ -67,7 +67,7 @@ class Genre(Base):
     name = Column(String)
     created_at = Column(DateTime, default=datetime.now)
     updated_at = Column(DateTime, nullable=True)
-    video: Mapped[List['Video']] = relationship(secondary=content_video_genre, back_populates="genre")
+    video: Mapped[List['Video']] = relationship(secondary=content_video_genre, back_populates="genre", lazy="selectin")
 
 
 class Actor(Base):
@@ -79,7 +79,7 @@ class Actor(Base):
     profile = Column(String, nullable=True)
     created_at = Column(DateTime, default=datetime.now)
     updated_at = Column(DateTime, nullable=True)
-    video: Mapped[List['Video']] = relationship(secondary=content_video_actor, back_populates="actor")
+    video: Mapped[List['Video']] = relationship(secondary=content_video_actor, back_populates="actor", lazy="selectin")
 
 
 class Staff(Base):
@@ -91,7 +91,7 @@ class Staff(Base):
     profile = Column(String, nullable=True)
     created_at = Column(DateTime, default=datetime.now)
     updated_at = Column(DateTime, nullable=True)
-    video: Mapped[List['Video']] = relationship(secondary=content_video_staff, back_populates="staff")
+    video: Mapped[List['Video']] = relationship(secondary=content_video_staff, back_populates="staff", lazy="selectin")
 
 
 class VideoWatch(Base):
@@ -103,7 +103,7 @@ class VideoWatch(Base):
     created_at = Column(DateTime, default=datetime.now)
     updated_at = Column(DateTime, nullable=True)
     video_id: Mapped[int] = mapped_column(ForeignKey('rvvs_video.id'))
-    video: Mapped['Video'] = relationship(back_populates="watch")
+    video: Mapped['Video'] = relationship(back_populates="watch", lazy="selectin")
 
 
 class VideoThumbnail(Base):
@@ -117,7 +117,7 @@ class VideoThumbnail(Base):
     created_at = Column(DateTime, default=datetime.now)
     updated_at = Column(DateTime, nullable=True)
     video_id: Mapped[int] = mapped_column(ForeignKey('rvvs_video.id'))
-    video: Mapped['Video'] = relationship(back_populates="thumbnail")
+    video: Mapped['Video'] = relationship(back_populates="thumbnail", lazy="selectin")
 
 
 class VideoLikeLog(Base):
