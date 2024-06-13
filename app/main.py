@@ -11,7 +11,7 @@ from app.utils.logger import Logger
 from app.routes.v1 import (
     defaults as defaults_v1,
     users as users_v1,
-    contents as contents_v1,
+    videos as videos_v1,
     reviews as reviews_v1
 )
 
@@ -40,7 +40,7 @@ def create_api() -> FastAPI:
     # Router 정의
     api.include_router(defaults_v1.router, prefix="/v1")
     api.include_router(users_v1.router, prefix="/v1")
-    api.include_router(contents_v1.router, prefix="/v1")
+    api.include_router(videos_v1.router, prefix="/v1/contents")
     # api.include_router(review_v1.router, prefix="/v1")
     # api.include_router(admins_v1.router, prefix="/v1/admins")
 
