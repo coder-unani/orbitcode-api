@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, UploadFile, status, Response, Request, HTTPException
 from fastapi.encoders import jsonable_encoder
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config.settings import settings
 from app.config.variables import messages
@@ -37,7 +37,7 @@ ADMIN_PREFIX = "/admin" + PREFIX
 @router.post(PREFIX + "/create", tags=['users'], response_model=Res)
 async def create_user(
     in_user: ReqUserCreate,
-    db: Session = Depends(get_db)
+    db: AsyncSession = Depends(get_db)
 ):
     # 필수 입력값 체크
     if not in_user.email or not in_user.password or not in_user.nickname:
@@ -89,10 +89,10 @@ async def login_user(
     req_user: ReqUserLogin,
     request: Request,
     response: Response,
-    db: Session = Depends(get_db)
+    db: AsyncSession = Depends(get_db)
 ):
     try:
-        get_user = UserLoginVerifier(db, request, jsonable_encoder(req_user)).return_user_after_verified()
+        get_user = await UserLoginVerifier(db, request, jsonable_encoder(req_user)).return_user_after_verified()
     except HTTPException as e:
         raise e
     # 토큰 생성
@@ -111,7 +111,7 @@ async def login_user(
 @router.post(PREFIX + "/me", tags=['users'], response_model=ResUserMe)
 async def read_user_me(
     user: ReqUserId,
-    db: Session = Depends(get_db),
+    db: AsyncSession = Depends(get_db),
     auth_user: UserMe = Depends(verify_access_token_user)
 ):
     # 유저 정보 일치 확인
@@ -128,7 +128,7 @@ async def read_user_me(
 @router.get(PREFIX + "/{user_id}", tags=['users'], response_model=ResUserMe)
 async def read_user(
     user_id: int,
-    db: Session = Depends(get_db),
+    db: AsyncSession = Depends(get_db),
     auth_user: UserMe = Depends(verify_access_token_user)
 ):
     # 요청 유저 권한 확인
@@ -146,7 +146,7 @@ async def read_user(
 async def update_user(
     user_id: int,
     req_user: ReqUserUpdate,
-    db: Session = Depends(get_db),
+    db: AsyncSession = Depends(get_db),
     auth_user: UserMe = Depends(verify_access_token_user)
 ):
     # 유저 정보 입력 확인
@@ -163,7 +163,7 @@ async def update_user(
 @router.delete(PREFIX + "/{user_id}", tags=['users'], response_model=Res)
 async def delete_user(
     user_id: int,
-    db: Session = Depends(get_db),
+    db: AsyncSession = Depends(get_db),
     auth_user: UserMe = Depends(verify_access_token_user)
 ):
     # 유저 삭제
@@ -178,7 +178,7 @@ async def delete_user(
 async def update_password(
     user_id: int,
     req_user: ReqUserPassword,
-    db: Session = Depends(get_db),
+    db: AsyncSession = Depends(get_db),
     auth_user: UserMe = Depends(verify_access_token_user)
 ):
     # 비밀번호 입력 확인
@@ -202,7 +202,7 @@ async def update_password(
 async def update_nickname(
     user_id: int,
     req_user: ReqUserNickname,
-    db: Session = Depends(get_db),
+    db: AsyncSession = Depends(get_db),
     auth_user: UserMe = Depends(verify_access_token_user)
 ):
     # 닉네임 입력 확인
@@ -228,7 +228,7 @@ async def update_nickname(
 async def update_profile(
     user_id: int,
     req_user: ReqUserProfile,
-    db: Session = Depends(get_db),
+    db: AsyncSession = Depends(get_db),
     auth_user: UserMe = Depends(verify_access_token_user)
 ):
     # 프로필 입력 확인
@@ -245,7 +245,7 @@ async def update_profile(
 @router.patch(PREFIX + "/{user_id}/profile/image", tags=['users'], response_model=Res)
 async def update_profile_image(
     file: UploadFile = None,
-    db: Session = Depends(get_db),
+    db: AsyncSession = Depends(get_db),
     auth_user: UserMe = Depends(verify_access_token_user)
 ):
     # 파일 입력 확인
@@ -277,7 +277,7 @@ async def update_profile_image(
 async def update_agree(
         user_id: int,
         req_user: ReqUserAgree,
-        db: Session = Depends(get_db),
+        db: AsyncSession = Depends(get_db),
         auth_user: UserMe = Depends(verify_access_token_user)
 ):
     # 광고수신 동의 입력 확인

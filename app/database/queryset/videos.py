@@ -1,14 +1,16 @@
-from fastapi.encoders import jsonable_encoder
+from fastapi import HTTPException, status
 from sqlalchemy import func
-from sqlalchemy.orm import Session, joinedload
-from sqlalchemy.sql.expression import select, insert, update, delete
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.sql.expression import insert, update, delete
+from sqlalchemy.future import select
 from app.database.model.videos import (
     Video,
     VideoViewLog
 )
+from app.database.schema.videos import VideoSimple
 
 
-def create_video(db: Session, video: dict):
+def create_video(db: AsyncSession, video: dict):
     try:
         video_new = db.execute(insert(Video).returning(Video), video).scalar()
         db.commit()
@@ -18,7 +20,7 @@ def create_video(db: Session, video: dict):
         return False, "EXCEPTION"
 
 
-def read_video_by_id(db: Session, video_id: int):
+def read_video_by_id(db: AsyncSession, video_id: int):
     try:
         video: Video = db.get(Video, video_id)
         return True, "VIDEO_READ_SUCC", video
@@ -27,7 +29,7 @@ def read_video_by_id(db: Session, video_id: int):
         return False, "EXCEPTION", None
 
 
-def update_video(db: Session, video_id: int, video: dict):
+def update_video(db: AsyncSession, video_id: int, video: dict):
     try:
         stmt = update(Video).where(Video.id == video_id).values(**video)
         db.execute(stmt)
@@ -38,7 +40,7 @@ def update_video(db: Session, video_id: int, video: dict):
         return False, "EXCEPTION"
 
 
-def delete_video(db: Session, video_id: int):
+def delete_video(db: AsyncSession, video_id: int):
     try:
         stmt = delete(Video).where(Video.id == video_id)
         db.execute(stmt)
@@ -49,7 +51,7 @@ def delete_video(db: Session, video_id: int):
         return False, "EXCEPTION"
 
 
-def insert_video_view(db: Session, video_id: int, user_id: int | None = None):
+def insert_video_view(db: AsyncSession, video_id: int, user_id: int | None = None):
     try:
         with ((db.begin())):
             if user_id:
@@ -70,7 +72,7 @@ def insert_video_view(db: Session, video_id: int, user_id: int | None = None):
 
 
 def read_video_list(
-    db: Session,
+    db: AsyncSession,
     page: int,
     keyword: str | None = None,
     is_delete: bool = False,
@@ -98,11 +100,11 @@ def read_video_list(
         return False, "EXCEPTION", 0, 0, []
 
 
-def search_video_list(
-    db: Session,
+async def search_video_list(
+    db: AsyncSession,
     page: int = 1,
     page_size: int = 20,
-    type: str | None = None,
+    video_type: str | None = None,
     keyword: str | None = None,
     video_id: int | None = None,
     actor_id: int | None = None,
@@ -116,14 +118,12 @@ def search_video_list(
     unit_per_page = page_size
     offset = (page - 1) * unit_per_page
 
-    print("search_video_list")
-
     try:
         stmt = select(Video)
         if video_id is not None:
             stmt = stmt.filter_by(id=video_id)
-        if type is not None:
-            stmt = stmt.filter_by(type=type)
+        if video_type is not None:
+            stmt = stmt.filter_by(type=video_type)
         if platform_id is not None:
             stmt = stmt.filter_by(platform_id=platform_id)
         if is_delete is not None:
@@ -164,15 +164,15 @@ def search_video_list(
             elif order_by == "rating_asc":
                 stmt = stmt.order_by(Video.rating.asc())
 
-        total = db.execute(select(func.count()).select_from(stmt)).scalar()
-        result = db.execute(stmt.offset(offset).limit(unit_per_page))
+        # Total count
+        total = await db.scalar(select(func.count()).select_from(stmt))
+        result = await db.execute(stmt.offset(offset).limit(unit_per_page))
         videos = result.scalars().all()
-        return True, "VIDEO_SEARCH_SUCC", total, videos
+
+        return total, videos
 
     except Exception as e:
-        print("exexex")
-        print(e)
-        return False, "EXCEPTION", 0, []
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Internal Server Error")
 
 
 

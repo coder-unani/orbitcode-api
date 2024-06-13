@@ -1,14 +1,13 @@
 import contextlib
 
-from sqlalchemy import create_engine
 from sqlalchemy.engine import URL
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sessionmaker
 from sqlalchemy.orm import declarative_base
 
 from app.config.settings import settings
 
 
-engine = create_engine(
+engine = create_async_engine(
     URL.create(
         drivername=settings.DB_DRIVER,
         host=settings.DB_HOST,
@@ -18,14 +17,11 @@ engine = create_engine(
         password=settings.DB_USER_PASSWORD,
     )
 )
-session = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+AsyncSessionLocal = async_sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 Base.metadata.bind = engine
 
 
-def get_db():
-    db = session()
-    try:
-        yield db
-    finally:
-        db.close()
+async def get_db():
+    async with AsyncSessionLocal() as session:
+        yield session
