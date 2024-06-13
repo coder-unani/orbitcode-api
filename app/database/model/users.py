@@ -38,7 +38,7 @@ class UserLoginLog(Base):
     code = Column(String, nullable=True)
     message = Column(String, nullable=True)
     path = Column(String, nullable=True)
-    input_id = Column(Integer, nullable=True)
+    input_id = Column(String, nullable=True)
     client_ip = Column(String, nullable=True)
     client_host = Column(String, nullable=True)
     user_agent = Column(String, nullable=True)
