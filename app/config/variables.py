@@ -22,6 +22,7 @@ messages['USER_LOGIN_FAIL'] = "로그인에 실패하였습니다."
 messages['USER_LOGIN_AUTH_FAIL'] = "사용자 인증 정보가 올바르지 않습니다."
 messages['USER_LOGIN_EMAIL_REQUIRED'] = "이메일을 입력해주세요"
 messages['USER_LOGIN_PASSWORD_REQUIRED'] = "비밀번호를 입력해주세요"
+messages['USER_LOGIN_TYPE_REQUIRED'] = "타입을 입력해주세요"
 
 messages['USER_NOT_MATCH'] = "유저 정보가 일치하지 않습니다."
 messages['USER_NOT_FOUND'] = "유저를 찾을 수 없습니다."
@@ -29,6 +30,10 @@ messages['USER_NOT_ADMIN'] = "관리자 권한이 없습니다."
 # User Create, Read, Update, Delete, Login, User Check 관련
 messages['USER_CREATE_SUCC'] = "회원가입이 완료되었습니다."
 messages['USER_CREATE_FAIL'] = "회원가입에 실패하였습니다."
+messages['USER_CREATE_REQUIRED_FIELDS'] = "필수 입력사항을 입력해주세요."
+messages['USER_AGREE_PRIVACY_REQUIRED'] = "개인정보 처리방침에 동의해주세요."
+messages['USER_AGREE_TERMS_REQUIRED'] = "이용 약관에 동의해주세요."
+messages['USER_AGREE_MARKETING_REQUIRED'] = "마케팅 정보 수신에 동의해주세요."
 
 messages['USER_TYPE_SUCC'] = "유효한 회원 유형입니다."
 messages['USER_TYPE_ERR'] = "유효하지 않은 회원 유형입니다."
