@@ -5,16 +5,153 @@ from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from sqlalchemy.orm import Session
 
 from app.config.settings import settings
+from app.config.variables import messages
+from app.database.database import get_db
+from app.database.schema.users import User
+from app.database.queryset.users import read_user_by_id, read_user_by_email, insert_user_login_log
 from app.network.response import json_response
-from app.utils.formatter import format_datetime
 from app.security.password import Password
 from app.security.token import JWTManager
-from app.database.schema.users import User
-from app.database.database import get_db
-from app.database.queryset.users import read_user_by_id
+from app.utils.formatter import format_datetime
 
 
 security = HTTPBasic()
+
+
+class UserLoginVerifier:
+    def __init__(self, db: Session, request: Request, user: dict):
+        self.db = db
+        self.user = user
+        self.get_user = None
+        self.client_ip = request.headers.get('x-real-ip')
+        self.client_host = request.headers.get('host')
+        self.user_agent = request.headers.get('user-agent')
+
+    def return_user_after_verified(self):
+        # 이메일 입력 여부 확인
+        if not self.user['email']:
+            status_code = status.HTTP_400_BAD_REQUEST
+            code = "USER_LOGIN_EMAIL_REQUIRED"
+            self.log_login_attempt(status_code, code)
+            raise HTTPException(
+                status_code=status_code,
+                detail=messages[code],
+                headers={"code": code}
+            )
+        # 비밀번호 입력 여부 확인
+        if not self.user['password']:
+            status_code = status.HTTP_400_BAD_REQUEST
+            code = "USER_LOGIN_PASSWORD_REQUIRED"
+            self.log_login_attempt(status_code, code)
+            raise HTTPException(
+                status_code=status_code,
+                detail=messages[code],
+                headers={"code": code}
+            )
+        # 회원 유형 입력 여부 확인
+        if not self.user.get('type'):
+            status_code = status.HTTP_400_BAD_REQUEST
+            code = "USER_LOGIN_TYPE_REQUIRED"
+            self.log_login_attempt(status_code, code)
+            raise HTTPException(
+                status_code=status_code,
+                detail=messages[code],
+                headers={"code": code}
+            )
+        # 회원 유형 유효성 검사
+        if self.user['type'] not in settings.USER_TYPE_ALLOW:
+            status_code = status.HTTP_401_UNAUTHORIZED
+            code = "USER_TYPE_ERR"
+            self.log_login_attempt(status_code, code)
+            raise HTTPException(
+                status_code=status_code,
+                detail=messages[code],
+                headers={"code": code}
+            )
+        # 데이터베이스 회원 정보 조회
+        if not self.get_userdata():
+            status_code = status.HTTP_401_UNAUTHORIZED
+            code = "USER_LOGIN_FAIL"
+            self.log_login_attempt(status_code, code)
+            raise HTTPException(
+                status_code=status_code,
+                detail=messages[code],
+                headers={"code": code}
+            )
+        # 회원 유형별 검증
+        # 일반 회원
+        if self.user['type'] == "10":
+            # 비밀번호 일치 여부 확인
+            if not Password.verify_password(self.user['password'], self.get_user['password']):
+                status_code = status.HTTP_401_UNAUTHORIZED
+                code = "USER_LOGIN_AUTH_FAIL"
+                self.log_login_attempt(status_code, code)
+                raise HTTPException(
+                    status_code=status_code,
+                    detail=messages[code],
+                    headers={"code": code}
+                )
+            # 회원 상태 확인
+            if not self.get_user['is_active']:
+                status_code = status.HTTP_401_UNAUTHORIZED
+                code = "USER_LOGIN_AUTH_FAIL"
+                self.log_login_attempt(status_code, code)
+                raise HTTPException(
+                    status_code=status_code,
+                    detail=messages[code],
+                    headers={"code": code}
+                )
+            # 회원 차단 여부 확인
+            if self.get_user['is_block']:
+                status_code = status.HTTP_401_UNAUTHORIZED
+                code = "USER_BLOCKED"
+                self.log_login_attempt(status_code, code)
+                raise HTTPException(
+                    status_code=status_code,
+                    detail=messages[code],
+                    headers={"code": code}
+                )
+        # 구글 회원
+        elif self.user['type'] == "11":
+            pass
+        # 카카오 회원
+        elif self.user['type'] == "12":
+            pass
+        # 기타
+        elif self.user['type'] == "13":
+            pass
+        # 로그인 성공
+        status_code = status.HTTP_200_OK
+        code = "USER_LOGIN_SUCC"
+        # 성공 로그
+        self.log_login_attempt(status_code, code)
+        # 회원 정보 리턴
+        return self.get_user
+
+    def get_userdata(self):
+        try:
+            self.get_user = read_user_by_email(self.db, self.user['email'])
+            self.get_user.created_at = format_datetime(self.get_user.created_at)
+            if self.get_user.updated_at:
+                self.get_user.updated_at = format_datetime(self.get_user.updated_at)
+            self.get_user = jsonable_encoder(self.get_user)
+            return True
+        except Exception as e:
+            print(e)
+            return False
+
+    def log_login_attempt(self, status_code: int, code: str):
+        insert_user_login_log(
+            self.db,
+            status_code,
+            code,
+            "",
+            "",
+            self.user['email'],
+            self.client_ip,
+            self.client_host,
+            self.user_agent
+        )
 
 
 def verify_user(user: dict):
