@@ -1,16 +1,14 @@
-import secrets
-from fastapi import APIRouter, Depends, UploadFile, status, Response
+from fastapi import APIRouter, Depends, UploadFile, status, Response, Request, HTTPException
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import Session
 
 from app.config.settings import settings
 from app.config.variables import messages
-from app.utils.formatter import format_datetime
 from app.utils.file import File
 from app.network.response import json_response
-from app.security import verifier, validator
+from app.security import validator
 from app.security.token import JWTManager
-from app.security.verifier import verify_access_token_user
+from app.security.verifier import verify_access_token_user, UserLoginVerifier
 from app.security.password import Password
 from app.database.database import get_db
 from app.database.queryset import users as queryset
@@ -29,7 +27,6 @@ from app.database.schema.users import (
     ResUserMe
 )
 
-
 router = APIRouter()
 
 
@@ -42,6 +39,15 @@ async def create_user(
     in_user: ReqUserCreate,
     db: Session = Depends(get_db)
 ):
+    # 필수 입력값 체크
+    if not in_user.email or not in_user.password or not in_user.nickname:
+        return json_response(status.HTTP_400_BAD_REQUEST, "USER_CREATE_REQUIRED_FIELDS")
+    # 약관 동의 확인
+    if not in_user.is_privacy_agree:
+        return json_response(status.HTTP_400_BAD_REQUEST, "USER_AGREE_PRIVACY_REQUIRED")
+    # 개인정보 수집 동의 확인
+    if not in_user.is_terms_agree:
+        return json_response(status.HTTP_400_BAD_REQUEST, "USER_AGREE_TERMS_REQUIRED")
     # 이메일 유효성 검사
     valid_result, valid_code = validator.validate_email(in_user.email)
     if not valid_result:
@@ -70,7 +76,8 @@ async def create_user(
     in_user.password = Password.create_password_hash(in_user.password)
     # 유저 생성
     result, code = queryset.create_user(db, user=jsonable_encoder(in_user))
-    # TODO: 유저 생성시 is_activate = False 로 생성 후 이메일 인증 후 is_activate = True 로 변경하여야 함
+    # TODO: 유저 생성시 is_email_verify = False 로 생성 후 이메일 인증 후 is_email_verify = True 로 변경하여야 함
+    # TODO: 가입 시도 로그 기록 (IP, User-Agent, Host 등) 체크해서 하루 가입 가능 횟수 제한 필요
     # 결과 출력
     if not result:
         return json_response(status.HTTP_500_INTERNAL_SERVER_ERROR, code)
@@ -80,39 +87,20 @@ async def create_user(
 @router.post(PREFIX + "/login", tags=['users'], response_model=ResUserLogin)
 async def login_user(
     req_user: ReqUserLogin,
+    request: Request,
     response: Response,
     db: Session = Depends(get_db)
 ):
-    # 유저 정보 입력 확인
-    if not req_user.email:
-        return json_response(status.HTTP_400_BAD_REQUEST, "USER_LOGIN_EMAIL_REQUIRED")
-    if not req_user.password:
-        return json_response(status.HTTP_400_BAD_REQUEST, "USER_LOGIN_PASSWORD_REQUIRED")
-    # 유저 정보 가져오기
-    get_user = queryset.read_user_by_email(db, req_user.email)
-    # 유저 등록정보 확인
-    if not verifier.verify_user(get_user):
-        return json_response(status.HTTP_401_UNAUTHORIZED, "USER_LOGIN_FAIL")
-    # 유저 비밀번호 확인
-    if not verifier.verify_user_password(req_user.password, get_user.password):
-        return json_response(status.HTTP_401_UNAUTHORIZED, "USER_LOGIN_FAIL")
-    # 유저 활성화 확인
-    if not verifier.verify_user_active(get_user):
-        return json_response(status.HTTP_401_UNAUTHORIZED, "USER_LOGIN_FAIL")
-    # 유저 블럭 체크
-    if not verifier.verify_user_unblocked(get_user):
-        return json_response(status.HTTP_401_UNAUTHORIZED, "USER_BLOCKED")
-    # 유저정보 가공
-    get_user.created_at = format_datetime(get_user.created_at)
-    if get_user.updated_at:
-        get_user.updated_at = format_datetime(get_user.updated_at)
+    try:
+        get_user = UserLoginVerifier(db, request, jsonable_encoder(req_user)).return_user_after_verified()
+    except HTTPException as e:
+        raise e
     # 토큰 생성
-    access_token = JWTManager.create_access_token(jsonable_encoder(get_user))
-    refresh_token = JWTManager.create_refresh_token(jsonable_encoder(get_user))
+    access_token = JWTManager.create_access_token(get_user)
+    refresh_token = JWTManager.create_refresh_token(get_user)
     # 결과 출력
     response.headers['code'] = "USER_LOGIN_SUCC"
     return {
-        "code": "USER_LOGIN_SUCC",
         "message": messages["USER_LOGIN_SUCC"],
         "user": get_user,
         "access_token": access_token,
