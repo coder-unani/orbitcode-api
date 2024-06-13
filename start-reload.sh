@@ -30,4 +30,4 @@ LOG_LEVEL=${LOG_LEVEL:-info}
 source .venv/bin/activate
 
 # Start Uvicorn with live reload
-exec nohup uvicorn --reload --host $HOST --port $PORT --log-level $LOG_LEVEL "$APP_MODULE" &
+exec uvicorn --reload --host $HOST --port $PORT --log-level $LOG_LEVEL "$APP_MODULE"

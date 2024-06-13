@@ -35,4 +35,4 @@ export WORKER_CLASS=${WORKER_CLASS:-"uvicorn.workers.UvicornWorker"}
 # fi
 
 # Start Gunicorn
-exec gunicorn -k "$WORKER_CLASS" -c "$GUNICORN_CONF" "$APP_MODULE"
+exec nohup gunicorn -k "$WORKER_CLASS" -c "$GUNICORN_CONF" "$APP_MODULE" &
