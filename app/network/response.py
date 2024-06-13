@@ -1,5 +1,4 @@
 from fastapi import HTTPException
-from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
 
 from app.config.variables import messages
@@ -15,39 +14,20 @@ def json_response(status: int, code: str, data: dict | list | None = None):
         if status in status_success:
             content = dict()
             content["message"] = messages[code]
-
             if data:
                 content_data = data
                 if type(content_data) is not dict:
                     content_data = data
                 content["data"] = content_data
-
-            return JSONResponse(
-                status_code=status,
-                headers=headers,
-                content=content
-            )
+            return JSONResponse(status_code=status, headers=headers, content=content)
         elif status in status_fail:
-            raise HTTPException(
-                status_code=status,
-                headers=headers,
-                detail=messages[code]
-            )
-
+            raise HTTPException(status_code=status, headers=headers, detail=messages[code])
         else:
-            raise HTTPException(
-                status_code=500,
-                headers=headers,
-                detail=messages[code]
-            )
+            raise HTTPException(status_code=500, headers=headers, detail=messages[code])
     except HTTPException as e:
         raise e
     except Exception as e:
-        raise HTTPException(
-            status_code=500,
-            headers=headers,
-            detail=messages["EXCEPTION"]
-        )
+        raise HTTPException(status_code=500, headers=headers, detail=messages["EXCEPTION"])
 
 
 
