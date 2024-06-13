@@ -8,7 +8,6 @@ class Token(BaseModel):
 
 
 class Res(BaseModel):
-    code: str = ""
     message: str = ""
 
 
