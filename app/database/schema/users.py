@@ -15,44 +15,52 @@ class User(BaseModel):
         from_attributes = True
 
 
-class UserAdmin(User):
+class UserMe(User):
     type: str
-    profile: str
-    is_active: bool
-    is_admin: bool
-    is_agree: bool
-    token: str
+    profile_text: str | None = None
+    birth_yaer: int | None = None
+    level: int
+    mileage: int
+    like_count: int
+    review_count: int
+    rating_count: int
+    is_email_verify: bool
+    is_marketing_agree: bool
     created_at: datetime
-    updated_at: datetime
+    updated_at: datetime | None = None
 
     class Config:
         from_attributes = True
 
 
-class UserMe(User):
-    type: str
-    profile: str | None = None
-    is_agree: bool = False
-    is_admin: bool = False
-    created_at: datetime
+class UserAdmin(UserMe):
+    is_active: bool
+    is_block: bool
+    is_privacy_agree: bool
+    is_terms_agree: bool
+
+    class Config:
+        from_attributes = True
 
 
 class ReqUserCreate(BaseModel):
     email: str
     password: str
     nickname: str
-    profile_image: Optional[str] = None
-    profile: Optional[str] = None
+    is_privacy_agree: bool
+    is_terms_agree: bool
     type: Optional[str] = "10"
-    is_agree: Optional[bool] = False
+    profile_image: Optional[str] = None
+    profile_text: Optional[str] = None
+    is_marketing_agree: Optional[bool] = False
 
 
 class ReqUserUpdate(BaseModel):
-    nickname: str
-    password: str
-    profile_image: str
-    profile: str
-    is_agree: bool
+    nickname: Optional[str] = None
+    password: Optional[str] = None
+    profile_image: Optional[str] = None
+    profile: Optional[str] = None
+    is_marketing_agree: Optional[bool] = None
 
 
 class ReqUserId(BaseModel):
@@ -60,12 +68,13 @@ class ReqUserId(BaseModel):
 
 
 class ReqUserLogin(BaseModel):
+    type: str
     email: str
     password: str
 
 
 class ReqUserProfile(BaseModel):
-    profile: str
+    profile_text: str
 
 
 class ReqUserNickname(BaseModel):
