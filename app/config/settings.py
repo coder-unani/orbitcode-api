@@ -9,6 +9,7 @@ load_dotenv(os.path.join(BASE_DIR, ".env"))
 
 class Settings:
     # Default
+    DEBUG: bool = os.getenv('DEBUG')
     APP_NAME: str = os.getenv('APP_NAME')
     BASE_DIR: str = BASE_DIR
     TIME_ZONE = ZoneInfo(os.getenv('TIME_ZONE'))
@@ -39,6 +40,9 @@ class Settings:
     USER_EMAIL_ALLOW_SPACE: bool = False
     USER_EMAIL_LENGTH_MIN: int = 5
     USER_EMAIL_LENGTH_MAX: int = 50
+    USER_NICKNAME_ALLOW_SPACE: bool = False
+    USER_NICKNAME_LENGTH_MIN: int = 2
+    USER_NICKNAME_LENGTH_MAX: int = 20
     USER_PASSWORD_INCLUDE_SPACE: bool = False
     USER_PASSWORD_INCLUDE_WORD: bool = True
     USER_PASSWORD_INCLUDE_NUMBER: bool = True
