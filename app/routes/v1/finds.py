@@ -10,7 +10,7 @@ from app.security.validator import validate_email
 router = APIRouter()
 
 
-@router.get("/finds/users/nickname", tags=["finds"], response_model=ResData)
+@router.get("/users/nickname", tags=["finds"], response_model=ResData)
 async def find_user_by_nickname(
     nickname: str,
     response: Response,
@@ -46,7 +46,7 @@ async def find_user_by_nickname(
         raise e
 
 
-@router.get("/finds/users/email", tags=["finds"], response_model=ResData)
+@router.get("/users/email", tags=["finds"], response_model=ResData)
 async def find_user_by_email(
     email: str,
     response: Response,
