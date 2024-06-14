@@ -7,7 +7,7 @@ from app.network.response import json_response
 router = APIRouter()
 
 
-@router.get("/token", response_model=ResData)
+@router.get("/token", tags=['oauth2.0'], response_model=ResData)
 async def token(
     access_token: str = Depends(verify_access_token)
 ):
