@@ -25,6 +25,7 @@ class User(Base):
     is_email_verify = Column(Boolean, default=False)
     is_privacy_agree = Column(Boolean, default=False)
     is_terms_agree = Column(Boolean, default=False)
+    is_age_agree = Column(Boolean, default=False)
     is_marketing_agree = Column(Boolean, default=False)
     created_at = Column(DateTime, default=datetime.now)
     updated_at = Column(DateTime, nullable=True)

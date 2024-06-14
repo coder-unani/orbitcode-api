@@ -23,6 +23,7 @@ messages['USER_LOGIN_AUTH_FAIL'] = "사용자 인증 정보가 올바르지 않�
 messages['USER_LOGIN_EMAIL_REQUIRED'] = "이메일을 입력해주세요"
 messages['USER_LOGIN_PASSWORD_REQUIRED'] = "비밀번호를 입력해주세요"
 messages['USER_LOGIN_TYPE_REQUIRED'] = "타입을 입력해주세요"
+messages['USER_LOGIN_AGREE_FAIL'] = "약관 동의, 개인정보 처리방침 동의, 만 14세 이상 동의가 필요합니다."
 
 messages['USER_NOT_MATCH'] = "유저 정보가 일치하지 않습니다."
 messages['USER_NOT_FOUND'] = "유저를 찾을 수 없습니다."

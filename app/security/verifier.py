@@ -79,6 +79,18 @@ class UserLoginVerifier:
                 detail=messages[code],
                 headers={"code": code}
             )
+        # 약관 동의 여부 확인
+        # 개인 정보 수집 동의 확인
+        # 만 14세 이상 확인
+        if not self.get_user['is_privacy_agree'] or not self.get_user['is_terms_agree'] or not self.get_user['is_age_agree']:
+            status_code = status.HTTP_401_UNAUTHORIZED
+            code = "USER_LOGIN_AGREE_FAIL"
+            await self.log_login_attempt(status_code, code)
+            raise HTTPException(
+                status_code=status_code,
+                detail=messages[code],
+                headers={"code": code}
+            )
         # 회원 유형별 검증
         # 일반 회원
         if self.user['type'] == "10":
@@ -132,9 +144,6 @@ class UserLoginVerifier:
     async def get_userdata(self):
         try:
             self.get_user = await read_user_by_email(self.db, self.user['email'])
-            # self.get_user.created_at = format_datetime(self.get_user.created_at)
-            # if self.get_user.updated_at:
-            #     self.get_user.updated_at = format_datetime(self.get_user.updated_at)
             self.get_user = jsonable_encoder(self.get_user)
             return True
         except Exception as e:

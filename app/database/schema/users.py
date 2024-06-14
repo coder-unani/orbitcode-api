@@ -49,6 +49,7 @@ class ReqUserCreate(BaseModel):
     nickname: str
     is_privacy_agree: bool
     is_terms_agree: bool
+    is_age_agree: bool
     type: Optional[str] = "10"
     profile_image: Optional[str] = None
     profile_text: Optional[str] = None
