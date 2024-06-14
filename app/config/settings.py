@@ -3,9 +3,8 @@ from dotenv import load_dotenv
 from zoneinfo import ZoneInfo
 
 
-ENV_NAME = "development"
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-load_dotenv(os.path.join(BASE_DIR, f".env.{ENV_NAME}"))
+load_dotenv(os.path.join(BASE_DIR, ".env"))
 
 
 class Settings:
