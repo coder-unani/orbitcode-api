@@ -24,9 +24,6 @@ def create_api() -> FastAPI:
         openapi_url=None,
     )
 
-    # Custom OpenAPI 설정
-    # api.openapi = custom_openapi
-
     # Middleware 정의
     api.add_middleware(
         CORSMiddleware,
@@ -60,9 +57,9 @@ def custom_openapi():
     if app.openapi_schema:
         return app.openapi_schema
     openapi_schema = get_openapi(
-        title="Custom API",
-        version="1.0.0",
-        description="This is a custom API documentation with enhanced Swagger UI.",
+        title="Orbitcode API Documentation",
+        version="0.1.0",
+        description="Orbitcode가 Reviewniverse API를 제공합니다.",
         routes=app.routes,
     )
     openapi_schema["info"]["x-logo"] = {
