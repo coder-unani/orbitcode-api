@@ -49,39 +49,39 @@ async def create_user(
     if not in_user.is_terms_agree:
         return json_response(status.HTTP_400_BAD_REQUEST, "USER_AGREE_TERMS_REQUIRED")
     # 이메일 유효성 검사
-    valid_result, valid_code = validator.validate_email(in_user.email)
-    if not valid_result:
-        return json_response(status.HTTP_400_BAD_REQUEST, valid_code)
+    valid_email_code = validator.validate_email(in_user.email)
+    if valid_email_code != "VALID_EMAIL_SUCC":
+        return json_response(status.HTTP_400_BAD_REQUEST, valid_email_code)
     # 비밀번호 유효성 검사
-    valid_result, valid_code = validator.validate_password(in_user.password)
-    if not valid_result:
-        return json_response(status.HTTP_400_BAD_REQUEST, valid_code)
+    valid_pwd_code = validator.validate_password(in_user.password)
+    if valid_pwd_code != "VALID_PWD_SUCC":
+        return json_response(status.HTTP_400_BAD_REQUEST, valid_pwd_code)
     # 닉네임 유효성 검사
-    valid_result, valid_code = validator.validate_nickname(in_user.nickname)
-    if not valid_result:
-        return json_response(status.HTTP_400_BAD_REQUEST, valid_code)
+    valid_nick_code = validator.validate_nickname(in_user.nickname)
+    if valid_nick_code != "VALID_NICK_SUCC":
+        return json_response(status.HTTP_400_BAD_REQUEST, valid_nick_code)
     # 유저 타입 유효성 검사
-    valid_result, valid_code = validator.validate_usertype(in_user.type)
-    if not valid_result:
-        return json_response(status.HTTP_400_BAD_REQUEST, valid_code)
+    valid_type_code = validator.validate_usertype(in_user.type)
+    if valid_type_code != "VALID_USER_TYPE_SUCC":
+        return json_response(status.HTTP_400_BAD_REQUEST, valid_type_code)
     # 이메일 중복 체크
-    check_email_result, check_email_code = queryset.check_exist_email(db, email=in_user.email)
-    if not check_email_result:
-        return json_response(status.HTTP_400_BAD_REQUEST, check_email_code)
+    verify_email = await queryset.verify_exist_email(db, email=in_user.email)
+    if not verify_email:
+        return json_response(status.HTTP_400_BAD_REQUEST, "VALID_EMAIL_ALREADY_EXIST")
     # 닉네임 중복 체크
-    check_nick_result, check_nick_code = queryset.check_exist_nickname(db, nickname=in_user.nickname)
-    if not check_nick_result:
-        return json_response(status.HTTP_400_BAD_REQUEST, check_nick_code)
+    verify_nick = await queryset.verify_exist_nickname(db, nickname=in_user.nickname)
+    if not verify_nick:
+        return json_response(status.HTTP_400_BAD_REQUEST, "VALID_NICK_ALREADY_EXIST")
     # 비밀번호 암호화
     in_user.password = Password.create_password_hash(in_user.password)
     # 유저 생성
-    result, code = queryset.create_user(db, user=jsonable_encoder(in_user))
+    result = await queryset.create_user(db, user=jsonable_encoder(in_user))
     # TODO: 유저 생성시 is_email_verify = False 로 생성 후 이메일 인증 후 is_email_verify = True 로 변경하여야 함
     # TODO: 가입 시도 로그 기록 (IP, User-Agent, Host 등) 체크해서 하루 가입 가능 횟수 제한 필요
     # 결과 출력
     if not result:
-        return json_response(status.HTTP_500_INTERNAL_SERVER_ERROR, code)
-    return json_response(status.HTTP_201_CREATED, code)
+        return json_response(status.HTTP_500_INTERNAL_SERVER_ERROR, "USER_CREATE_FAIL")
+    return json_response(status.HTTP_201_CREATED, "USER_CREATE_SUCC")
 
 
 @router.post(PREFIX + "/login", tags=['users'], response_model=ResUserLogin)

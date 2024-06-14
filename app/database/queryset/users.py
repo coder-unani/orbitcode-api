@@ -1,7 +1,9 @@
+from fastapi import HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.sql.expression import insert, update, delete, exists
 from sqlalchemy.future import select
 
+from app.config.variables import messages
 from app.database.model.users import User, UserLoginLog
 from app.database.schema.users import UserMe
 
@@ -11,18 +13,29 @@ async def create_user(db: AsyncSession, user: dict):
         created_user = await db.scalar(insert(User).returning(User), user)
         if created_user:
             await db.commit()
-            return True, "USER_CREATE_SUCC"
+            return True
         else:
-            return False, "USER_CREATE_FAIL"
+            return False
     except Exception as e:
-        await db.rollback()
-        print(e)
-        return False, "EXCEPTION"
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=messages['EXCEPTION'],
+            headers={"code": "EXCEPTION"}
+        )
 
 
 async def read_user_by_email(db: AsyncSession, email: str):
     try:
         user: UserMe = await db.scalar(select(User).filter_by(email=email))
+        return user
+    except Exception as e:
+        print(e)
+        return None
+
+
+async def read_user_by_nickname(db: AsyncSession, nickname: str):
+    try:
+        user: UserMe = await db.scalar(select(User).filter_by(nickname=nickname))
         return user
     except Exception as e:
         print(e)
@@ -108,26 +121,32 @@ async def delete_user(db: AsyncSession, user_id: int):
         return False, "EXCEPTION"
 
 
-async def check_exist_email(db: AsyncSession, email: str):
+async def verify_exist_email(db: AsyncSession, email: str):
     try:
-        is_email = await db.scalar(select(exists().where(User.email == email)))
-        if is_email:
-            return False, "EMAIL_ALREADY_EXIST"
-        return True, "EMAIL_DOES_NOT_EXIST"
+        user = await db.scalar(select(exists().where(User.email == email)))
+        if user:
+            return False
+        return True
     except Exception as e:
-        print(e)
-        return False, "EXCEPTION"
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=messages['EXCEPTION'],
+            headers={"code": "EXCEPTION"}
+        )
 
 
-async def check_exist_nickname(db: AsyncSession, nickname: str):
+async def verify_exist_nickname(db: AsyncSession, nickname: str):
     try:
-        is_already_nickname = await db.scalar(select(exists().where(User.nickname == nickname)))
-        if is_already_nickname:
-            return False, "NICKNAME_ALREADY_EXIST"
-        return True, "NICKNAME_DOES_NOT_EXIST"
+        user = await db.scalar(select(exists().where(User.nickname == nickname)))
+        if user:
+            return False
+        return True
     except Exception as e:
-        print(e)
-        return False, "EXCEPTION"
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=messages['EXCEPTION'],
+            headers={"code": "EXCEPTION"}
+        )
 
 
 async def insert_user_login_log(
