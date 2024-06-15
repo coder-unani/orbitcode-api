@@ -38,7 +38,7 @@ async def find_user_by_nickname(
         raise e
 
 
-@router.get("/users/email", tags=["validation"], response_model=ResData)
+@router.get("/users/email", tags=["validation"], status_code=status.HTTP_204_NO_CONTENT)
 async def find_user_by_email(
     email: str,
     response: Response,
