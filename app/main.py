@@ -1,8 +1,9 @@
-import secrets
-from fastapi import FastAPI, Depends
+import os
+from fastapi import FastAPI, Depends, Response
+from fastapi.responses import PlainTextResponse
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.openapi.docs import get_swagger_ui_html
 from fastapi.openapi.utils import get_openapi
+from fastapi.staticfiles import StaticFiles
 
 from app.config.settings import settings
 from app.middleware.logging import LoggingMiddleware
@@ -42,17 +43,32 @@ def create_api() -> FastAPI:
     api.include_router(validation_v1.router, prefix="/v1/validation")
     api.include_router(videos_v1.router, prefix="/v1/contents")
     # api.include_router(review_v1.router, prefix="/v1")
+
     return api
 
 
+# FastAPI instance
 app: FastAPI = create_api()
 
+# Static Files
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
+
+# Robots.txt
+@app.get("/robots.txt", include_in_schema=False, response_class=PlainTextResponse)
+def robots():
+    return Response(content="User-agent: *\nDisallow: /", media_type="text/plain")
+
+
+# API Documentation
 @app.get("/api/docs", include_in_schema=False, dependencies=[Depends(verify_access_docs)])
 def get_documentation():
-    return get_swagger_ui_html(openapi_url="/api/openapi.json", title="docs")
+    with open(os.path.join("static", "swagger_ui.html")) as f:
+        html_content = f.read()
+    return Response(content=html_content, media_type="text/html")
 
 
+# OpenAPI Schema
 @app.get("/api/openapi.json", include_in_schema=False, dependencies=[Depends(verify_access_docs)])
 def custom_openapi():
     if app.openapi_schema:
@@ -60,16 +76,17 @@ def custom_openapi():
     openapi_schema = get_openapi(
         title="Orbitcode API Documentation",
         version="0.1.0",
-        description="Orbitcode가 Reviewniverse API를 제공합니다.",
+        description="안녕하세요 Orbitcode API 문서입니다. Reviewniverse APIs를 제공하고 있습니다.",
         routes=app.routes,
     )
     openapi_schema["info"]["x-logo"] = {
-        "url": "https://fastapi.tiangolo.com/img/logo-margin/logo-teal.png"
+        "url": "/static/assets/reviewniverse-logo-1.png",
     }
     app.openapi_schema = openapi_schema
     return app.openapi_schema
 
 
+# Main
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)
