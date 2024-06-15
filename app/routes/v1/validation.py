@@ -10,7 +10,7 @@ from app.security.validator import validate_email
 router = APIRouter()
 
 
-@router.get("/users/nickname", tags=["finds"], response_model=ResData)
+@router.get("/users/nickname", tags=["validation"], status_code=status.HTTP_204_NO_CONTENT)
 async def find_user_by_nickname(
     nickname: str,
     response: Response,
@@ -29,24 +29,16 @@ async def find_user_by_nickname(
         # 닉네임 중복 있음
         if user:
             response.headers["code"] = "VALID_NICK_FAIL"
-            return ResData(
-                status=status.HTTP_200_OK,
-                message=messages['VALID_NICK_FAIL'],
-                data={"result": True}
-            )
+            return None
         # 닉네임 중복 없음
         response.headers["code"] = "VALID_NICK_SUCC"
-        return ResData(
-            status=status.HTTP_200_OK,
-            message=messages['VALID_NICK_SUCC'],
-            data={"result": False}
-        )
+        return None
     # 예외 발생시
     except HTTPException as e:
         raise e
 
 
-@router.get("/users/email", tags=["finds"], response_model=ResData)
+@router.get("/users/email", tags=["validation"], response_model=ResData)
 async def find_user_by_email(
     email: str,
     response: Response,

@@ -7,11 +7,7 @@ class Token(BaseModel):
     access_token: str
 
 
-class Res(BaseModel):
-    message: str = ""
-
-
-class ResData(Res):
+class ResData(BaseModel):
     data: dict | list | None = None
 
 
