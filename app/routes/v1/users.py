@@ -2,7 +2,6 @@ from fastapi import APIRouter, Depends, UploadFile, status, Response, Request, H
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.config.settings import settings
-from app.config.endpoints import EndpointUsers
 from app.config.variables import messages
 from app.utils.file import File
 from app.network.response import json_response
@@ -164,7 +163,7 @@ async def delete_user_me(
             detail=messages['USER_NOT_MATCH']
         )
     # 유저 삭제
-    result = queryset.delete_user(db, user_id)
+    result = await queryset.delete_user(db, user_id)
     # 결과 출력
     if not result:
         response.headers['code'] = "USER_DELETE_FAIL"
@@ -176,7 +175,7 @@ async def delete_user_me(
     return None
 
 
-@router.patch(EndpointUsers.PATCH_NICKNAME, tags=[tags], response_model=Res)
+@router.patch("/users/{user_id}/nickname", tags=[tags], response_model=Res)
 async def patch_user_nickname(
     user_id: int,
     req_user: ReqUserNickname,
@@ -202,7 +201,7 @@ async def patch_user_nickname(
     return json_response(status.HTTP_200_OK, code)
 
 
-@router.patch(EndpointUsers.PATCH_PASSWORD, tags=[tags], response_model=Res)
+@router.patch("/users/{user_id}/password", tags=[tags], response_model=Res)
 async def patch_user_password(
     user_id: int,
     req_user: ReqUserPassword,
@@ -226,7 +225,7 @@ async def patch_user_password(
     return json_response(status.HTTP_200_OK, code)
 
 
-@router.patch(EndpointUsers.PATCH_PROFILE, tags=[tags], response_model=Res)
+@router.patch("/users/{user_id}/profile", tags=[tags], response_model=Res)
 async def patch_user_profile(
     user_id: int,
     req_user: ReqUserProfile,
@@ -244,7 +243,7 @@ async def patch_user_profile(
     return json_response(status.HTTP_200_OK, code)
 
 
-@router.patch(EndpointUsers.PATCH_MARKETING, tags=[tags], response_model=Res)
+@router.patch("/users/{user_id}/marketing", tags=[tags], response_model=Res)
 async def patch_user_marketing_agree(
         user_id: int,
         req_user: ReqUserAgree,
@@ -262,7 +261,7 @@ async def patch_user_marketing_agree(
     return json_response(status.HTTP_200_OK, code)
 
 
-@router.post(EndpointUsers.LOGIN, tags=[tags], status_code=status.HTTP_200_OK, response_model=ResUserLogin)
+@router.post("/users/login", tags=[tags], status_code=status.HTTP_200_OK, response_model=ResUserLogin)
 async def login_user(
     req_user: ReqUserLogin,
     request: Request,

@@ -135,7 +135,8 @@ async def update_user_isagree(db: AsyncSession, user_id: int, is_agree: bool):
 
 async def delete_user(db: AsyncSession, user_id: int):
     try:
-        await db.scalar(delete(User).where(User.id == user_id))
+        # TODO: 바로 삭제 할 지 is_delete=True로 변경 후 일정 기간 후 삭제할 지 고민 필요
+        await db.execute(delete(User).where(User.id == user_id))
         await db.commit()
         return True
     except Exception as e:
