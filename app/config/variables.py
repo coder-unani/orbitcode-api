@@ -34,6 +34,7 @@ messages['USER_CREATE_FAIL'] = "회원가입에 실패하였습니다."
 messages['USER_CREATE_REQUIRED_FIELDS'] = "필수 입력사항을 입력해주세요."
 messages['USER_AGREE_PRIVACY_REQUIRED'] = "개인정보 처리방침에 동의해주세요."
 messages['USER_AGREE_TERMS_REQUIRED'] = "이용 약관에 동의해주세요."
+messages['USER_AGREE_AGE_REQUIRED'] = "가입 연령에 동의해주세요."
 messages['USER_AGREE_MARKETING_REQUIRED'] = "마케팅 정보 수신에 동의해주세요."
 
 messages['USER_TYPE_SUCC'] = "유효한 회원 유형입니다."
