@@ -41,18 +41,18 @@ async def search_users(
         email=em,
         nickname=nm
     )
-    if total <= 0 and not users:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            headers={"code": "USER_READ_NOT_FOUND"},
-            detail=messages['USER_READ_NOT_FOUND']
-        )
+    # 검색 결과 없을 경우
+    if total <= 0 or not users:
+        response.status_code = status.HTTP_204_NO_CONTENT
+        response.headers['code'] = "SEARCH_NOT_FOUND"
+        return None
+    # 검색 데이터 수
     count = len(users)
     # Response Header code
-    response.headers['code'] = "USER_READ_SUCC"
+    response.headers['code'] = "SEARCH_SUCC"
     # 결과 출력
     return ResUserProfileList(
-        message=messages["USER_READ_SUCC"],
+        message=messages["SEARCH_SUCC"],
         data=users,
         total=total,
         count=count
