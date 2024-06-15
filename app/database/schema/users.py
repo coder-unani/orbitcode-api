@@ -29,7 +29,7 @@ class User(BaseModel):
 
 class UserProfile(User):
     profile_text: str | None = None
-    birth_yaer: int | None = None
+    birth_year: int | None = None
     level: int
     like_count: int
     review_count: int
