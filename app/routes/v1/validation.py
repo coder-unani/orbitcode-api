@@ -28,7 +28,7 @@ async def find_user_by_nickname(
         user = await read_user_by_nickname(db, nickname)
         # 닉네임 중복 있음
         if user:
-            response.headers["code"] = "VALID_NICK_FAIL"
+            response.headers["code"] = "VALID_NICK_EXIST"
             return None
         # 닉네임 중복 없음
         response.headers["code"] = "VALID_NICK_SUCC"
@@ -60,17 +60,9 @@ async def find_user_by_email(
             )
         user = await read_user_by_email(db, email)
         if user:
-            response.headers["code"] = "VALID_EMAIL_ALREADY_EXIST"
-            return ResData(
-                status=status.HTTP_200_OK,
-                message=messages['VALID_EMAIL_ALREADY_EXIST'],
-                data={"result": True}
-            )
+            response.headers["code"] = f"VALID_EMAIL_EXIST_{user.type}"
+            return
         response.headers["code"] = "VALID_EMAIL_SUCC"
-        return ResData(
-            status=status.HTTP_200_OK,
-            message=messages['VALID_EMAIL_SUCC'],
-            data={"result": False}
-        )
+        return
     except HTTPException as e:
         raise e
