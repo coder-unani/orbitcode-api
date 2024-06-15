@@ -225,29 +225,28 @@ def verify_access_token(request: Request):
         return json_response(status.HTTP_500_INTERNAL_SERVER_ERROR, "EXCEPTION")
 
 
-def verify_access_token_user(request: Request, db: AsyncSession = Depends(get_db)):
+async def verify_access_token_user(request: Request, db: AsyncSession = Depends(get_db)):
     token = verify_access_token(request)
     # 토큰 검증
     try:
         decoded_token = JWTManager.decode_access_token(token)
         # 토큰 유저 검증
-        result, user = read_user_by_id(db, decoded_token['user']['id'])
-        if not result:
+        user = await read_user_by_id(db, decoded_token['user']['id'])
+        if not user:
             return json_response(status.HTTP_500_INTERNAL_SERVER_ERROR, "EXCEPTION")
         if not user:
             return json_response(status.HTTP_400_BAD_REQUEST, "USER_NOT_FOUND")
         # 토큰 유저 일치 검증
         if not secrets.compare_digest(user.email, decoded_token['user']['email']):
             return json_response(status.HTTP_401_UNAUTHORIZED, "USER_NOT_MATCH")
-        # 유저 출력 정보 가공
-        if user.created_at:
-            user.created_at = format_datetime(user.created_at)
-        if user.updated_at:
-            user.updated_at = format_datetime(user.updated_at)
         # 결과 출력
         return jsonable_encoder(user)
     except HTTPException:
-        return json_response(status.HTTP_500_INTERNAL_SERVER_ERROR, "EXCEPTION")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=messages['EXCEPTION'],
+            headers={"code": "EXCEPTION"}
+        )
 
 
 def verify_access_docs(credentials: HTTPBasicCredentials = Depends(security)):
