@@ -2,15 +2,14 @@ from fastapi import HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.sql.expression import insert, update, delete, exists
 from sqlalchemy.future import select
-
 from app.config.variables import messages
 from app.database.model.users import User, UserLoginLog
-from app.database.schema.users import UserMe
+from app.database.schema.users import UserMe, ReqUserCreate, ReqUserUpdate
 
 
-async def create_user(db: AsyncSession, user: dict):
+async def create_user(db: AsyncSession, user: ReqUserCreate):
     try:
-        created_user = await db.scalar(insert(User).returning(User), user)
+        created_user = await db.scalar(insert(User).returning(User), user.dict())
         if created_user:
             await db.commit()
             return True
@@ -44,21 +43,44 @@ async def read_user_by_nickname(db: AsyncSession, nickname: str):
 
 async def read_user_by_id(db: AsyncSession, user_id: int):
     try:
-        user: User = await db.get(User, user_id)
-        return True, user
+        user: UserMe = await db.scalar(select(User).filter_by(id=user_id))
+        return user
     except Exception as e:
-        print(e)
-        return False, None
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=messages['EXCEPTION'],
+            headers={"code": "EXCEPTION"}
+        )
 
 
-async def update_user(db: AsyncSession, user_id: int, user: dict):
+async def update_user(db: AsyncSession, user_id: int, user: ReqUserUpdate):
     try:
-        await db.scalar(update(User).where(User.id == user_id).values(**user))
-        await db.commit()
-        return True, "USER_UPDATE_SUCC"
+        # update_values = dict()
+        # for key, value in user.dict(exclude_unset=True).items():
+        #     if value:
+        #         update_values[key] = value
+        # stmt = (
+        #     update(User).
+        #     where(User.id == user_id).
+        #     values(update_values).
+        #     execution_options(synchronize_session="fetch")
+        # )
+        # await db.execute(stmt)
+        # await db.commit()
+        get_user = await db.scalar(select(User).filter_by(id=user_id))
+        if get_user:
+            for key, value in user.dict(exclude_unset=True).items():
+                if value:
+                    setattr(get_user, key, value)
+            await db.commit()
+            return True
     except Exception as e:
         print(e)
-        return False, "EXCEPTION"
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=messages['EXCEPTION'],
+            headers={"code": "EXCEPTION"}
+        )
 
 
 async def update_user_password(db: AsyncSession, user_id: int, password: str):
@@ -115,10 +137,13 @@ async def delete_user(db: AsyncSession, user_id: int):
     try:
         await db.scalar(delete(User).where(User.id == user_id))
         await db.commit()
-        return True, "USER_DELETE_SUCC"
+        return True
     except Exception as e:
-        print(e)
-        return False, "EXCEPTION"
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=messages['EXCEPTION'],
+            headers={"code": "EXCEPTION"}
+        )
 
 
 async def verify_exist_email(db: AsyncSession, email: str):
