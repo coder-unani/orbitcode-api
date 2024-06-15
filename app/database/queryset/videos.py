@@ -7,7 +7,6 @@ from app.database.model.videos import (
     Video,
     VideoViewLog
 )
-from app.database.schema.videos import VideoSimple
 
 
 def create_video(db: AsyncSession, video: dict):
