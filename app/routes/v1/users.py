@@ -290,9 +290,7 @@ async def patch_user_password(
 @router.patch("/users/{user_id}/profile_image", tags=[tags], status_code=status.HTTP_204_NO_CONTENT)
 async def patch_user_profile_image(
     user_id: int,
-    profile_text: str = None,
     profile_image: UploadFile = None,
-    request: Request = None,
     response: Response = None,
     db: AsyncSession = Depends(get_db),
     auth_user: UserMe = Depends(verify_access_token_user)
