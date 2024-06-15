@@ -12,7 +12,7 @@ from app.routes.v1 import (
     defaults as defaults_v1,
     users as users_v1,
     videos as videos_v1,
-    finds as finds_v1,
+    validation as validation_v1,
     reviews as reviews_v1
 )
 
@@ -31,7 +31,7 @@ def create_api() -> FastAPI:
         allow_credentials=True,  # cross-origin request에서 cookie를 허용
         allow_methods=["*"],  # 모든 HTTP 메서드 허용
         allow_headers=["*"],  # 모든 HTTP 헤더 허용
-        expose_headers=["ACCESS-ORIGIN-EXPOSED-HEADERS"],
+        expose_headers=["ACCESS-ORIGIN-EXPOSED-HEADERS"],  # Custom Header 허용
     )
     # Logging Middleware 정의
     if not settings.DEBUG:
@@ -39,7 +39,7 @@ def create_api() -> FastAPI:
     # Router 정의
     api.include_router(defaults_v1.router, prefix="/v1")
     api.include_router(users_v1.router, prefix="/v1")
-    api.include_router(finds_v1.router, prefix="/v1/finds")
+    api.include_router(validation_v1.router, prefix="/v1/validation")
     api.include_router(videos_v1.router, prefix="/v1/contents")
     # api.include_router(review_v1.router, prefix="/v1")
     return api
