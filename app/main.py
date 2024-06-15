@@ -35,7 +35,7 @@ def create_api() -> FastAPI:
         expose_headers=["ACCESS-ORIGIN-EXPOSED-HEADERS"],  # Custom Header 허용
     )
     # Logging Middleware 정의
-    if not settings.DEBUG:
+    if not settings.DEBUG == "True":
         api.add_middleware(LoggingMiddleware, logger=Logger())
     # Router 정의
     api.include_router(defaults_v1.router, prefix="/v1")
