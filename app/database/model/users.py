@@ -1,6 +1,4 @@
-from datetime import datetime
-from sqlalchemy import Column, Integer, String, Boolean, DateTime
-
+from sqlalchemy import Column, Integer, String, Boolean, DateTime, func
 from app.database.database import Base
 
 
@@ -27,8 +25,8 @@ class User(Base):
     is_terms_agree = Column(Boolean, default=False)
     is_age_agree = Column(Boolean, default=False)
     is_marketing_agree = Column(Boolean, default=False)
-    created_at = Column(DateTime, default=datetime.now)
-    updated_at = Column(DateTime, nullable=True)
+    created_at = Column(DateTime, server_default=func.now(), default=func.now())
+    updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now())
 
 
 class UserLoginLog(Base):
@@ -43,4 +41,4 @@ class UserLoginLog(Base):
     client_ip = Column(String, nullable=True)
     client_host = Column(String, nullable=True)
     user_agent = Column(String, nullable=True)
-    created_at = Column(DateTime, default=datetime.now)
+    created_at = Column(DateTime, server_default=func.now(), default=func.now())
