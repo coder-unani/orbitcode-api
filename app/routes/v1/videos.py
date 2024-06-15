@@ -97,16 +97,7 @@ async def content_videos(
     return ResVideos(total=total, count=count, page=p, data=videos)
 
 
-# 비디오 생성
-@router.post("/videos", tags=['contents'], response_model=Res)
-async def create_video(video: ReqVideo, db: AsyncSession = Depends(get_db)):
-    result, code = queryset.create_video(db, video=jsonable_encoder(video))
-    if not result:
-        return json_response(status.HTTP_500_INTERNAL_SERVER_ERROR, code)
-    return json_response(status.HTTP_201_CREATED, code)
-
-
-# 비디오 조회
+# 비디오 상세정보 조회
 @router.get("/videos/{video_id}", tags=['contents'], response_model=ResVideo)
 async def read_video(video_id: int, db: AsyncSession = Depends(get_db)):
     result, code, video = queryset.read_video_by_id(db, video_id=video_id)
