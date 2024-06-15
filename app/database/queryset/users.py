@@ -62,7 +62,6 @@ async def read_user(
         )
 
 
-
 async def read_user_by_email(db: AsyncSession, email: str):
     try:
         user: UserMe = await db.scalar(select(User).filter_by(email=email))
