@@ -440,12 +440,3 @@ async def login_user(
         access_token=access_token,
         refresh_token=refresh_token
     )
-
-
-@router.get("/users/detail", tags=[tags], response_model=ResUserProfile)
-async def read_user_detail(
-    user: ReqUserId,
-    response: Response,
-    db: AsyncSession = Depends(get_db)
-):
-    pass
