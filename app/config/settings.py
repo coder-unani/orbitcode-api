@@ -16,6 +16,9 @@ class Settings:
     DOCS_USER: bool = os.getenv("DOCS_USER")
     DOCS_PASSWORD: str = os.getenv("DOCS_PASSWORD")
 
+    # LOG DIR
+    LOG_DIR = os.getenv("LOG_DIR")
+
     # FILE, UPLOAD
     FILE_DIR = os.path.join(BASE_DIR, "static/uploads/")
     FILE_DIR_TEMP = os.path.join(FILE_DIR, "temp/")

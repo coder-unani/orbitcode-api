@@ -37,7 +37,7 @@ def create_api() -> FastAPI:
 
     # Logging Middleware 정의
     if not settings.DEBUG == "True":
-        api.add_middleware(LoggingMiddleware, logger=Logger())
+        api.add_middleware(LoggingMiddleware, logger=Logger(log_dir=settings.LOG_DIR))
 
     # Router 정의
     api.include_router(defaults_v1.router, prefix="/v1")
