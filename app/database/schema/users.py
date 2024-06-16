@@ -1,6 +1,6 @@
 from typing import Optional
 from datetime import datetime
-from pydantic import BaseModel, EmailStr, validator, field_validator
+from pydantic import BaseModel, field_validator
 
 from app.database.schema.default import Res
 
@@ -11,17 +11,19 @@ class User(BaseModel):
     nickname: str
     profile_image: str | None = None
 
-    @field_validator('email')
+    @field_validator("email")
     def mask_email(cls, value: str) -> str:
         """
         이메일 주소의 일부를 별표(*)로 마스킹합니다.
         예: test@example.com -> t**t@e******.com
         """
-        user, domain = value.split('@')
-        masked_user = user[0] + '*' * (len(user) - 2) + user[-1]
-        domain_name, domain_extension = domain.split('.')
-        masked_domain = domain_name[0] + '*' * (len(domain_name) - 1) + '.' + domain_extension
-        return masked_user + '@' + masked_domain
+        user, domain = value.split("@")
+        masked_user = user[0] + "*" * (len(user) - 2) + user[-1]
+        domain_name, domain_extension = domain.split(".")
+        masked_domain = (
+            domain_name[0] + "*" * (len(domain_name) - 1) + "." + domain_extension
+        )
+        return masked_user + "@" + masked_domain
 
     class Config:
         from_attributes = True
@@ -104,7 +106,7 @@ class ResUserProfile(Res):
 
 
 class ResUserMe(Res):
-    data: UserMe
+    user: UserMe
 
 
 class ResUserLogin(ResUserMe):
@@ -114,6 +116,3 @@ class ResUserLogin(ResUserMe):
 
 class ResUserProfileList(Res):
     data: list[UserProfile]
-
-
-
