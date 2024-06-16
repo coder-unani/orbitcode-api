@@ -14,7 +14,7 @@ from app.routes.v1 import (
     users as users_v1,
     videos as videos_v1,
     validation as validation_v1,
-    reviews as reviews_v1
+    reviews as reviews_v1,
 )
 
 
@@ -34,14 +34,17 @@ def create_api() -> FastAPI:
         allow_headers=["*"],  # 모든 HTTP 헤더 허용
         expose_headers=["ACCESS-ORIGIN-EXPOSED-HEADERS"],  # Custom Header 허용
     )
+
     # Logging Middleware 정의
     if not settings.DEBUG == "True":
         api.add_middleware(LoggingMiddleware, logger=Logger())
+
     # Router 정의
     api.include_router(defaults_v1.router, prefix="/v1")
     api.include_router(users_v1.router, prefix="/v1")
-    api.include_router(validation_v1.router, prefix="/v1/validation")
     api.include_router(videos_v1.router, prefix="/v1/contents")
+    api.include_router(validation_v1.router, prefix="/v1/validation")
+
     # api.include_router(review_v1.router, prefix="/v1")
 
     return api
@@ -61,7 +64,9 @@ def robots():
 
 
 # API Documentation
-@app.get("/api/docs", include_in_schema=False, dependencies=[Depends(verify_access_docs)])
+@app.get(
+    "/api/docs", include_in_schema=False, dependencies=[Depends(verify_access_docs)]
+)
 def get_documentation():
     with open(os.path.join("static", "swagger_ui.html")) as f:
         html_content = f.read()
@@ -69,7 +74,11 @@ def get_documentation():
 
 
 # OpenAPI Schema
-@app.get("/api/openapi.json", include_in_schema=False, dependencies=[Depends(verify_access_docs)])
+@app.get(
+    "/api/openapi.json",
+    include_in_schema=False,
+    dependencies=[Depends(verify_access_docs)],
+)
 def custom_openapi():
     if app.openapi_schema:
         return app.openapi_schema
@@ -89,4 +98,5 @@ def custom_openapi():
 # Main
 if __name__ == "__main__":
     import uvicorn
+
     uvicorn.run(app, host="0.0.0.0", port=8000)
