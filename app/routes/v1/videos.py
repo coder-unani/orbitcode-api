@@ -161,7 +161,7 @@ async def insert_video_view(
 ):
     client_ip = request.headers.get("x-real-ip")
     if not client_ip:
-        client_ip = request.headers.get("host")
+        client_ip = request.client.host
 
     try:
         # 비디오 ID 파라메터 체크
