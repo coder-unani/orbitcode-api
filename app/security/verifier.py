@@ -24,6 +24,8 @@ class UserLoginVerifier:
         self.user = user
         self.get_user = None
         self.client_ip = request.headers.get('x-real-ip')
+        if not self.client_ip:
+            self.client_ip = request.client.host
         self.client_host = request.headers.get('host')
         self.user_agent = request.headers.get('user-agent')
 
