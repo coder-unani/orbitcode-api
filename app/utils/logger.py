@@ -15,7 +15,7 @@ class Logger:
 
         # Info log handler
         info_handler = TimedRotatingFileHandler(
-            filename=os.path.join(log_dir, f"info.{datetime.today().date()}.log"),
+            filename=os.path.join(log_dir, "info.log"),
             when="midnight",
             interval=1,
             backupCount=30,
@@ -27,7 +27,7 @@ class Logger:
 
         # Error log handler
         error_handler = TimedRotatingFileHandler(
-            filename=os.path.join(log_dir, f"error.{datetime.today().date()}.log"),
+            filename=os.path.join(log_dir, "error.log"),
             when="midnight",
             interval=1,
             backupCount=30,
