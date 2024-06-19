@@ -8,7 +8,7 @@ from app.network.response import json_response
 from app.database.database import get_db
 from app.database.queryset import videos as queryset
 from app.database.queryset import reviews as review_queryset
-from app.database.schema.default import Res, ResData
+from app.database.schema.default import ResData
 from app.database.schema.users import UserMe
 from app.database.schema.videos import ResVideo, ResVideos
 from app.database.schema.reviews import RequestReview, ResponseReviews
@@ -251,7 +251,7 @@ async def read_video_review_list(
 
 
 # 비디오 리뷰 등록
-@router.post("/videos/{video_id}/reviews", tags=[tags], response_model=Res)
+@router.post("/videos/{video_id}/reviews", tags=[tags])
 async def create_video_review(
     video_id: int,
     review: RequestReview,
@@ -267,7 +267,7 @@ async def create_video_review(
 
 
 # 비디오 리뷰 수정
-@router.put("/videos/{video_id}/reviews/{review_id}", tags=[tags], response_model=Res)
+@router.put("/videos/{video_id}/reviews/{review_id}", tags=[tags])
 async def update_video_review(
     video_id: int,
     review_id: int,
@@ -284,9 +284,7 @@ async def update_video_review(
 
 
 # 비디오 리뷰 삭제
-@router.delete(
-    "/videos/{video_id}/reviews/{review_id}", tags=[tags], response_model=Res
-)
+@router.delete("/videos/{video_id}/reviews/{review_id}", tags=[tags])
 async def delete_video_review(
     video_id: int,
     review_id: int,

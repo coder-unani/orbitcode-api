@@ -7,19 +7,5 @@ class Token(BaseModel):
     access_token: str
 
 
-class Res(BaseModel):
-    message: str | None = None
-
-
 class ResData(BaseModel):
     data: dict | list | None = None
-
-
-# class ResponseToken(ResponseData):
-#     data: Token | None = None
-
-
-
-
-
-

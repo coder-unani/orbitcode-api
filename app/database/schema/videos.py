@@ -3,7 +3,6 @@ from datetime import datetime
 from pydantic import BaseModel, field_validator
 
 from app.config.settings import settings
-from app.database.schema.default import Res
 
 
 class Genre(BaseModel):
@@ -85,11 +84,11 @@ class Video(VideoSimple):
         from_attributes = True
 
 
-class ResVideo(Res):
+class ResVideo(BaseModel):
     data: Video | None = None
 
 
-class ResVideos(Res):
+class ResVideos(BaseModel):
     total: int
     count: int
     page: int

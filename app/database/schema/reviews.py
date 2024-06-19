@@ -2,8 +2,6 @@ from typing import List, Optional
 from datetime import datetime
 from pydantic import BaseModel
 
-from app.database.schema.default import Res
-
 
 class PublicReview(BaseModel):
     id: int
@@ -47,10 +45,9 @@ class RequestReviewLike(BaseModel):
     is_like: bool
 
 
-class ResponseReview(Res):
+class ResponseReview(BaseModel):
     data: PublicReview
 
 
-class ResponseReviews(Res):
+class ResponseReviews(BaseModel):
     data: PublicReviews
-

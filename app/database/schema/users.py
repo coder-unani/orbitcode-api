@@ -2,8 +2,6 @@ from typing import Optional
 from datetime import datetime
 from pydantic import BaseModel, field_validator
 
-from app.database.schema.default import Res
-
 
 class User(BaseModel):
     id: int
@@ -97,15 +95,15 @@ class ReqUserMarketing(BaseModel):
     is_marketing_agree: bool
 
 
-class ResUser(Res):
+class ResUser(BaseModel):
     data: User
 
 
-class ResUserProfile(Res):
+class ResUserProfile(BaseModel):
     data: UserProfile
 
 
-class ResUserMe(Res):
+class ResUserMe(BaseModel):
     user: UserMe
 
 
@@ -114,5 +112,5 @@ class ResUserLogin(ResUserMe):
     refresh_token: str
 
 
-class ResUserProfileList(Res):
+class ResUserProfileList(BaseModel):
     data: list[UserProfile]
