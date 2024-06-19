@@ -14,27 +14,11 @@ class Genre(BaseModel):
         from_attributes = True
 
 
-class GenreAdmin(Genre):
-    created_at: datetime
-    updated_at: datetime
-
-    class Config:
-        from_attributes = True
-
-
 class Actor(BaseModel):
     id: int
     name: str
     picture: str
     profile: str
-
-    class Config:
-        from_attributes = True
-
-
-class ActorAdmin(Actor):
-    created_at: datetime
-    updated_at: datetime
 
     class Config:
         from_attributes = True
@@ -50,14 +34,6 @@ class Staff(BaseModel):
         from_attributes = True
 
 
-class StaffAdmin(Staff):
-    created_at: datetime
-    updated_at: datetime
-
-    class Config:
-        from_attributes = True
-
-
 class VideoWatch(BaseModel):
     id: int
     type: str
@@ -67,30 +43,16 @@ class VideoWatch(BaseModel):
         from_attributes = True
 
 
-class VideoWatchAdmin(VideoWatch):
-    created_at: datetime
-    updated_at: datetime
-
-    class Config:
-        from_attributes = True
-
-
 class VideoThumbnail(BaseModel):
     id: int
     type: str
     url: str
+    width: int
+    height: int
 
     @field_validator("url")
     def url_add_host(cls, value: str) -> str:
         return f"{settings.THUMBNAIL_BASE_URL}{value}"
-
-    class Config:
-        from_attributes = True
-
-
-class VideoThumbnailAdmin(VideoThumbnail):
-    created_at: datetime
-    updated_at: datetime
 
     class Config:
         from_attributes = True

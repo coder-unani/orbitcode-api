@@ -142,6 +142,8 @@ class VideoThumbnail(Base):
     url = Column(String)
     extension = Column(String)
     size = Column(Integer)
+    width = Column(Integer)
+    height = Column(Integer)
     created_at = Column(DateTime, server_default=func.now(), default=func.now())
     updated_at = Column(
         DateTime, nullable=True, server_default=func.now(), onupdate=func.now()
