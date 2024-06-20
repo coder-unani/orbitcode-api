@@ -20,8 +20,8 @@ async def search_video_list(
     staff_id: int | None = None,
     genre_id: int | None = None,
     platform_id: str | None = None,
-    is_delete: bool | None = None,
-    is_confirm: bool | None = None,
+    is_delete: bool = False,
+    is_confirm: bool = True,
     order_by: str | None = None,
 ):
     unit_per_page = page_size
