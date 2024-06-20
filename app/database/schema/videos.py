@@ -75,6 +75,7 @@ class VideoSimple(BaseModel):
 
 
 class Video(VideoSimple):
+    synopsis: str
     genre: list[Genre] = []
     actor: list[Actor] = []
     staff: list[Staff] = []
