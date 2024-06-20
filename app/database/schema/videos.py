@@ -98,6 +98,10 @@ class VideoReview(BaseModel):
     created_at: datetime
     updated_at: datetime | None = None
 
+    @field_validator("user_profile_image")
+    def image_add_host(cls, value: str) -> str:
+        return f"{settings.THUMBNAIL_BASE_URL}{value}"
+
     class Config:
         from_attributes = True
 
