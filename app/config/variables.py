@@ -121,6 +121,8 @@ messages["INVALID_PARAM_KEYWORD"] = "유효하지 않은 검색어입니다."
 messages["INVALID_PARAM_TYPE"] = "유효하지 않은 타입입니다."
 messages["INVALID_PARAM_ORDER_BY"] = "유효하지 않은 정렬 조건입니다."
 messages["INVALID_PARAM_VIDEO_ID"] = "유효하지 않은 비디오 ID입니다."
+messages["INVALID_PARAM_REVIEW_ID"] = "유효하지 않은 리뷰 ID입니다."
+messages["INVALID_PARAM_USER_ID"] = "유효하지 않은 유저 ID입니다."
 
 messages["VIDEO_NOT_FOUND"] = "비디오를 찾을 수 없습니다."
 
@@ -137,12 +139,14 @@ messages["VIDEO_UPDATE_FAIL"] = "컨텐츠 수정에 실패하였습니다."
 messages["VIDEO_DELETE_SUCC"] = "컨텐츠가 삭제되었습니다."
 messages["VIDEO_DELETE_FAIL"] = "컨텐츠 삭제에 실패하였습니다."
 
-messages["VIDEO_VIEW_INST_SUCC"] = "컨텐츠 조회수를 갱신하였습니다."
-messages["VIDEO_VIEW_INST_FAIL"] = "컨텐츠 조회수 갱신에 실패하였습니다."
-
+messages["VIDEO_VIEW_UPDATE_SUCC"] = "컨텐츠 조회수를 갱신하였습니다."
+messages["VIDEO_VIEW_UPDATE_FAIL"] = "컨텐츠 조회수 갱신에 실패하였습니다."
+messages["VIDEO_LIKE_UPDATE_SUCC"] = "컨텐츠 좋아요를 갱신하였습니다."
+messages["VIDEO_LIKE_UPDATE_FAIL"] = "컨텐츠 좋아요 갱신에 실패하였습니다."
 
 messages["REVIEW_READ_LIST_SUCC"] = "리뷰 조회에 성공하였습니다."
 messages["REVIEW_CREATE_SUCC"] = "리뷰 등록에 성공했습니다."
+messages["REVIEW_CREATE_FAIL"] = "리뷰 등록에 실패했습니다."
 messages["REVIEW_READ_SUCC"] = "리뷰 조회에 성공했습니다."
 messages["REVIEW_UPDATE_SUCC"] = "리뷰 수정에 성공했습니다."
 messages["REVIEW_UPDATE_FAIL"] = "리뷰 수정에 실패했습니다."
@@ -150,3 +154,5 @@ messages["REVIEW_UPDATE_PERMISSION_ERR"] = "리뷰 수정 권한이 없습니다
 messages["REVIEW_DELETE_SUCC"] = "리뷰 삭제에 성공했습니다."
 messages["REVIEW_DELETE_FAIL"] = "리뷰 삭제에 실패했습니다."
 messages["REVIEW_DELETE_PERMISSION_ERR"] = "리뷰 삭제 권한이 없습니다."
+messages["REVIEW_NOT_MATCH"] = "리뷰 정보가 일치하지 않습니다."
+messages["REVIEW_NOT_FOUND"] = "리뷰를 찾을 수 없습니다."

@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 from datetime import datetime
 from pydantic import BaseModel, field_validator
 
@@ -85,6 +85,55 @@ class Video(VideoSimple):
         from_attributes = True
 
 
+class VideoReview(BaseModel):
+    id: int
+    video_id: int
+    user_id: int
+    user_nickname: str
+    user_profile_image: str
+    title: str
+    content: str
+    like_count: int
+    is_spoiler: bool
+    created_at: datetime
+    updated_at: datetime | None = None
+
+    class Config:
+        from_attributes = True
+
+
+class VideoReviewLike(BaseModel):
+    id: int
+    review_id: int
+    user_id: int
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
+
+
+class VideoRating(BaseModel):
+    id: int
+    video_id: int
+    user_id: int
+    rating: float
+    created_at: datetime
+    updated_at: datetime | None = None
+
+    class Config:
+        from_attributes = True
+
+
+class ReqVideoReview(BaseModel):
+    title: str
+    content: Optional[str] = None
+    is_spoiler: Optional[bool] = False
+    is_private: Optional[bool] = False
+
+    class Config:
+        from_attributes = True
+
+
 class ResVideo(BaseModel):
     data: Video | None = None
 
@@ -94,3 +143,14 @@ class ResVideos(BaseModel):
     count: int
     page: int
     data: List[VideoSimple] | None = None
+
+
+class ResVideoReview(BaseModel):
+    data: VideoReview | None = None
+
+
+class ResVideoReviews(BaseModel):
+    total: int
+    count: int
+    page: int
+    data: List[VideoReview] | None = None

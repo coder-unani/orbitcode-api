@@ -6,7 +6,7 @@ from sqlalchemy.future import select
 from sqlalchemy.sql.expression import insert, update, delete
 
 from app.config.variables import messages
-from app.database.model.videos import Video, VideoViewLog, VideoLike
+from app.database.model.videos import Video, VideoViewLog, VideoLike, VideoReview
 
 
 async def search_video_list(
@@ -81,6 +81,7 @@ async def search_video_list(
         return total, videos
 
     except Exception as e:
+        print(e)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Internal Server Error",
@@ -107,18 +108,6 @@ async def read_video(
             stmt = stmt.filter_by(is_confirm=is_confirm)
         video: Video = await db.scalar(stmt)
         return video
-    except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            headers={"code": "EXCEPTION"},
-            detail=messages["EXCEPTION"],
-        )
-
-
-async def read_video_by_id(db: AsyncSession, video_id: int):
-    try:
-        video: Video = db.get(Video, video_id)
-        return True, "VIDEO_READ_SUCC", video
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -205,6 +194,105 @@ async def toggle_video_like(db: AsyncSession, video_id: int, user_id: int):
         await db.execute(stmt)
         await db.commit()
         return is_like
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            headers={"code": "EXCEPTION"},
+            detail=messages["EXCEPTION"],
+        )
+
+
+async def read_video_review_list(
+    db: AsyncSession,
+    video_id: int,
+    page: int = 1,
+    page_size: int = 20,
+    is_private: bool = False,
+    is_block: bool = False,
+):
+    # 페이징 변수
+    unit_per_page = page_size
+    offset = (page - 1) * unit_per_page
+    try:
+        # QuerySet 생성
+        stmt = select(VideoReview).filter_by(video_id=video_id)
+        if is_private is not None:
+            stmt = stmt.filter_by(is_private=is_private)
+        if is_block is not None:
+            stmt = stmt.filter_by(is_block=is_block)
+        # Total Count
+        total = await db.scalar(select(func.count()).select_from(stmt))
+        # Review List
+        result = await db.execute(stmt.offset(offset).limit(unit_per_page))
+        reviews = result.scalars().all()
+        # 결과 반환
+        return total, reviews
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            headers={"code": "EXCEPTION"},
+            detail=messages["EXCEPTION"],
+        )
+
+
+async def read_video_review(db: AsyncSession, review_id: int):
+    try:
+        stmt = select(VideoReview).filter_by(id=review_id)
+        review: VideoReview = await db.scalar(stmt)
+        return review
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            headers={"code": "EXCEPTION"},
+            detail=messages["EXCEPTION"],
+        )
+
+
+async def create_video_review(db: AsyncSession, req_review: dict):
+    try:
+        # 리뷰 Insert
+        stmt = insert(VideoReview).values(**req_review)
+        await db.execute(stmt)
+        await db.commit()
+        return True
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            headers={"code": "EXCEPTION"},
+            detail=messages["EXCEPTION"],
+        )
+
+
+async def update_video_review(db: AsyncSession, review_id: int, req_review: dict):
+    try:
+        # 리뷰 Update
+        stmt = (
+            update(VideoReview).where(VideoReview.id == review_id).values(**req_review)
+        )
+        await db.execute(stmt)
+        await db.commit()
+        return True
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            headers={"code": "EXCEPTION"},
+            detail=messages["EXCEPTION"],
+        )
+
+
+async def delete_video_review(db: AsyncSession, review_id: int):
+    try:
+        # 리뷰 Delete
+        stmt = delete(VideoReview).where(VideoReview.id == review_id)
+        await db.execute(stmt)
+        await db.commit()
+        return True
+    except HTTPException as e:
+        raise e
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
