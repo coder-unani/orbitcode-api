@@ -5,10 +5,6 @@ from sqlalchemy import (
     ForeignKey,
     Column,
     Integer,
-    String,
-    Float,
-    Boolean,
-    DateTime,
 )
 from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship, Mapped, mapped_column
@@ -49,13 +45,13 @@ class Video(Base):
     runtime: Mapped[str]
     notice_age: Mapped[str]
     rating: Mapped[float]
-    like_count: Mapped[int]
-    view_count: Mapped[int]
-    review_count: Mapped[int]
+    like_count: Mapped[int] = mapped_column(default=0)
+    view_count: Mapped[int] = mapped_column(default=0)
+    review_count: Mapped[int] = mapped_column(default=0)
     platform_code: Mapped[str]
     platform_id: Mapped[str]
-    is_confirm: Mapped[bool]
-    is_delete: Mapped[bool]
+    is_confirm: Mapped[bool] = mapped_column(default=False)
+    is_delete: Mapped[bool] = mapped_column(default=False)
     created_at: Mapped[datetime] = mapped_column(
         server_default=func.now(), default=func.now()
     )
@@ -85,10 +81,14 @@ class Video(Base):
 class Genre(Base):
     __tablename__ = "rvvs_genre"
 
-    id = Column(Integer, primary_key=True, index=True)
-    name = Column(String)
-    created_at = Column(DateTime, server_default=func.now(), default=func.now())
-    updated_at = Column(DateTime, nullable=True)
+    id: Mapped[int] = mapped_column(primary_key=True, index=True)
+    name: Mapped[str] = mapped_column(index=True)
+    created_at: Mapped[datetime] = mapped_column(
+        server_default=func.now(), default=func.now()
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        nullable=True, server_default=func.now(), onupdate=func.now()
+    )
     video: Mapped[List["Video"]] = relationship(
         secondary=content_video_genre, back_populates="genre", lazy="selectin"
     )
@@ -97,12 +97,16 @@ class Genre(Base):
 class Actor(Base):
     __tablename__ = "rvvs_actor"
 
-    id = Column(Integer, primary_key=True, index=True)
-    name = Column(String)
-    picture = Column(String, nullable=True)
-    profile = Column(String, nullable=True)
-    created_at = Column(DateTime, server_default=func.now(), default=func.now())
-    updated_at = Column(DateTime, nullable=True)
+    id: Mapped[int] = mapped_column(primary_key=True, index=True)
+    name: Mapped[str] = mapped_column(index=True)
+    picture: Mapped[str] = mapped_column(nullable=True)
+    profile: Mapped[str] = mapped_column(nullable=True)
+    created_at: Mapped[datetime] = mapped_column(
+        server_default=func.now(), default=func.now()
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        nullable=True, server_default=func.now(), onupdate=func.now()
+    )
     video: Mapped[List["Video"]] = relationship(
         secondary=content_video_actor, back_populates="actor", lazy="selectin"
     )
@@ -111,12 +115,16 @@ class Actor(Base):
 class Staff(Base):
     __tablename__ = "rvvs_staff"
 
-    id = Column(Integer, primary_key=True, index=True)
-    name = Column(String)
-    picture = Column(String, nullable=True)
-    profile = Column(String, nullable=True)
-    created_at = Column(DateTime, server_default=func.now(), default=func.now())
-    updated_at = Column(DateTime, nullable=True)
+    id: Mapped[int] = mapped_column(primary_key=True, index=True)
+    name: Mapped[str] = mapped_column(index=True)
+    picture: Mapped[str] = mapped_column(nullable=True)
+    profile: Mapped[str] = mapped_column(nullable=True)
+    created_at: Mapped[datetime] = mapped_column(
+        server_default=func.now(), default=func.now()
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        nullable=True, server_default=func.now(), onupdate=func.now()
+    )
     video: Mapped[List["Video"]] = relationship(
         secondary=content_video_staff, back_populates="staff", lazy="selectin"
     )
@@ -125,11 +133,15 @@ class Staff(Base):
 class VideoWatch(Base):
     __tablename__ = "rvvs_video_watch"
 
-    id = Column(Integer, primary_key=True, index=True)
-    type = Column(String)
-    url = Column(String)
-    created_at = Column(DateTime, server_default=func.now(), default=func.now())
-    updated_at = Column(DateTime, nullable=True)
+    id: Mapped[int] = mapped_column(primary_key=True, index=True)
+    type: Mapped[str]
+    url: Mapped[str]
+    created_at: Mapped[datetime] = mapped_column(
+        server_default=func.now(), default=func.now()
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        nullable=True, server_default=func.now(), onupdate=func.now()
+    )
     video_id: Mapped[int] = mapped_column(ForeignKey("rvvs_video.id"))
     video: Mapped["Video"] = relationship(back_populates="watch", lazy="selectin")
 
@@ -137,16 +149,18 @@ class VideoWatch(Base):
 class VideoThumbnail(Base):
     __tablename__ = "rvvs_video_thumbnail"
 
-    id = Column(Integer, primary_key=True, index=True)
-    type = Column(String)
-    url = Column(String)
-    extension = Column(String)
-    size = Column(Integer)
-    width = Column(Integer)
-    height = Column(Integer)
-    created_at = Column(DateTime, server_default=func.now(), default=func.now())
-    updated_at = Column(
-        DateTime, nullable=True, server_default=func.now(), onupdate=func.now()
+    id: Mapped[int] = mapped_column(primary_key=True, index=True)
+    type: Mapped[str]
+    url: Mapped[str]
+    extension: Mapped[str]
+    size: Mapped[int]
+    width: Mapped[int]
+    height: Mapped[int]
+    created_at: Mapped[datetime] = mapped_column(
+        server_default=func.now(), default=func.now()
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        nullable=True, server_default=func.now(), onupdate=func.now()
     )
     video_id: Mapped[int] = mapped_column(ForeignKey("rvvs_video.id"))
     video: Mapped["Video"] = relationship(back_populates="thumbnail", lazy="selectin")
@@ -155,22 +169,79 @@ class VideoThumbnail(Base):
 class VideoLike(Base):
     __tablename__ = "rvvs_video_like"
 
-    id = Column(Integer, primary_key=True, index=True)
-    video_id = Column(Integer, nullable=False, index=True)
-    video_title = Column(String, nullable=False)
-    is_like = Column(Boolean, default=False)
-    user_id = Column(Integer, nullable=False, index=True)
-    created_at = Column(DateTime, server_default=func.now(), default=func.now())
-    updated_at = Column(
-        DateTime, nullable=True, server_default=func.now(), onupdate=func.now()
+    id: Mapped[int] = mapped_column(primary_key=True, index=True)
+    video_id: Mapped[int] = mapped_column(nullable=False, index=True)
+    video_title: Mapped[str] = mapped_column(nullable=False)
+    like_type: Mapped[str] = mapped_column(nullable=False, default="10")
+    is_like: Mapped[bool] = mapped_column(default=False)
+    user_id: Mapped[int] = mapped_column(nullable=False, index=True)
+    created_at: Mapped[datetime] = mapped_column(
+        server_default=func.now(), default=func.now()
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        nullable=True, server_default=func.now(), onupdate=func.now()
     )
 
 
 class VideoViewLog(Base):
     __tablename__ = "rvvs_log_video_view"
 
-    id = Column(Integer, primary_key=True, index=True)
-    video_id = Column(Integer, nullable=False, index=True)
-    user_id = Column(Integer, nullable=True)
-    client_ip = Column(String, nullable=False)
-    created_at = Column(DateTime, server_default=func.now(), default=func.now())
+    id: Mapped[int] = mapped_column(primary_key=True, index=True)
+    video_id: Mapped[int] = mapped_column(nullable=False, index=True)
+    user_id: Mapped[int] = mapped_column(nullable=True)
+    client_ip: Mapped[str] = mapped_column(nullable=False)
+    created_at: Mapped[datetime] = mapped_column(
+        server_default=func.now(), default=func.now()
+    )
+
+
+class VideoReview(Base):
+    __tablename__ = "rvvs_video_review"
+
+    id: Mapped[int] = mapped_column(primary_key=True, index=True)
+    title: Mapped[str]
+    content: Mapped[str] = mapped_column(nullable=True)
+    like_count: Mapped[int] = mapped_column(default=0)
+    is_spoiler: Mapped[bool] = mapped_column(default=False)
+    is_private: Mapped[bool] = mapped_column(default=False)
+    is_block: Mapped[bool] = mapped_column(default=False)
+    user_id: Mapped[int] = mapped_column(nullable=False, index=True)
+    user_nickname: Mapped[str] = mapped_column(nullable=False)
+    user_profile_image: Mapped[str] = mapped_column(nullable=False)
+    video_id: Mapped[int] = mapped_column(nullable=False, index=True)
+    created_at: Mapped[datetime] = mapped_column(
+        server_default=func.now(), default=func.now()
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        nullable=True, server_default=func.now(), onupdate=func.now()
+    )
+
+
+class VideoReviewLike(Base):
+    __tablename__ = "rvvs_video_review_like"
+
+    id: Mapped[int] = mapped_column(primary_key=True, index=True)
+    review_id: Mapped[int] = mapped_column(nullable=False, index=True)
+    user_id: Mapped[int] = mapped_column(nullable=False, index=True)
+    is_like: Mapped[bool] = mapped_column(default=False)
+    created_at: Mapped[datetime] = mapped_column(
+        server_default=func.now(), default=func.now()
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        nullable=True, server_default=func.now(), onupdate=func.now()
+    )
+
+
+class VideoRaing(Base):
+    __tablename__ = "rvvs_video_rating"
+
+    id: Mapped[int] = mapped_column(primary_key=True, index=True)
+    video_id: Mapped[int] = mapped_column(nullable=False, index=True)
+    user_id: Mapped[int] = mapped_column(nullable=False, index=True)
+    rating: Mapped[int] = mapped_column(nullable=False)
+    created_at: Mapped[datetime] = mapped_column(
+        server_default=func.now(), default=func.now()
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        nullable=True, server_default=func.now(), onupdate=func.now()
+    )
