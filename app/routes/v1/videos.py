@@ -269,6 +269,15 @@ async def create_video_review(
                 headers={"code": "VIDEO_NOT_FOUND"},
                 detail=messages["VIDEO_NOT_FOUND"],
             )
+        get_review = await queryset.read_video_review_by_user(
+            db, video_id, auth_user["id"]
+        )
+        if get_review:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                headers={"code": "REVIEW_ALREADY_EXIST"},
+                detail=messages["REVIEW_ALREADY_EXIST"],
+            )
         # 회원정보 가져오기
         get_user = await read_user_by_id(db, auth_user["id"])
         if not get_user:

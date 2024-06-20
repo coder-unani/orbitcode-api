@@ -248,6 +248,19 @@ async def read_video_review(db: AsyncSession, review_id: int):
         )
 
 
+async def read_video_review_by_user(db: AsyncSession, video_id: int, user_id: int):
+    try:
+        stmt = select(VideoReview).filter_by(video_id=video_id, user_id=user_id)
+        review: VideoReview = await db.scalar(stmt)
+        return review
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            headers={"code": "EXCEPTION"},
+            detail=messages["EXCEPTION"],
+        )
+
+
 async def create_video_review(db: AsyncSession, req_review: dict):
     try:
         # 리뷰 Insert
