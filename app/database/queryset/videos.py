@@ -220,6 +220,7 @@ async def read_video_review_list(
             stmt = stmt.filter_by(is_private=is_private)
         if is_block is not None:
             stmt = stmt.filter_by(is_block=is_block)
+        stmt.order_by(VideoReview.created_at.desc())
         # Total Count
         total = await db.scalar(select(func.count()).select_from(stmt))
         # Review List
