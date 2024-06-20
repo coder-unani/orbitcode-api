@@ -14,7 +14,6 @@ from app.routes.v1 import (
     users as users_v1,
     videos as videos_v1,
     validation as validation_v1,
-    reviews as reviews_v1,
 )
 
 
@@ -44,8 +43,6 @@ def create_api() -> FastAPI:
     api.include_router(users_v1.router, prefix="/v1")
     api.include_router(videos_v1.router, prefix="/v1/contents")
     api.include_router(validation_v1.router, prefix="/v1/validation")
-
-    # api.include_router(review_v1.router, prefix="/v1")
 
     return api
 
