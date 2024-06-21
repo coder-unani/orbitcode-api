@@ -232,7 +232,7 @@ class VideoReviewLike(Base):
     )
 
 
-class VideoRaing(Base):
+class VideoRating(Base):
     __tablename__ = "rvvs_video_rating"
 
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
