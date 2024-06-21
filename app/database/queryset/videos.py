@@ -115,7 +115,6 @@ async def read_video(
         if is_confirm is not None:
             stmt = stmt.filter_by(is_confirm=is_confirm)
         video: Video = await db.scalar(stmt)
-        print(video)
         return video
     except Exception as e:
         print(e)
@@ -151,7 +150,9 @@ async def insert_video_view(
                 )
             # user_id가 없을 경우
             else:
-                stmt_view_log = insert(VideoViewLog).values(video_id=video_id)
+                stmt_view_log = insert(VideoViewLog).values(
+                    video_id=video_id, client_ip=client_ip
+                )
             # VideoViewLog Insert
             await db.execute(stmt_view_log)
         # 같은 Video ID의 조회수 Count
@@ -160,16 +161,14 @@ async def insert_video_view(
         )
         # Video 조회수 Update
         stmt_update = (
-            update(Video)
-            .where(Video.id == video_id)
-            .values(view_count=view_count)
-            .returning(Video.view_count)
+            update(Video).where(Video.id == video_id).values(view_count=view_count)
         )
         await db.execute(stmt_update)
         await db.commit()
         # 조회수 반환
         return view_count
     except Exception as e:
+        print(e)
         # Exception 발생 시 Rollback
         await db.rollback()
         raise HTTPException(

@@ -148,11 +148,12 @@ async def read_video_detail(
                 headers={"code": "INVALID_PARAM_VIDEO_ID"},
                 detail=messages["INVALID_PARAM_VIDEO_ID"],
             )
-        video = await queryset.read_video(db, video_id=video_id)
-        if not video:
-            response.headers["code"] = "VIDEO_NOT_FOUND"
         # 비디오 조회수 증가
-        await queryset.insert_video_view(db, video_id, user_id, client_ip)
+        try:
+            await queryset.insert_video_view(db, video_id, user_id, client_ip)
+        except Exception as e:
+            print(e)
+        video = await queryset.read_video(db, video_id=video_id)
         response.headers["code"] = "VIDEO_READ_SUCC"
         return ResVideo(data=video)
     except Exception as e:
