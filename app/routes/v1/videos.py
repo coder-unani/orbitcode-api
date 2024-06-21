@@ -490,7 +490,7 @@ async def delete_video_review(
 
 @router.get(
     "/videos/{video_id}/reviews/{review_id}/like",
-    tags=[tags_rating],
+    tags=[tags_review],
     status_code=status.HTTP_200_OK,
     response_model=ResData,
 )
