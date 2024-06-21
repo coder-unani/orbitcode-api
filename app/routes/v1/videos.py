@@ -130,7 +130,7 @@ async def content_videos(
     status_code=status.HTTP_200_OK,
     response_model=ResVideo,
 )
-async def read_video(
+async def read_video_detail(
     request: Request,
     response: Response,
     video_id: int,
@@ -300,7 +300,7 @@ async def create_video_review(
                 detail=messages["INVALID_PARAM_VIDEO_ID"],
             )
         # 비디오 체크
-        video = read_video(db, video_id)
+        video = queryset.read_video(db, video_id=video_id)
         if not video:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
