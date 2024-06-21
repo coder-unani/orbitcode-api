@@ -206,7 +206,7 @@ async def insert_video_view(
 
 
 # 비디오 좋아요 토글
-@router.get(
+@router.post(
     "/videos/{video_id}/like",
     tags=[tags_video],
     status_code=status.HTTP_200_OK,
@@ -488,7 +488,7 @@ async def delete_video_review(
         raise e
 
 
-@router.get(
+@router.post(
     "/videos/{video_id}/reviews/{review_id}/like",
     tags=[tags_review],
     status_code=status.HTTP_200_OK,
