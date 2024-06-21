@@ -6,7 +6,14 @@ from sqlalchemy.future import select
 from sqlalchemy.sql.expression import insert, update, delete
 
 from app.config.variables import messages
-from app.database.model.videos import Video, VideoViewLog, VideoLike, VideoReview
+from app.database.model.videos import (
+    Video,
+    VideoViewLog,
+    VideoLike,
+    VideoReview,
+    VideoReviewLike,
+    VideoRating,
+)
 
 
 async def search_video_list(
@@ -93,7 +100,7 @@ async def read_video(
     video_id: int = None,
     platform_id: str = None,
     is_delete: bool = False,
-    is_confirm: bool = False,
+    is_confirm: bool = True,
 ):
     try:
         stmt = select(Video)
@@ -107,8 +114,10 @@ async def read_video(
         if is_confirm is not None:
             stmt = stmt.filter_by(is_confirm=is_confirm)
         video: Video = await db.scalar(stmt)
+        print(video)
         return video
     except Exception as e:
+        print(e)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             headers={"code": "EXCEPTION"},
@@ -162,39 +171,6 @@ async def insert_video_view(
     except Exception as e:
         # Exception 발생 시 Rollback
         await db.rollback()
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            headers={"code": "EXCEPTION"},
-            detail=messages["EXCEPTION"],
-        )
-
-
-async def toggle_video_like(db: AsyncSession, video_id: int, user_id: int):
-    try:
-        video = await db.scalar(select(Video).where(Video.id == video_id))
-        video_title = video.title
-        is_like = await db.scalar(
-            select(VideoLike.is_like).filter_by(video_id=video_id, user_id=user_id)
-        )
-        if is_like is None:
-            is_like = True
-            stmt = insert(VideoLike).values(
-                video_id=video_id,
-                video_title=video_title,
-                user_id=user_id,
-                is_like=is_like,
-            )
-        else:
-            is_like = not is_like
-            stmt = (
-                update(VideoLike)
-                .where(VideoLike.video_id == video_id, VideoLike.user_id == user_id)
-                .values(is_like=is_like)
-            )
-        await db.execute(stmt)
-        await db.commit()
-        return is_like
-    except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             headers={"code": "EXCEPTION"},
@@ -308,6 +284,237 @@ async def delete_video_review(db: AsyncSession, review_id: int):
     except HTTPException as e:
         raise e
     except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            headers={"code": "EXCEPTION"},
+            detail=messages["EXCEPTION"],
+        )
+
+
+async def read_video_rating_by_user(db: AsyncSession, video_id: int, user_id: int):
+    try:
+        stmt = select(VideoRating).filter_by(video_id=video_id, user_id=user_id)
+        rating: VideoRating = await db.scalar(stmt)
+        return rating
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            headers={"code": "EXCEPTION"},
+            detail=messages["EXCEPTION"],
+        )
+
+
+async def create_video_rating(
+    db: AsyncSession, video_id: int, user_id: int, rating: int
+):
+    try:
+        # 리뷰 Insert
+        stmt = insert(VideoRating).values(
+            video_id=video_id, user_id=user_id, rating=rating
+        )
+        await db.execute(stmt)
+        await db.commit()
+        return True
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        print(e)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            headers={"code": "EXCEPTION"},
+            detail=messages["EXCEPTION"],
+        )
+
+
+async def update_video_rating(
+    db: AsyncSession, video_id: int, user_id: int, rating: int
+):
+    try:
+        # 리뷰 Update
+        stmt = (
+            update(VideoRating)
+            .where(VideoRating.video_id == video_id, VideoRating.user_id == user_id)
+            .values(rating=rating)
+        )
+        await db.execute(stmt)
+        await db.commit()
+        return True
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        print(e)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            headers={"code": "EXCEPTION"},
+            detail=messages["EXCEPTION"],
+        )
+
+
+async def delete_video_rating(db: AsyncSession, video_id: int, user_id: int):
+    try:
+        # 리뷰 Delete
+        stmt = delete(VideoRating).where(
+            VideoRating.video_id == video_id, VideoRating.user_id == user_id
+        )
+        await db.execute(stmt)
+        await db.commit()
+        return True
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        print(e)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            headers={"code": "EXCEPTION"},
+            detail=messages["EXCEPTION"],
+        )
+
+
+async def toggle_video_like(db: AsyncSession, video_id: int, user_id: int):
+    try:
+        video = await db.scalar(select(Video).where(Video.id == video_id))
+        video_title = video.title
+        is_like = await db.scalar(
+            select(VideoLike.is_like).filter_by(video_id=video_id, user_id=user_id)
+        )
+        if is_like is None:
+            is_like = True
+            stmt = insert(VideoLike).values(
+                video_id=video_id,
+                video_title=video_title,
+                user_id=user_id,
+                is_like=is_like,
+            )
+        else:
+            is_like = not is_like
+            stmt = (
+                update(VideoLike)
+                .where(VideoLike.video_id == video_id, VideoLike.user_id == user_id)
+                .values(is_like=is_like)
+            )
+        await db.execute(stmt)
+        await db.commit()
+        return is_like
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            headers={"code": "EXCEPTION"},
+            detail=messages["EXCEPTION"],
+        )
+
+
+async def toggle_video_review_like(db: AsyncSession, review_id: int, user_id: int):
+    try:
+        print("review_id", review_id)
+        print("user_id", user_id)
+        is_review_like = await db.scalar(
+            select(VideoReviewLike.is_like).filter_by(review_id=review_id)
+        )
+        if is_review_like is None:
+            is_review_like = True
+            stmt = insert(VideoReviewLike).values(
+                review_id=review_id, user_id=user_id, is_like=is_review_like
+            )
+        else:
+            is_review_like = not is_review_like
+            stmt = (
+                update(VideoReviewLike)
+                .where(
+                    VideoReviewLike.review_id == review_id,
+                    VideoReviewLike.user_id == user_id,
+                )
+                .values(is_like=is_review_like)
+            )
+        # 업데이트
+        await db.execute(stmt)
+        await db.commit()
+        return is_review_like
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        print(e)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            headers={"code": "EXCEPTION"},
+            detail=messages["EXCEPTION"],
+        )
+
+
+async def update_video_view_count(db: AsyncSession, video_id: int):
+    pass
+
+
+async def update_video_review_count(db: AsyncSession, video_id: int):
+    try:
+        # 비디오 리뷰 카운팅
+        review_stmt = select(VideoReview).filter_by(video_id=video_id)
+        review_count = await db.scalar(select(func.count()).select_from(review_stmt))
+        # 비디오 리뷰 카운팅 업데이트
+        update_stmt = (
+            update(Video)
+            .where(Video.id == video_id)
+            .values(review_count=review_count)
+            .returning(Video.review_count)
+        )
+        await db.execute(update_stmt)
+        await db.commit()
+        return True
+
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            headers={"code": "EXCEPTION"},
+            detail=messages["EXCEPTION"],
+        )
+
+
+async def update_video_review_like_count(db: AsyncSession, review_id: int):
+    try:
+        # 리뷰 좋아요 카운팅
+        like_stmt = select(VideoReviewLike).filter_by(review_id=review_id, is_like=True)
+        like_count = await db.scalar(select(func.count()).select_from(like_stmt))
+        print("like_count", like_count)
+        # 리뷰 좋아요 카운팅 업데이트
+        update_stmt = (
+            update(VideoReview)
+            .where(VideoReview.id == review_id)
+            .values(like_count=like_count)
+            .returning(VideoReview.like_count)
+        )
+        await db.execute(update_stmt)
+        await db.commit()
+        return like_count
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        print(e)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            headers={"code": "EXCEPTION"},
+            detail=messages["EXCEPTION"],
+        )
+
+
+async def update_video_like_count(db: AsyncSession, video_id: int):
+    try:
+        # 비디오 좋아요 카운팅
+        select_stmt = select(VideoLike).filter_by(video_id=video_id, is_like=True)
+        like_count = await db.scalar(select(func.count()).select_from(select_stmt))
+        # 비디오 좋아요 카운팅 업데이트
+        update_stmt = (
+            update(Video).where(Video.id == video_id).values(like_count=like_count)
+        )
+        # 업데이트 쿼리 실행
+        await db.execute(update_stmt)
+        await db.commit()
+        # 업데이트된 좋아요 카운팅 반환
+        return like_count
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        print(e)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             headers={"code": "EXCEPTION"},

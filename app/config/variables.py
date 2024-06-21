@@ -123,6 +123,7 @@ messages["INVALID_PARAM_ORDER_BY"] = "유효하지 않은 정렬 조건입니다
 messages["INVALID_PARAM_VIDEO_ID"] = "유효하지 않은 비디오 ID입니다."
 messages["INVALID_PARAM_REVIEW_ID"] = "유효하지 않은 리뷰 ID입니다."
 messages["INVALID_PARAM_USER_ID"] = "유효하지 않은 유저 ID입니다."
+messages["INVALID_PARAM_RATING"] = "유효하지 않은 평점입니다."
 
 messages["VIDEO_NOT_FOUND"] = "비디오를 찾을 수 없습니다."
 
@@ -157,3 +158,12 @@ messages["REVIEW_DELETE_PERMISSION_ERR"] = "리뷰 삭제 권한이 없습니다
 messages["REVIEW_NOT_MATCH"] = "리뷰 정보가 일치하지 않습니다."
 messages["REVIEW_NOT_FOUND"] = "리뷰를 찾을 수 없습니다."
 messages["REVIEW_ALREADY_EXIST"] = "이미 작성한 리뷰가 있습니다."
+
+messages["RATING_CREATE_SUCC"] = "평점 등록에 성공했습니다."
+messages["RATING_CREATE_FAIL"] = "평점 등록에 실패했습니다."
+messages["RATING_UPDATE_SUCC"] = "평점 수정에 성공했습니다."
+messages["RATING_UPDATE_FAIL"] = "평점 수정에 실패했습니다."
+messages["RATING_DELETE_SUCC"] = "평점 삭제에 성공했습니다."
+messages["RATING_DELETE_FAIL"] = "평점 삭제에 실패했습니다."
+messages["RATING_ALREADY_EXIST"] = "이미 평가한 컨텐츠가 있습니다."
+messages["RATING_EQUAL_INPUT_VALUE"] = "별점은 이전과 동일합니다."
