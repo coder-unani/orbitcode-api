@@ -126,24 +126,20 @@ messages["INVALID_PARAM_USER_ID"] = "유효하지 않은 유저 ID입니다."
 messages["INVALID_PARAM_RATING"] = "유효하지 않은 평점입니다."
 
 messages["VIDEO_NOT_FOUND"] = "비디오를 찾을 수 없습니다."
-
 messages["VIDEO_CREATE_SUCC"] = "컨텐츠 생성에 성공하였습니다."
 messages["VIDEO_CREATE_FAIL"] = "컨텐츠 생성에 실패하였습니다."
-
 messages["VIDEO_SEARCH_SUCC"] = "컨텐츠 검색에 성공하였습니다."
 messages["VIDEO_READ_SUCC"] = "컨텐츠 조회에 성공하였습니다."
 messages["VIDEO_READ_FAIL"] = "컨텐츠 조회에 실패하였습니다."
-
 messages["VIDEO_UPDATE_SUCC"] = "컨텐츠 수정에 성공하였습니다."
 messages["VIDEO_UPDATE_FAIL"] = "컨텐츠 수정에 실패하였습니다."
-
 messages["VIDEO_DELETE_SUCC"] = "컨텐츠가 삭제되었습니다."
 messages["VIDEO_DELETE_FAIL"] = "컨텐츠 삭제에 실패하였습니다."
-
 messages["VIDEO_VIEW_UPDATE_SUCC"] = "컨텐츠 조회수를 갱신하였습니다."
 messages["VIDEO_VIEW_UPDATE_FAIL"] = "컨텐츠 조회수 갱신에 실패하였습니다."
 messages["VIDEO_LIKE_UPDATE_SUCC"] = "컨텐츠 좋아요를 갱신하였습니다."
 messages["VIDEO_LIKE_UPDATE_FAIL"] = "컨텐츠 좋아요 갱신에 실패하였습니다."
+messages["VIDEO_MYINFO_READ_SUCC"] = "내 컨텐츠 조회에 성공하였습니다."
 
 messages["REVIEW_READ_LIST_SUCC"] = "리뷰 조회에 성공하였습니다."
 messages["REVIEW_CREATE_SUCC"] = "리뷰 등록에 성공했습니다."

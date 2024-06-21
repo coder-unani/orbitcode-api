@@ -4,6 +4,7 @@ from sqlalchemy import func
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from sqlalchemy.sql.expression import insert, update, delete
+from sqlalchemy.orm import aliased
 
 from app.config.variables import messages
 from app.database.model.videos import (
@@ -513,6 +514,82 @@ async def update_video_like_count(db: AsyncSession, video_id: int):
         return like_count
     except HTTPException as e:
         raise e
+    except Exception as e:
+        print(e)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            headers={"code": "EXCEPTION"},
+            detail=messages["EXCEPTION"],
+        )
+
+
+async def read_video_my_is_like(db: AsyncSession, video_id: int, user_id: int):
+    try:
+        print("read_video_my_is_like start")
+        is_like = await db.scalar(
+            select(VideoLike.is_like).filter_by(
+                video_id=video_id, user_id=user_id, is_like=True
+            )
+        )
+        print("read_video_my_is_like end")
+        return is_like
+    except Exception as e:
+        print(e)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            headers={"code": "EXCEPTION"},
+            detail=messages["EXCEPTION"],
+        )
+
+
+async def read_video_my_review_id(db: AsyncSession, video_id: int, user_id: int):
+    try:
+        print("read_video_my_review_id start")
+        review_id = await db.scalar(
+            select(VideoReview.id).filter_by(video_id=video_id, user_id=user_id)
+        )
+        print("read_video_my_review_id end")
+        return review_id
+    except Exception as e:
+        print(e)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            headers={"code": "EXCEPTION"},
+            detail=messages["EXCEPTION"],
+        )
+
+
+async def read_video_my_review_like(db: AsyncSession, video_id: int, user_id: int):
+    try:
+        print("read_video_my_review_like start")
+
+        # Alias for the VideoReview table to be used in join
+        video_review_alias = aliased(VideoReview)
+
+        # Select review IDs for the given video and user
+        video_review_ids = await db.execute(
+            select(video_review_alias.id).filter_by(video_id=video_id, user_id=user_id)
+        )
+        video_review_ids = video_review_ids.scalars().all()
+
+        if not video_review_ids:
+            return []
+
+        # Select review_like_ids where the review is liked by the user
+        review_like_ids = await db.execute(
+            select(VideoReviewLike.review_id)
+            .join(
+                video_review_alias, VideoReviewLike.review_id == video_review_alias.id
+            )
+            .where(
+                video_review_alias.id.in_(video_review_ids),
+                VideoReviewLike.user_id == user_id,
+                VideoReviewLike.is_like.is_(True),
+            )
+        )
+        result = review_like_ids.scalars().all()
+        print("read_video_my_review_like end")
+        return result
     except Exception as e:
         print(e)
         raise HTTPException(

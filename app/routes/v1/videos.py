@@ -237,6 +237,47 @@ async def toggle_video_like(
         )
 
 
+@router.post(
+    "/videos/{video_id}/myinfo",
+    tags=[tags_video],
+    status_code=status.HTTP_200_OK,
+    response_model=ResData,
+)
+async def read_video_myinfo(
+    response: Response,
+    video_id: int,
+    db: AsyncSession = Depends(get_db),
+    auth_user: UserMe = Depends(verify_access_token_user),
+):
+    try:
+        if not video_id:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                headers={"code": "INVALID_PARAM_VIDEO_ID"},
+                detail=messages["INVALID_PARAM_VIDEO_ID"],
+            )
+        my_is_like = await queryset.read_video_my_is_like(db, video_id, auth_user["id"])
+        my_review = await queryset.read_video_my_review_id(
+            db, video_id, auth_user["id"]
+        )
+        my_review_like = await queryset.read_video_my_review_like(
+            db, video_id, auth_user["id"]
+        )
+        myinfo = {
+            "is_like": my_is_like,
+            "review": my_review,
+            "review_like": my_review_like,
+        }
+        response.headers["code"] = "VIDEO_MYINFO_READ_SUCC"
+        return ResData(data=myinfo)
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            headers={"code": "EXCEPTION"},
+            detail=messages["EXCEPTION"],
+        )
+
+
 # 비디오 리뷰 작성
 @router.post(
     "/videos/{video_id}/reviews",
