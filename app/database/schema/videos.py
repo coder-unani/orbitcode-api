@@ -102,7 +102,7 @@ class VideoReview(BaseModel):
     def image_add_host(cls, value: str) -> str:
         if value is None:
             return value
-        return f"{settings.THUMBNAIL_BASE_URL}default.png"
+        return f"{settings.THUMBNAIL_BASE_URL}{value}"
 
     class Config:
         from_attributes = True
