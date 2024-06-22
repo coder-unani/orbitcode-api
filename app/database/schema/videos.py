@@ -90,7 +90,7 @@ class VideoReview(BaseModel):
     video_id: int
     user_id: int
     user_nickname: str
-    user_profile_image: str
+    user_profile_image: str | None
     title: str
     content: str
     like_count: int
@@ -100,7 +100,9 @@ class VideoReview(BaseModel):
 
     @field_validator("user_profile_image")
     def image_add_host(cls, value: str) -> str:
-        return f"{settings.THUMBNAIL_BASE_URL}{value}"
+        if value is None:
+            return value
+        return f"{settings.THUMBNAIL_BASE_URL}default.png"
 
     class Config:
         from_attributes = True
