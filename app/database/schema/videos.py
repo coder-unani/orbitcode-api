@@ -46,8 +46,8 @@ class VideoThumbnail(BaseModel):
     id: int
     type: str
     url: str
-    width: int
-    height: int
+    width: int | None
+    height: int | None
 
     @field_validator("url")
     def url_add_host(cls, value: str) -> str:
