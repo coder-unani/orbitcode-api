@@ -45,6 +45,8 @@ class Video(Base):
     runtime: Mapped[str]
     notice_age: Mapped[str]
     rating: Mapped[float]
+    production: Mapped[str] = mapped_column(nullable=True)
+    country: Mapped[str] = mapped_column(nullable=True)
     like_count: Mapped[int] = mapped_column(default=0)
     view_count: Mapped[int] = mapped_column(default=0)
     review_count: Mapped[int] = mapped_column(default=0)

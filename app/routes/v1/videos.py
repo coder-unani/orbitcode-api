@@ -157,6 +157,7 @@ async def read_video_detail(
         response.headers["code"] = "VIDEO_READ_SUCC"
         return ResVideo(data=video)
     except Exception as e:
+        print(e)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             headers={"code": "EXCEPTION"},

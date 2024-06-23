@@ -65,6 +65,8 @@ class VideoSimple(BaseModel):
     runtime: str
     notice_age: str
     rating: float
+    production: str | None
+    country: str | None
     like_count: int
     review_count: int
     view_count: int
