@@ -9,6 +9,12 @@ from sqlalchemy.orm import aliased
 from app.config.variables import messages
 from app.database.model.videos import (
     Video,
+    Genre,
+    Actor,
+    Staff,
+    VideoGenre,
+    VideoActor,
+    VideoStaff,
     VideoViewLog,
     VideoLike,
     VideoReview,
@@ -589,6 +595,48 @@ async def read_video_my_review_like(db: AsyncSession, video_id: int, user_id: in
         result = review_like_ids.scalars().all()
         print("read_video_my_review_like end")
         return result
+    except Exception as e:
+        print(e)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            headers={"code": "EXCEPTION"},
+            detail=messages["EXCEPTION"],
+        )
+
+
+async def read_genre(db: AsyncSession, genre_id: int):
+    try:
+        stmt = select(Genre).filter_by(id=genre_id)
+        genre = await db.scalar(stmt)
+        return genre
+    except Exception as e:
+        print(e)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            headers={"code": "EXCEPTION"},
+            detail=messages["EXCEPTION"],
+        )
+
+
+async def read_actor(db: AsyncSession, actor_id: int):
+    try:
+        stmt = select(Actor).filter_by(id=actor_id)
+        actor = await db.scalar(stmt)
+        return actor
+    except Exception as e:
+        print(e)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            headers={"code": "EXCEPTION"},
+            detail=messages["EXCEPTION"],
+        )
+
+
+async def read_staff(db: AsyncSession, staff_id: int):
+    try:
+        stmt = select(Staff).filter_by(id=staff_id)
+        staff = await db.scalar(stmt)
+        return staff
     except Exception as e:
         print(e)
         raise HTTPException(
