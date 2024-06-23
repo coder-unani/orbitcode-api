@@ -16,8 +16,8 @@ class Genre(BaseModel):
 class Actor(BaseModel):
     id: int
     name: str
-    picture: str
-    profile: str
+    picture: str | None
+    profile: str | None
 
     class Config:
         from_attributes = True
