@@ -17,7 +17,14 @@ class Actor(BaseModel):
     id: int
     name: str
     picture: str | None
-    profile: str | None
+
+    class Config:
+        from_attributes = True
+
+
+class VideoActor(Actor):
+    type: str | None
+    role: str | None
 
     class Config:
         from_attributes = True
@@ -27,7 +34,13 @@ class Staff(BaseModel):
     id: int
     name: str
     picture: str | None
-    profile: str | None
+
+    class Config:
+        from_attributes = True
+
+
+class VideoStaff(Staff):
+    type: str | None
 
     class Config:
         from_attributes = True
@@ -79,8 +92,8 @@ class VideoSimple(BaseModel):
 class Video(VideoSimple):
     synopsis: str
     genre: list[Genre] = []
-    actor: list[Actor] = []
-    staff: list[Staff] = []
+    actor: list[VideoActor] = []
+    staff: list[VideoStaff] = []
     watch: list[VideoWatch] = []
 
     class Config:
