@@ -1,3 +1,4 @@
+from typing import List
 from fastapi import APIRouter, Request, Response, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -9,6 +10,11 @@ from app.database.queryset.users import read_user_by_id
 from app.database.schema.default import ResData
 from app.database.schema.users import UserMe
 from app.database.schema.videos import (
+    Video,
+    Actor,
+    Staff,
+    VideoActor,
+    VideoStaff,
     ReqVideoReview,
     ResVideo,
     ResVideos,
@@ -153,9 +159,65 @@ async def read_video_detail(
             await queryset.insert_video_view(db, video_id, user_id, client_ip)
         except Exception as e:
             print(e)
-        video = await queryset.read_video(db, video_id=video_id)
+        # 비디오 상세정보 조회
+        try:
+            video = await queryset.read_video(db, video_id=video_id)
+            # 배우정보 생성
+            actor_list: List[VideoActor] | [] = []
+            for actor_map in video.actor_list:
+                actor: Actor = await queryset.read_actor(db, actor_map.actor_id)
+                actor_info = VideoActor(
+                    id=actor_map.actor_id,
+                    type=actor_map.type,
+                    role=actor_map.role,
+                    name=actor.name,
+                    picture=actor.picture,
+                )
+                actor_list.append(actor_info)
+            # 스태프정보 생성
+            staff_list: List[VideoStaff] | [] = []
+            for staff_map in video.staff_list:
+                staff: Staff = await queryset.read_staff(db, staff_map.staff_id)
+                print(staff_map.type)
+                staff_info = VideoStaff(
+                    id=staff_map.staff_id,
+                    type=staff_map.type,
+                    name=staff.name,
+                    picture=staff.picture,
+                )
+                staff_list.append(staff_info)
+            # 반환할 비디오 정보 생성
+            return_video = Video(
+                id=video.id,
+                type=video.type,
+                title=video.title,
+                release=video.release,
+                runtime=video.runtime,
+                notice_age=video.notice_age,
+                rating=video.rating,
+                production=video.production,
+                country=video.country,
+                like_count=video.like_count,
+                review_count=video.review_count,
+                view_count=video.view_count,
+                synopsis=video.synopsis,
+                genre=video.genre,
+                actor=actor_list,
+                staff=staff_list,
+                watch=video.watch,
+                thumbnail=video.thumbnail,
+            )
+        except Exception as e:
+            print(e)
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                headers={"code": "VIDEO_NOT_FOUND"},
+                detail=messages["VIDEO_NOT_FOUND"],
+            )
+        # Response Header Code
         response.headers["code"] = "VIDEO_READ_SUCC"
-        return ResVideo(data=video)
+        # 비디오 상세정보 반환
+        return ResVideo(data=return_video)
     except Exception as e:
         print(e)
         raise HTTPException(
