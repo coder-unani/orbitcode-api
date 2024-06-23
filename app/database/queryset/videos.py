@@ -1,6 +1,6 @@
 from datetime import datetime
 from fastapi import HTTPException, status
-from sqlalchemy import func
+from sqlalchemy import func, desc
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from sqlalchemy.sql.expression import insert, update, delete
@@ -211,6 +211,50 @@ async def read_video_review_list(
         # 결과 반환
         return total, reviews
     except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            headers={"code": "EXCEPTION"},
+            detail=messages["EXCEPTION"],
+        )
+
+
+async def read_video_review_list_with_rating(
+    db: AsyncSession,
+    video_id: int,
+    page: int = 1,
+    page_size: int = 20,
+    is_private: bool = False,
+    is_block: bool = False,
+):
+    # 페이징 변수
+    unit_per_page = page_size
+    offset = (page - 1) * unit_per_page
+    try:
+        video_review_alias = aliased(VideoReview)
+        video_rating_alias = aliased(VideoRating)
+        stmt = (
+            select(video_review_alias, video_rating_alias.rating)
+            .outerjoin(
+                video_rating_alias,
+                (video_review_alias.video_id == video_rating_alias.video_id)
+                & (video_review_alias.user_id == video_rating_alias.user_id),
+            )
+            .where(video_review_alias.video_id == video_id)
+        )
+        if is_private is not None:
+            stmt = stmt.where(video_review_alias.is_private == is_private)
+        if is_block is not None:
+            stmt = stmt.where(video_review_alias.is_block == is_block)
+        stmt = stmt.order_by(desc(video_review_alias.created_at))
+        # Total Count
+        total = await db.scalar(select(func.count()).select_from(stmt.alias()))
+        # Review List
+        result = await db.execute(stmt.offset(offset).limit(unit_per_page))
+        reviews = result.all()
+        # 결과 반환
+        return total, reviews
+    except Exception as e:
+        print(e)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             headers={"code": "EXCEPTION"},

@@ -15,10 +15,12 @@ from app.database.schema.videos import (
     Staff,
     VideoActor,
     VideoStaff,
+    VideoReviewWithRating,
     ReqVideoReview,
     ResVideo,
     ResVideos,
     ResVideoReviews,
+    ResVideoReviewsWithRating,
 )
 
 router = APIRouter()
@@ -419,7 +421,7 @@ async def create_video_review(
     "/videos/{video_id}/reviews",
     tags=[tags_review],
     status_code=status.HTTP_200_OK,
-    response_model=ResVideoReviews,
+    response_model=ResVideoReviewsWithRating,
 )
 async def read_video_review_list(
     response: Response,
@@ -437,14 +439,36 @@ async def read_video_review_list(
                 detail=messages["INVALID_PARAM_VIDEO_ID"],
             )
         # 비디오 리뷰 목록 조회
-        total, reviews = await queryset.read_video_review_list(db, video_id, p, ps)
+        total, reviews = await queryset.read_video_review_list_with_rating(
+            db, video_id, p, ps
+        )
         # 비디오 리뷰 목록이 없을 경우
         if not reviews:
             response.headers["code"] = "REVIEW_NOT_FOUND"
         # Response Header Code
         response.headers["code"] = "REVIEW_READ_SUCC"
+        # 리뷰 목록 생성
+        return_reviews = [
+            VideoReviewWithRating(
+                id=review[0].id,
+                video_id=review[0].video_id,
+                user_id=review[0].user_id,
+                user_nickname=review[0].user_nickname,
+                user_profile_image=review[0].user_profile_image,
+                title=review[0].title,
+                content=review[0].content,
+                like_count=review[0].like_count,
+                is_spoiler=review[0].is_spoiler,
+                created_at=review[0].created_at,
+                updated_at=review[0].updated_at,
+                rating=review[1],
+            )
+            for review in reviews
+        ]
         # 비디오 리뷰 목록 반환
-        return ResVideoReviews(total=total, count=len(reviews), page=1, data=reviews)
+        return ResVideoReviews(
+            total=total, count=len(reviews), page=1, data=return_reviews
+        )
     except Exception as e:
         print(e)
         raise HTTPException(

@@ -123,6 +123,13 @@ class VideoReview(BaseModel):
         from_attributes = True
 
 
+class VideoReviewWithRating(VideoReview):
+    rating: int | None
+
+    class Config:
+        from_attributes = True
+
+
 class VideoReviewLike(BaseModel):
     id: int
     review_id: int
@@ -175,3 +182,10 @@ class ResVideoReviews(BaseModel):
     count: int
     page: int
     data: List[VideoReview] | None = None
+
+
+class ResVideoReviewsWithRating(BaseModel):
+    total: int
+    count: int
+    page: int
+    data: List[VideoReviewWithRating] | None = None
