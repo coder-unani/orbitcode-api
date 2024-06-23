@@ -12,28 +12,6 @@ from sqlalchemy.orm import relationship, Mapped, mapped_column
 from app.database.database import Base
 
 
-content_video_genre = Table(
-    "rvvs_video_genre",
-    Base.metadata,
-    Column("video_id", Integer, ForeignKey("rvvs_video.id")),
-    Column("genre_id", Integer, ForeignKey("rvvs_genre.id")),
-)
-
-content_video_actor = Table(
-    "rvvs_video_actor",
-    Base.metadata,
-    Column("video_id", Integer, ForeignKey("rvvs_video.id")),
-    Column("actor_id", Integer, ForeignKey("rvvs_actor.id")),
-)
-
-content_video_staff = Table(
-    "rvvs_video_staff",
-    Base.metadata,
-    Column("video_id", Integer, ForeignKey("rvvs_video.id")),
-    Column("staff_id", Integer, ForeignKey("rvvs_staff.id")),
-)
-
-
 class Video(Base):
     __tablename__ = "rvvs_video"
 
@@ -61,13 +39,22 @@ class Video(Base):
         nullable=True, server_default=func.now(), onupdate=func.now()
     )
     genre: Mapped[List["Genre"]] = relationship(
-        secondary=content_video_genre, back_populates="video", lazy="selectin"
+        "Genre", secondary="rvvs_video_genre", back_populates="video", lazy="selectin"
+    )
+    genre_list: Mapped[List["VideoGenre"]] = relationship(
+        "VideoGenre", overlaps="genre", lazy="selectin"
     )
     actor: Mapped[List["Actor"]] = relationship(
-        secondary=content_video_actor, back_populates="video", lazy="selectin"
+        "Actor", secondary="rvvs_video_actor", back_populates="video", lazy="selectin"
+    )
+    actor_list: Mapped[List["VideoActor"]] = relationship(
+        "VideoActor", overlaps="actor", lazy="selectin"
     )
     staff: Mapped[List["Staff"]] = relationship(
-        secondary=content_video_staff, back_populates="video", lazy="selectin"
+        "Staff", secondary="rvvs_video_staff", back_populates="video", lazy="selectin"
+    )
+    staff_list: Mapped[List["VideoStaff"]] = relationship(
+        "VideoStaff", overlaps="staff", lazy="selectin"
     )
     watch: Mapped[List["VideoWatch"]] = relationship(
         back_populates="video", lazy="selectin"
@@ -92,7 +79,11 @@ class Genre(Base):
         nullable=True, server_default=func.now(), onupdate=func.now()
     )
     video: Mapped[List["Video"]] = relationship(
-        secondary=content_video_genre, back_populates="genre", lazy="selectin"
+        "Video",
+        secondary="rvvs_video_genre",
+        overlaps="genre_list",
+        back_populates="genre",
+        lazy="selectin",
     )
 
 
@@ -110,7 +101,11 @@ class Actor(Base):
         nullable=True, server_default=func.now(), onupdate=func.now()
     )
     video: Mapped[List["Video"]] = relationship(
-        secondary=content_video_actor, back_populates="actor", lazy="selectin"
+        "Video",
+        secondary="rvvs_video_actor",
+        overlaps="actor_list",
+        back_populates="actor",
+        lazy="selectin",
     )
 
 
@@ -128,7 +123,44 @@ class Staff(Base):
         nullable=True, server_default=func.now(), onupdate=func.now()
     )
     video: Mapped[List["Video"]] = relationship(
-        secondary=content_video_staff, back_populates="staff", lazy="selectin"
+        "Video",
+        secondary="rvvs_video_staff",
+        overlaps="staff_list",
+        back_populates="staff",
+        lazy="selectin",
+    )
+
+
+class VideoGenre(Base):
+    __tablename__ = "rvvs_video_genre"
+    video_id: Mapped[int] = mapped_column(
+        Integer, ForeignKey("rvvs_video.id"), primary_key=True
+    )
+    genre_id: Mapped[int] = mapped_column(
+        Integer, ForeignKey("rvvs_genre.id"), primary_key=True
+    )
+
+
+class VideoActor(Base):
+    __tablename__ = "rvvs_video_actor"
+    type: Mapped[str] = mapped_column(nullable=True)
+    role: Mapped[str] = mapped_column(nullable=True)
+    video_id: Mapped[int] = mapped_column(
+        Integer, ForeignKey("rvvs_video.id"), primary_key=True
+    )
+    actor_id: Mapped[int] = mapped_column(
+        Integer, ForeignKey("rvvs_actor.id"), primary_key=True
+    )
+
+
+class VideoStaff(Base):
+    __tablename__ = "rvvs_video_staff"
+    type: Mapped[str] = mapped_column(nullable=True)
+    video_id: Mapped[int] = mapped_column(
+        Integer, ForeignKey("rvvs_video.id"), primary_key=True
+    )
+    staff_id: Mapped[int] = mapped_column(
+        Integer, ForeignKey("rvvs_staff.id"), primary_key=True
     )
 
 
