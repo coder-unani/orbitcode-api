@@ -329,10 +329,12 @@ async def read_video_myinfo(
         my_review_like = await queryset.read_video_my_review_like(
             db, video_id, auth_user["id"]
         )
+        my_rating = await queryset.read_video_my_rating(db, video_id, auth_user["id"])
         myinfo = {
             "is_like": my_is_like,
             "review": my_review,
             "review_like": my_review_like,
+            "rating": my_rating,
         }
         response.headers["code"] = "VIDEO_MYINFO_READ_SUCC"
         return ResData(data=myinfo)

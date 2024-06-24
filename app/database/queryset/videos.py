@@ -648,6 +648,21 @@ async def read_video_my_review_like(db: AsyncSession, video_id: int, user_id: in
         )
 
 
+async def read_video_my_rating(db: AsyncSession, video_id: int, user_id: int):
+    try:
+        rating = await db.scalar(
+            select(VideoRating.rating).filter_by(video_id=video_id, user_id=user_id)
+        )
+        return rating
+    except Exception as e:
+        print(e)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            headers={"code": "EXCEPTION"},
+            detail=messages["EXCEPTION"],
+        )
+
+
 async def read_genre(db: AsyncSession, genre_id: int):
     try:
         stmt = select(Genre).filter_by(id=genre_id)
