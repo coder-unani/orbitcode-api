@@ -701,10 +701,6 @@ async def create_video_rating(
         get_rating = await queryset.read_video_rating_by_user(
             db, video_id, auth_user["id"]
         )
-        # 평점이 같은 경우
-        if get_rating and get_rating.rating == rating:
-            response.headers["code"] = "RATING_EQUAL_INPUT_VALUE"
-            return
         # 평점이 없는 경우
         if rating == 0 and not get_rating:
             raise HTTPException(
@@ -713,7 +709,7 @@ async def create_video_rating(
                 detail=messages["RATING_DOES_NOT_EXIST"],
             )
         # 삭제
-        if rating == 0 and get_rating:
+        if (rating == 0 or get_rating.rating == rating) and get_rating:
             # 삭제
             del_rating = await queryset.delete_video_rating(
                 db, video_id, auth_user["id"]
