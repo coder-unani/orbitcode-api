@@ -703,58 +703,60 @@ async def create_video_rating(
         get_rating = await queryset.read_video_rating_by_user(
             db, video_id, auth_user["id"]
         )
-        # 평점이 없는 경우
-        if rating == 0 and not get_rating:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                headers={"code": "RATING_DOES_NOT_EXIST"},
-                detail=messages["RATING_DOES_NOT_EXIST"],
-            )
-        # 삭제
-        if (rating == 0 or get_rating.rating == rating) and get_rating:
+        if get_rating:
             # 삭제
-            del_rating = await queryset.delete_video_rating(
-                db, video_id, auth_user["id"]
-            )
-            # 삭제 실패
-            if not del_rating:
-                raise HTTPException(
-                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                    headers={"code": "RATING_DELETE_FAIL"},
-                    detail=messages["RATING_DELETE_FAIL"],
+            if rating == 0 or get_rating.rating == rating:
+                # 삭제
+                del_rating = await queryset.delete_video_rating(
+                    db, video_id, auth_user["id"]
                 )
-            # Response Header Code
-            response.headers["code"] = "RATING_DELETE_SUCC"
-        # 업데이트
-        elif rating > 0 and get_rating:
+                # 삭제 실패
+                if not del_rating:
+                    raise HTTPException(
+                        status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                        headers={"code": "RATING_DELETE_FAIL"},
+                        detail=messages["RATING_DELETE_FAIL"],
+                    )
+                # Response Header Code
+                response.headers["code"] = "RATING_DELETE_SUCC"
             # 업데이트
-            upt_rating = await queryset.update_video_rating(
-                db, video_id, auth_user["id"], rating
-            )
-            # 업데이트 실패
-            if not upt_rating:
-                raise HTTPException(
-                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                    headers={"code": "RATING_UPDATE_FAIL"},
-                    detail=messages["RATING_UPDATE_FAIL"],
+            elif 0 < rating != get_rating.rating:
+                # 업데이트
+                upt_rating = await queryset.update_video_rating(
+                    db, video_id, auth_user["id"], rating
                 )
-            # Response Header Code
-            response.headers["code"] = "RATING_UPDATE_SUCC"
-        # 생성
-        elif rating > 0 and not get_rating:
+                # 업데이트 실패
+                if not upt_rating:
+                    raise HTTPException(
+                        status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                        headers={"code": "RATING_UPDATE_FAIL"},
+                        detail=messages["RATING_UPDATE_FAIL"],
+                    )
+                # Response Header Code
+                response.headers["code"] = "RATING_UPDATE_SUCC"
+        else:
+            # 평점이 없는 경우
+            if rating == 0:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    headers={"code": "RATING_DOES_NOT_EXIST"},
+                    detail=messages["RATING_DOES_NOT_EXIST"],
+                )
             # 생성
-            cre_rating = await queryset.create_video_rating(
-                db, video_id, auth_user["id"], rating
-            )
-            # 생성 실패
-            if not cre_rating:
-                raise HTTPException(
-                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                    headers={"code": "RATING_CREATE_FAIL"},
-                    detail=messages["RATING_CREATE_FAIL"],
+            elif rating > 0 and not get_rating:
+                # 생성
+                cre_rating = await queryset.create_video_rating(
+                    db, video_id, auth_user["id"], rating
                 )
-            # Response Header Code
-            response.headers["code"] = "RATING_CREATE_SUCC"
+                # 생성 실패
+                if not cre_rating:
+                    raise HTTPException(
+                        status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                        headers={"code": "RATING_CREATE_FAIL"},
+                        detail=messages["RATING_CREATE_FAIL"],
+                    )
+                # Response Header Code
+                response.headers["code"] = "RATING_CREATE_SUCC"
         return
     except HTTPException as e:
         print(e)

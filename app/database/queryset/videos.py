@@ -344,7 +344,7 @@ async def delete_video_review(db: AsyncSession, review_id: int):
 async def read_video_rating_by_user(db: AsyncSession, video_id: int, user_id: int):
     try:
         stmt = select(VideoRating).filter_by(video_id=video_id, user_id=user_id)
-        rating: VideoRating = await db.scalar(stmt)
+        rating = await db.scalar(stmt)
         return rating
     except Exception as e:
         raise HTTPException(
