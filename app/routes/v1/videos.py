@@ -669,7 +669,7 @@ async def toggle_video_review_like(
 async def create_video_rating(
     response: Response,
     video_id: int,
-    rating: float,
+    rating: int,
     db: AsyncSession = Depends(get_db),
     auth_user: UserMe = Depends(verify_access_token_user),
 ):
@@ -759,6 +759,7 @@ async def create_video_rating(
             response.headers["code"] = "RATING_CREATE_SUCC"
         return
     except HTTPException as e:
+        print(e)
         raise e
     except Exception as e:
         print(e)
