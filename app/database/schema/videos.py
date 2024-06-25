@@ -41,6 +41,12 @@ class Staff(BaseModel):
     name: str
     picture: str | None
 
+    @field_validator("picture")
+    def image_add_host(cls, value: str) -> str:
+        if not value:
+            return value
+        return f"{settings.THUMBNAIL_BASE_URL}{value}"
+
     class Config:
         from_attributes = True
 
