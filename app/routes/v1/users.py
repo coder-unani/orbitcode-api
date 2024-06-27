@@ -105,9 +105,9 @@ async def create_user(
     if valid_nick_code != "VALID_NICK_SUCC":
         return json_response(status.HTTP_400_BAD_REQUEST, valid_nick_code)
     # 유저 타입 유효성 검사
-    valid_type_code = validator.validate_usertype(req_user.type)
-    if valid_type_code != "VALID_USER_TYPE_SUCC":
-        return json_response(status.HTTP_400_BAD_REQUEST, valid_type_code)
+    valid_code = validator.validate_usercode(req_user.code)
+    if valid_code != "VALID_USER_CODE_SUCC":
+        return json_response(status.HTTP_400_BAD_REQUEST, valid_code)
     # 이메일 중복 체크
     verify_email = await queryset.verify_exist_email(db, email=req_user.email)
     if not verify_email:
