@@ -41,7 +41,7 @@ class UserProfile(User):
 
 
 class UserMe(UserProfile):
-    type: str
+    code: str
     mileage: int
     is_marketing_agree: bool
     created_at: datetime
@@ -61,7 +61,7 @@ class ReqUserUpdate(BaseModel):
 
 
 class ReqUserCreate(ReqUserUpdate):
-    type: Optional[str] = "10"
+    code: Optional[str] = "10"
     email: str
     is_privacy_agree: bool
     is_terms_agree: bool
@@ -73,7 +73,7 @@ class ReqUserId(BaseModel):
 
 
 class ReqUserLogin(BaseModel):
-    type: str
+    code: str
     email: str
     password: str
 
