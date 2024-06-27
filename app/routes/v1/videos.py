@@ -103,7 +103,7 @@ async def content_videos(
             db,
             page=p,
             page_size=ps,
-            video_type=t,
+            video_code=t,
             keyword=q,
             video_id=vid,
             actor_id=aid,
@@ -170,34 +170,35 @@ async def read_video_detail(
                 actor: Actor = await queryset.read_actor(db, actor_map.actor_id)
                 actor_info = VideoActor(
                     id=actor_map.actor_id,
-                    type=actor_map.type,
+                    code=actor_map.code,
                     role=actor_map.role,
                     name=actor.name,
                     picture=actor.picture,
+                    sort=actor_map.sort,
                 )
                 actor_list.append(actor_info)
             # 스태프정보 생성
             staff_list: List[VideoStaff] | [] = []
             for staff_map in video.staff_list:
                 staff: Staff = await queryset.read_staff(db, staff_map.staff_id)
-                print(staff_map.type)
                 staff_info = VideoStaff(
                     id=staff_map.staff_id,
-                    type=staff_map.type,
+                    code=staff_map.code,
                     name=staff.name,
                     picture=staff.picture,
+                    sort=staff_map.sort,
                 )
                 staff_list.append(staff_info)
             # 반환할 비디오 정보 생성
             return_video = Video(
                 id=video.id,
-                type=video.type,
+                code=video.code,
                 title=video.title,
                 release=video.release,
                 runtime=video.runtime,
                 notice_age=video.notice_age,
                 rating=video.rating,
-                production=video.production,
+                # production=video.production,
                 country=video.country,
                 like_count=video.like_count,
                 review_count=video.review_count,
@@ -206,7 +207,7 @@ async def read_video_detail(
                 genre=video.genre,
                 actor=actor_list,
                 staff=staff_list,
-                watch=video.watch,
+                platform=video.platform,
                 thumbnail=video.thumbnail,
             )
         except Exception as e:
