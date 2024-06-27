@@ -2,14 +2,14 @@ import re
 from app.config.settings import settings
 
 
-def validate_usertype(usertype):
-    if not usertype:
-        return "VALID_USER_TYPE_REQUIRE_ERR"
+def validate_usercode(usercode):
+    if not usercode:
+        return "VALID_USER_CODE_REQUIRE_ERR"
     # 유효한 회원 유형인지 확인
-    if usertype in settings.USER_TYPE_ALLOW:
-        return "VALID_USER_TYPE_SUCC"
+    if usercode in settings.USER_CODE_ALLOW:
+        return "VALID_USER_CODE_SUCC"
     else:
-        return "VALID_USER_TYPE_ERR"
+        return "VALID_USER_CODE_ERR"
 
 
 def validate_email(email):

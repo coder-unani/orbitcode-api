@@ -51,7 +51,7 @@ class UserLoginVerifier:
                 headers={"code": code}
             )
         # 회원 유형 입력 여부 확인
-        if not self.user.get('type'):
+        if not self.user.get('code'):
             status_code = status.HTTP_400_BAD_REQUEST
             code = "USER_LOGIN_TYPE_REQUIRED"
             await self.log_login_attempt(status_code, code)
@@ -61,9 +61,9 @@ class UserLoginVerifier:
                 headers={"code": code}
             )
         # 회원 유형 유효성 검사
-        if self.user['type'] not in settings.USER_TYPE_ALLOW:
+        if self.user['code'] not in settings.USER_CODE_ALLOW:
             status_code = status.HTTP_401_UNAUTHORIZED
-            code = "USER_TYPE_ERR"
+            code = "USER_CODE_ERR"
             await self.log_login_attempt(status_code, code)
             raise HTTPException(
                 status_code=status_code,
@@ -95,7 +95,7 @@ class UserLoginVerifier:
             )
         # 회원 유형별 검증
         # 일반 회원
-        if self.user['type'] == "10":
+        if self.user['code'] == "10":
             # 비밀번호 일치 여부 확인
             if not Password.verify_password(self.user['password'], self.get_user['password']):
                 status_code = status.HTTP_401_UNAUTHORIZED
@@ -127,13 +127,13 @@ class UserLoginVerifier:
                     headers={"code": code}
                 )
         # 구글 회원
-        elif self.user['type'] == "11":
+        elif self.user['code'] == "11":
             pass
         # 카카오 회원
-        elif self.user['type'] == "12":
+        elif self.user['code'] == "12":
             pass
         # 기타
-        elif self.user['type'] == "13":
+        elif self.user['code'] == "13":
             pass
         # 로그인 성공
         status_code = status.HTTP_200_OK

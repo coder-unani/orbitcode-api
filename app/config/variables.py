@@ -40,8 +40,8 @@ messages["USER_AGREE_TERMS_REQUIRED"] = "이용 약관에 동의해주세요."
 messages["USER_AGREE_AGE_REQUIRED"] = "가입 연령에 동의해주세요."
 messages["USER_AGREE_MARKETING_REQUIRED"] = "마케팅 정보 수신에 동의해주세요."
 
-messages["USER_TYPE_SUCC"] = "유효한 회원 유형입니다."
-messages["USER_TYPE_ERR"] = "유효하지 않은 회원 유형입니다."
+messages["USER_CODE_SUCC"] = "유효한 회원 유형입니다."
+messages["USER_CODE_ERR"] = "유효하지 않은 회원 유형입니다."
 
 messages["USER_READ_SUCC"] = "회원 정보 조회에 성공하였습니다."
 messages["USER_READ_FAIL"] = "회원 정보 조회에 실패하였습니다."
