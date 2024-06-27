@@ -16,20 +16,18 @@ class Video(Base):
     __tablename__ = "rvvs_video"
 
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
-    type: Mapped[str]
+    code: Mapped[str]
     title: Mapped[str] = mapped_column(index=True)
     synopsis: Mapped[str]
     release: Mapped[str]
     runtime: Mapped[str]
     notice_age: Mapped[str]
     rating: Mapped[float]
-    production: Mapped[str] = mapped_column(nullable=True)
+    # production: Mapped[str] = mapped_column(nullable=True)
     country: Mapped[str] = mapped_column(nullable=True)
     like_count: Mapped[int] = mapped_column(default=0)
     view_count: Mapped[int] = mapped_column(default=0)
     review_count: Mapped[int] = mapped_column(default=0)
-    platform_code: Mapped[str]
-    platform_id: Mapped[str]
     is_confirm: Mapped[bool] = mapped_column(default=False)
     is_delete: Mapped[bool] = mapped_column(default=False)
     created_at: Mapped[datetime] = mapped_column(
@@ -56,7 +54,7 @@ class Video(Base):
     staff_list: Mapped[List["VideoStaff"]] = relationship(
         "VideoStaff", overlaps="staff", lazy="selectin"
     )
-    watch: Mapped[List["VideoWatch"]] = relationship(
+    platform: Mapped[List["VideoPlatform"]] = relationship(
         back_populates="video", lazy="selectin"
     )
     thumbnail: Mapped[List["VideoThumbnail"]] = relationship(
@@ -133,17 +131,20 @@ class Staff(Base):
 
 class VideoGenre(Base):
     __tablename__ = "rvvs_video_genre"
+
     video_id: Mapped[int] = mapped_column(
         Integer, ForeignKey("rvvs_video.id"), primary_key=True
     )
     genre_id: Mapped[int] = mapped_column(
         Integer, ForeignKey("rvvs_genre.id"), primary_key=True
     )
+    sort: Mapped[int] = mapped_column(default=99)
 
 
 class VideoActor(Base):
     __tablename__ = "rvvs_video_actor"
-    type: Mapped[str] = mapped_column(nullable=True)
+
+    code: Mapped[str] = mapped_column(nullable=True)
     role: Mapped[str] = mapped_column(nullable=True)
     video_id: Mapped[int] = mapped_column(
         Integer, ForeignKey("rvvs_video.id"), primary_key=True
@@ -151,24 +152,28 @@ class VideoActor(Base):
     actor_id: Mapped[int] = mapped_column(
         Integer, ForeignKey("rvvs_actor.id"), primary_key=True
     )
+    sort: Mapped[int] = mapped_column(default=99)
 
 
 class VideoStaff(Base):
     __tablename__ = "rvvs_video_staff"
-    type: Mapped[str] = mapped_column(nullable=True)
+
+    code: Mapped[str] = mapped_column(nullable=True)
     video_id: Mapped[int] = mapped_column(
         Integer, ForeignKey("rvvs_video.id"), primary_key=True
     )
     staff_id: Mapped[int] = mapped_column(
         Integer, ForeignKey("rvvs_staff.id"), primary_key=True
     )
+    sort: Mapped[int] = mapped_column(default=99)
 
 
-class VideoWatch(Base):
-    __tablename__ = "rvvs_video_watch"
+class VideoPlatform(Base):
+    __tablename__ = "rvvs_video_platform"
 
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
-    type: Mapped[str]
+    code: Mapped[str]
+    ext_id: Mapped[str]
     url: Mapped[str]
     created_at: Mapped[datetime] = mapped_column(
         server_default=func.now(), default=func.now()
@@ -177,14 +182,14 @@ class VideoWatch(Base):
         nullable=True, server_default=func.now(), onupdate=func.now()
     )
     video_id: Mapped[int] = mapped_column(ForeignKey("rvvs_video.id"))
-    video: Mapped["Video"] = relationship(back_populates="watch", lazy="selectin")
+    video: Mapped["Video"] = relationship(back_populates="platform", lazy="selectin")
 
 
 class VideoThumbnail(Base):
     __tablename__ = "rvvs_video_thumbnail"
 
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
-    type: Mapped[str]
+    code: Mapped[str]
     url: Mapped[str]
     extension: Mapped[str]
     size: Mapped[int]
