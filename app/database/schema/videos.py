@@ -29,8 +29,9 @@ class Actor(BaseModel):
 
 
 class VideoActor(Actor):
-    type: str | None
+    code: str | None
     role: str | None
+    # sort: int | None
 
     class Config:
         from_attributes = True
@@ -52,16 +53,8 @@ class Staff(BaseModel):
 
 
 class VideoStaff(Staff):
-    type: str | None
-
-    class Config:
-        from_attributes = True
-
-
-class VideoWatch(BaseModel):
-    id: int
-    type: str
-    url: str
+    code: str | None
+    # sort: int | None
 
     class Config:
         from_attributes = True
@@ -69,7 +62,7 @@ class VideoWatch(BaseModel):
 
 class VideoThumbnail(BaseModel):
     id: int
-    type: str
+    code: str
     url: str
     width: int | None
     height: int | None
@@ -82,15 +75,25 @@ class VideoThumbnail(BaseModel):
         from_attributes = True
 
 
+class VideoPlatform(BaseModel):
+    id: int
+    code: str
+    # ext_id: str | None
+    url: str
+
+    class Config:
+        from_attributes = True
+
+
 class VideoSimple(BaseModel):
     id: int
-    type: str
+    code: str
     title: str
     release: str
     runtime: str
     notice_age: str
     rating: float
-    production: str | None
+    # production: str | None
     country: str | None
     like_count: int
     review_count: int
@@ -106,7 +109,7 @@ class Video(VideoSimple):
     genre: list[Genre] = []
     actor: list[VideoActor] = []
     staff: list[VideoStaff] = []
-    watch: list[VideoWatch] = []
+    platform: list[VideoPlatform] = []
 
     class Config:
         from_attributes = True
