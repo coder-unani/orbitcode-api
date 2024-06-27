@@ -39,7 +39,7 @@ class Settings:
 
     # USER
     # 10: email, 11: google, 12: facebook, 13: kakao, 14: naver, 15: apple
-    USER_TYPE_ALLOW: list = ["10", "11", "12", "13", "14", "15"]
+    USER_CODE_ALLOW: list = ["10", "11", "12", "13", "14", "15"]
     USER_EMAIL_ALLOW_SPACE: bool = False
     USER_EMAIL_LENGTH_MIN: int = 5
     USER_EMAIL_LENGTH_MAX: int = 50
