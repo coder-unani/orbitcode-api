@@ -22,7 +22,7 @@ class User(Base):
     __tablename__ = "rvvs_user"
 
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
-    type: Mapped[str]
+    code: Mapped[str]
     email: Mapped[str] = mapped_column(unique=True, index=True)
     password: Mapped[str] = mapped_column(nullable=True)
     nickname: Mapped[str] = mapped_column(nullable=True)
