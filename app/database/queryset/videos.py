@@ -585,14 +585,14 @@ async def read_video_my_is_like(db: AsyncSession, video_id: int, user_id: int):
         )
 
 
-async def read_video_my_review_id(db: AsyncSession, video_id: int, user_id: int):
+async def read_video_my_review(db: AsyncSession, video_id: int, user_id: int):
     try:
         print("read_video_my_review_id start")
-        review_id = await db.scalar(
-            select(VideoReview.id).filter_by(video_id=video_id, user_id=user_id)
+        review = await db.scalar(
+            select(VideoReview).filter_by(video_id=video_id, user_id=user_id)
         )
         print("read_video_my_review_id end")
-        return review_id
+        return review
     except Exception as e:
         print(e)
         raise HTTPException(
