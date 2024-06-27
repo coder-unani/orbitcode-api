@@ -342,18 +342,22 @@ async def read_video_myinfo(
             )
         my_is_like = await queryset.read_video_my_is_like(db, video_id, auth_user["id"])
         my_review = await queryset.read_video_my_review(db, video_id, auth_user["id"])
-        print(my_review.title)
+        if my_review:
+            disp_review = {
+                "id": my_review.id,
+                "title": my_review.title,
+                "content": my_review.content,
+            }
+        else:
+            disp_review = {}
+
         my_review_like = await queryset.read_video_my_review_like(
             db, video_id, auth_user["id"]
         )
         my_rating = await queryset.read_video_my_rating(db, video_id, auth_user["id"])
         myinfo = {
             "is_like": my_is_like,
-            "review": {
-                "id": my_review.id,
-                "title": my_review.title,
-                "content": my_review.content,
-            },
+            "review": disp_review,
             "review_like": my_review_like,
             "rating": my_rating,
         }
