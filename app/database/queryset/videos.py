@@ -27,13 +27,12 @@ async def search_video_list(
     db: AsyncSession,
     page: int = 1,
     page_size: int = 20,
-    video_type: str | None = None,
+    video_code: str | None = None,
     keyword: str | None = None,
     video_id: int | None = None,
     actor_id: int | None = None,
     staff_id: int | None = None,
     genre_id: int | None = None,
-    platform_id: str | None = None,
     is_delete: bool = False,
     is_confirm: bool = True,
     order_by: str | None = None,
@@ -45,10 +44,8 @@ async def search_video_list(
         stmt = select(Video)
         if video_id is not None:
             stmt = stmt.filter_by(id=video_id)
-        if video_type is not None:
-            stmt = stmt.filter_by(type=video_type)
-        if platform_id is not None:
-            stmt = stmt.filter_by(platform_id=platform_id)
+        if video_code is not None:
+            stmt = stmt.filter_by(code=video_code)
         if is_delete is not None:
             stmt = stmt.filter_by(is_delete=is_delete)
         if is_confirm is not None:
@@ -105,7 +102,6 @@ async def search_video_list(
 async def read_video(
     db: AsyncSession,
     video_id: int = None,
-    platform_id: str = None,
     is_delete: bool = False,
     is_confirm: bool = True,
 ):
@@ -114,8 +110,6 @@ async def read_video(
         # Filter
         if video_id is not None:
             stmt = stmt.filter_by(id=video_id)
-        if platform_id is not None:
-            stmt = stmt.filter_by(platform_id=platform_id)
         if is_delete is not None:
             stmt = stmt.filter_by(is_delete=is_delete)
         if is_confirm is not None:
