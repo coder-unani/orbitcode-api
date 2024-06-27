@@ -11,17 +11,18 @@ from app.database.schema.users import UserMe, ReqUserCreate, ReqUserUpdate
 
 async def create_user(db: AsyncSession, user: ReqUserCreate):
     try:
-        created_user = await db.scalar(insert(User).returning(User), user.dict())
+        created_user = await db.scalar(insert(User).returning(User), user.model_dump())
         if created_user:
             await db.commit()
             return True
         else:
             return False
     except Exception as e:
+        print(e)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=messages['EXCEPTION'],
-            headers={"code": "EXCEPTION"}
+            detail=messages["EXCEPTION"],
+            headers={"code": "EXCEPTION"},
         )
 
 
@@ -57,8 +58,8 @@ async def read_user(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=messages['EXCEPTION'],
-            headers={"code": "EXCEPTION"}
+            detail=messages["EXCEPTION"],
+            headers={"code": "EXCEPTION"},
         )
 
 
@@ -87,8 +88,8 @@ async def read_user_by_id(db: AsyncSession, user_id: int):
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=messages['EXCEPTION'],
-            headers={"code": "EXCEPTION"}
+            detail=messages["EXCEPTION"],
+            headers={"code": "EXCEPTION"},
         )
 
 
@@ -117,8 +118,8 @@ async def update_user(db: AsyncSession, user_id: int, user: ReqUserUpdate):
         print(e)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=messages['EXCEPTION'],
-            headers={"code": "EXCEPTION"}
+            detail=messages["EXCEPTION"],
+            headers={"code": "EXCEPTION"},
         )
 
 
@@ -126,67 +127,79 @@ async def update_user_password(db: AsyncSession, user_id: int, password: str):
     try:
         get_user = await db.scalar(select(User).filter_by(id=user_id))
         if get_user:
-            setattr(get_user, 'password', password)
+            setattr(get_user, "password", password)
             await db.commit()
             return True
         return False
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=messages['EXCEPTION'],
-            headers={"code": "EXCEPTION"}
+            detail=messages["EXCEPTION"],
+            headers={"code": "EXCEPTION"},
         )
 
 
 async def update_user_nickname(db: AsyncSession, user_id: int, nickname: str):
     try:
-        await db.execute(update(User).where(User.id == user_id).values(nickname=nickname))
+        await db.execute(
+            update(User).where(User.id == user_id).values(nickname=nickname)
+        )
         await db.commit()
         return True
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=messages['EXCEPTION'],
-            headers={"code": "EXCEPTION"}
+            detail=messages["EXCEPTION"],
+            headers={"code": "EXCEPTION"},
         )
 
 
 async def update_user_profile_text(db: AsyncSession, user_id: int, profile_text: str):
     try:
-        await db.execute(update(User).where(User.id == user_id).values(profile_text=profile_text))
+        await db.execute(
+            update(User).where(User.id == user_id).values(profile_text=profile_text)
+        )
         await db.commit()
         return True
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=messages['EXCEPTION'],
-            headers={"code": "EXCEPTION"}
+            detail=messages["EXCEPTION"],
+            headers={"code": "EXCEPTION"},
         )
 
 
 async def update_user_profile_image(db: AsyncSession, user_id: int, profile_image: str):
     try:
-        await db.execute(update(User).where(User.id == user_id).values(profile_image=profile_image))
+        await db.execute(
+            update(User).where(User.id == user_id).values(profile_image=profile_image)
+        )
         await db.commit()
         return True
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=messages['EXCEPTION'],
-            headers={"code": "EXCEPTION"}
+            detail=messages["EXCEPTION"],
+            headers={"code": "EXCEPTION"},
         )
 
 
-async def update_user_marketing(db: AsyncSession, user_id: int, is_marketing_agree: bool):
+async def update_user_marketing(
+    db: AsyncSession, user_id: int, is_marketing_agree: bool
+):
     try:
-        await db.execute(update(User).where(User.id == user_id).values(is_marketing_agree=is_marketing_agree))
+        await db.execute(
+            update(User)
+            .where(User.id == user_id)
+            .values(is_marketing_agree=is_marketing_agree)
+        )
         await db.commit()
         return True
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=messages['EXCEPTION'],
-            headers={"code": "EXCEPTION"}
+            detail=messages["EXCEPTION"],
+            headers={"code": "EXCEPTION"},
         )
 
 
@@ -199,8 +212,8 @@ async def delete_user(db: AsyncSession, user_id: int):
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=messages['EXCEPTION'],
-            headers={"code": "EXCEPTION"}
+            detail=messages["EXCEPTION"],
+            headers={"code": "EXCEPTION"},
         )
 
 
@@ -213,8 +226,8 @@ async def verify_exist_email(db: AsyncSession, email: str):
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=messages['EXCEPTION'],
-            headers={"code": "EXCEPTION"}
+            detail=messages["EXCEPTION"],
+            headers={"code": "EXCEPTION"},
         )
 
 
@@ -227,8 +240,8 @@ async def verify_exist_nickname(db: AsyncSession, nickname: str):
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=messages['EXCEPTION'],
-            headers={"code": "EXCEPTION"}
+            detail=messages["EXCEPTION"],
+            headers={"code": "EXCEPTION"},
         )
 
 
@@ -241,7 +254,7 @@ async def insert_user_login_log(
     input_id,
     client_ip,
     client_host,
-    user_agent
+    user_agent,
 ):
     try:
         stmt = insert(UserLoginLog).values(
@@ -252,11 +265,9 @@ async def insert_user_login_log(
             input_id=input_id,
             client_ip=client_ip,
             client_host=client_host,
-            user_agent=user_agent
+            user_agent=user_agent,
         )
         await db.scalar(stmt)
         await db.commit()
     except Exception as e:
         print(e)
-
-
