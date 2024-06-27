@@ -122,7 +122,7 @@ class VideoReview(BaseModel):
     user_nickname: str
     user_profile_image: str | None
     title: str
-    content: str
+    content: str | None
     like_count: int
     is_spoiler: bool
     created_at: datetime
