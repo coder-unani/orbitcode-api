@@ -1,3 +1,4 @@
+import asyncio
 from typing import List
 from fastapi import APIRouter, Request, Response, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -164,11 +165,27 @@ async def read_video_detail(
         # 비디오 상세정보 조회
         try:
             video = await queryset.read_video(db, video_id=video_id)
+            if not video:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    headers={"code": "VIDEO_NOT_FOUND"},
+                    detail=messages["VIDEO_NOT_FOUND"],
+                )
+            # 병렬 처리로 배우정보와 스태프정보 가져오기
+            actor_tasks = [
+                queryset.read_actor(db, actor_map.actor_id)
+                for actor_map in video.actor_list
+            ]
+            staff_tasks = [
+                queryset.read_staff(db, staff_map.staff_id)
+                for staff_map in video.staff_list
+            ]
+            actor_results, staff_results = await asyncio.gather(
+                asyncio.gather(*actor_tasks), asyncio.gather(*staff_tasks)
+            )
             # 배우정보 생성
-            actor_list: List[VideoActor] | [] = []
-            for actor_map in video.actor_list:
-                actor: Actor = await queryset.read_actor(db, actor_map.actor_id)
-                actor_info = VideoActor(
+            actor_list: List[VideoActor] = [
+                VideoActor(
                     id=actor_map.actor_id,
                     code=actor_map.code,
                     role=actor_map.role,
@@ -176,19 +193,19 @@ async def read_video_detail(
                     picture=actor.picture,
                     sort=actor_map.sort,
                 )
-                actor_list.append(actor_info)
+                for actor_map, actor in zip(video.actor_list, actor_results)
+            ]
             # 스태프정보 생성
-            staff_list: List[VideoStaff] | [] = []
-            for staff_map in video.staff_list:
-                staff: Staff = await queryset.read_staff(db, staff_map.staff_id)
-                staff_info = VideoStaff(
+            staff_list: List[VideoStaff] = [
+                VideoStaff(
                     id=staff_map.staff_id,
                     code=staff_map.code,
                     name=staff.name,
                     picture=staff.picture,
                     sort=staff_map.sort,
                 )
-                staff_list.append(staff_info)
+                for staff_map, staff in zip(video.staff_list, staff_results)
+            ]
             # 반환할 비디오 정보 생성
             return_video = Video(
                 id=video.id,
