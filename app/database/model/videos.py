@@ -198,6 +198,7 @@ class VideoThumbnail(Base):
     size: Mapped[int]
     width: Mapped[int]
     height: Mapped[int]
+    sort: Mapped[int] = mapped_column(default=99)
     created_at: Mapped[datetime] = mapped_column(
         server_default=func.now(), default=func.now()
     )
@@ -205,7 +206,11 @@ class VideoThumbnail(Base):
         nullable=True, server_default=func.now(), onupdate=func.now()
     )
     video_id: Mapped[int] = mapped_column(ForeignKey("rvvs_video.id"))
-    video: Mapped["Video"] = relationship(back_populates="thumbnail", lazy="selectin")
+    video: Mapped["Video"] = relationship(
+        back_populates="thumbnail",
+        order_by=["VideoThumbnail.code", "VideoThumbnail.sort"],
+        lazy="selectin",
+    )
 
 
 class VideoLike(Base):
