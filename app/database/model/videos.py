@@ -12,6 +12,27 @@ from sqlalchemy.orm import relationship, Mapped, mapped_column
 from app.database.database import Base
 
 
+class VideoThumbnail(Base):
+    __tablename__ = "rvvs_video_thumbnail"
+
+    id: Mapped[int] = mapped_column(primary_key=True, index=True)
+    code: Mapped[str]
+    url: Mapped[str]
+    extension: Mapped[str]
+    size: Mapped[int]
+    width: Mapped[int]
+    height: Mapped[int]
+    sort: Mapped[int] = mapped_column(default=99)
+    created_at: Mapped[datetime] = mapped_column(
+        server_default=func.now(), default=func.now()
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        nullable=True, server_default=func.now(), onupdate=func.now()
+    )
+    video_id: Mapped[int] = mapped_column(ForeignKey("rvvs_video.id"))
+    video: Mapped["Video"] = relationship(back_populates="thumbnail", lazy="selectin")
+
+
 class Video(Base):
     __tablename__ = "rvvs_video"
 
@@ -48,7 +69,7 @@ class Video(Base):
     actor_list: Mapped[List["VideoActor"]] = relationship(
         "VideoActor",
         overlaps="actor",
-        order_by=["VideoActor.code", "VideoActor.sort"],
+        order_by="VideoActor.sort",
         lazy="selectin",
     )
     staff: Mapped[List["Staff"]] = relationship(
@@ -65,7 +86,7 @@ class Video(Base):
     )
     thumbnail: Mapped[List["VideoThumbnail"]] = relationship(
         back_populates="video",
-        order_by=["VideoThumbnail.code", "VideoThumbnail.sort"],
+        order_by=[VideoThumbnail.code, VideoThumbnail.sort],
         lazy="selectin",
     )
 
@@ -191,27 +212,6 @@ class VideoPlatform(Base):
     )
     video_id: Mapped[int] = mapped_column(ForeignKey("rvvs_video.id"))
     video: Mapped["Video"] = relationship(back_populates="platform", lazy="selectin")
-
-
-class VideoThumbnail(Base):
-    __tablename__ = "rvvs_video_thumbnail"
-
-    id: Mapped[int] = mapped_column(primary_key=True, index=True)
-    code: Mapped[str]
-    url: Mapped[str]
-    extension: Mapped[str]
-    size: Mapped[int]
-    width: Mapped[int]
-    height: Mapped[int]
-    sort: Mapped[int] = mapped_column(default=99)
-    created_at: Mapped[datetime] = mapped_column(
-        server_default=func.now(), default=func.now()
-    )
-    updated_at: Mapped[datetime] = mapped_column(
-        nullable=True, server_default=func.now(), onupdate=func.now()
-    )
-    video_id: Mapped[int] = mapped_column(ForeignKey("rvvs_video.id"))
-    video: Mapped["Video"] = relationship(back_populates="thumbnail", lazy="selectin")
 
 
 class VideoLike(Base):
