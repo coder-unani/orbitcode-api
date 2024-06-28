@@ -46,7 +46,10 @@ class Video(Base):
         "Actor", secondary="rvvs_video_actor", back_populates="video", lazy="selectin"
     )
     actor_list: Mapped[List["VideoActor"]] = relationship(
-        "VideoActor", overlaps="actor", order_by="VideoActor.sort", lazy="selectin"
+        "VideoActor",
+        overlaps="actor",
+        order_by=["VideoActor.code", "VideoActor.sort"],
+        lazy="selectin",
     )
     staff: Mapped[List["Staff"]] = relationship(
         "Staff",
@@ -61,7 +64,9 @@ class Video(Base):
         back_populates="video", order_by="VideoPlatform.code", lazy="selectin"
     )
     thumbnail: Mapped[List["VideoThumbnail"]] = relationship(
-        back_populates="video", order_by="VideoThumbnail.code", lazy="selectin"
+        back_populates="video",
+        order_by=["VideoThumbnail.code", "VideoThumbnail.sort"],
+        lazy="selectin",
     )
 
     class Config:
@@ -206,11 +211,7 @@ class VideoThumbnail(Base):
         nullable=True, server_default=func.now(), onupdate=func.now()
     )
     video_id: Mapped[int] = mapped_column(ForeignKey("rvvs_video.id"))
-    video: Mapped["Video"] = relationship(
-        back_populates="thumbnail",
-        order_by=["VideoThumbnail.code", "VideoThumbnail.sort"],
-        lazy="selectin",
-    )
+    video: Mapped["Video"] = relationship(back_populates="thumbnail", lazy="selectin")
 
 
 class VideoLike(Base):
