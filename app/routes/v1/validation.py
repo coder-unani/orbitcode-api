@@ -4,8 +4,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.config.variables import messages
 from app.database.database import get_db
 from app.database.queryset.users import read_user_by_email, read_user_by_nickname
-from app.database.schema.default import ResData
+
 from app.security.validator import validate_email
+from app.security import validator
 
 router = APIRouter()
 tags = "VALIDATION"
@@ -23,15 +24,20 @@ async def find_user_by_nickname(
                 detail=messages["VALID_NICK_REQUIRE_ERR"],
                 headers={"code": "VALID_NICK_REQUIRE_ERR"},
             )
+        # 닉네임 유효성 검사
+        valid_code = validator.validate_nickname(nickname)
+        if valid_code != "VALID_NICK_SUCC":
+            response.headers["code"] = "VALID_NICK_FAIL"
+            return
         # 닉네임으로 회원정보 조회
         user = await read_user_by_nickname(db, nickname)
         # 닉네임 중복 있음
         if user:
             response.headers["code"] = "VALID_NICK_EXIST"
-            return None
+            return
         # 닉네임 중복 없음
         response.headers["code"] = "VALID_NICK_SUCC"
-        return None
+        return
     # 예외 발생시
     except HTTPException as e:
         raise e

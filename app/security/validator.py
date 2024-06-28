@@ -1,5 +1,6 @@
 import re
 from app.config.settings import settings
+from app.config.constraints import USER_NICKNAME_NOT_ALLOWED
 
 
 def validate_usercode(usercode):
@@ -41,6 +42,9 @@ def validate_nickname(nickname):
     # 닉네임 공백 포함 여부
     if settings.USER_EMAIL_ALLOW_SPACE and ' ' in nickname:
         return "VALID_NICK_INCLUDE_SPACE_ERR"
+    # 허용되지 않는 닉네임
+    if nickname in USER_NICKNAME_NOT_ALLOWED:
+        return "VALID_NICK_FAIL"
     # 모든 조건 통과
     return "VALID_NICK_SUCC"
 

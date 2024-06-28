@@ -77,7 +77,7 @@ messages["VALID_USER_TYPE_ERR"] = "유효하지 않은 회원 유형입니다."
 messages["VALID_USER_TYPE_REQUIRE_ERR"] = "회원 유형은 필수 입력사항 입니다."
 
 messages["VALID_NICK_SUCC"] = "유효한 닉네임입니다."
-messages["VALID_NICK_FAIL"] = "이미 사용중인 닉네임 입니다."
+messages["VALID_NICK_FAIL"] = "사용할 수 없는 닉네임입니다."
 messages["VALID_NICK_ALREADY_EXIST"] = "이미 존재하는 닉네임입니다."
 messages["VALID_NICK_REQUIRE_ERR"] = "닉네임은 필수 입력사항 입니다."
 messages["VALID_NICK_INCLUDE_SPACE_ERR"] = "닉네임에 공백을 포함할 수 없습니다."
