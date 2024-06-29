@@ -177,6 +177,14 @@ async def update_user_me(
         profile_text=profile_text,
         is_marketing_agree=is_marketing_agree,
     )
+
+    print("nickname", nickname)
+    print("password", password)
+    print("birth_year", birth_year)
+    print("profile_image", profile_image)
+    print("profile_text", profile_text)
+    print("is_marketing_agree", is_marketing_agree)
+
     # 유저 정보 입력 확인
     if not req_user:
         response.headers["code"] = "USER_UPDATE_NOT_FOUND"
