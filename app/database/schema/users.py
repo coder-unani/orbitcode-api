@@ -30,7 +30,8 @@ class User(BaseModel):
     def image_add_host(cls, value: str) -> str:
         if value is None:
             return value
-        return f"{settings.THUMBNAIL_BASE_URL}{value}"
+        result = f"{settings.THUMBNAIL_BASE_URL}{value}".replace("//", "/")
+        return result
 
     class Config:
         from_attributes = True
