@@ -28,10 +28,9 @@ class User(BaseModel):
 
     @field_validator("profile_image")
     def image_add_host(cls, value: str) -> str:
-        if value is None:
+        if not value:
             return value
-        result = f"{settings.THUMBNAIL_BASE_URL}{value}".replace("//", "/")
-        return result
+        return f"{settings.THUMBNAIL_BASE_URL}{value}"
 
     class Config:
         from_attributes = True
