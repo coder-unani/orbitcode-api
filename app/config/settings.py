@@ -22,6 +22,7 @@ class Settings:
     # FILE, UPLOAD
     FILE_DIR = os.path.join(BASE_DIR, "static/uploads/")
     FILE_DIR_TEMP = os.path.join(FILE_DIR, "temp/")
+    FILE_UPLOAD_SIZE_LIMIT = 1024 * 1024 * 30
     FILE_UPLOAD_TYPE_ALLOWED = [
         "image/jpeg",
         "image/jpg",
