@@ -180,8 +180,8 @@ async def update_user_me(
     )
 
     print("request headers", request.headers)
-    print("request form", request.form)
-    print("request body", request.body)
+    print("request form", await request.form())
+    print("request body", await request.body())
     print("nickname", nickname)
     print("password", password)
     print("birth_year", birth_year)
