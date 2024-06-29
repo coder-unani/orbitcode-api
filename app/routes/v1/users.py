@@ -179,16 +179,6 @@ async def update_user_me(
         is_marketing_agree=is_marketing_agree,
     )
 
-    print("request headers", request.headers)
-    print("request form", await request.form())
-    print("request body", await request.body())
-    print("nickname", nickname)
-    print("password", password)
-    print("birth_year", birth_year)
-    print("profile_image", profile_image)
-    print("profile_text", profile_text)
-    print("is_marketing_agree", is_marketing_agree)
-
     # 유저 정보 입력 확인
     if not req_user:
         response.headers["code"] = "USER_UPDATE_NOT_FOUND"
@@ -199,24 +189,24 @@ async def update_user_me(
     # 프로필 이미지 입력 확인
     if profile_image:
         # 파일 타입 확인
-        # if profile_image.content_type not in settings.FILE_UPLOAD_TYPE_ALLOWED:
-        #     raise HTTPException(
-        #         status_code=status.HTTP_400_BAD_REQUEST,
-        #         headers={"code": "FILE_TYPE_ERR"},
-        #         detail=messages["FILE_TYPE_ERR"],
-        #     )
+        if profile_image.content_type not in settings.FILE_UPLOAD_TYPE_ALLOWED:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                headers={"code": "FILE_TYPE_ERR"},
+                detail=messages["FILE_TYPE_ERR"],
+            )
         # 파일 용량 체크
-        # if profile_image.spool > settings.FILE_UPLOAD_SIZE_LIMIT:
-        #     raise HTTPException(
-        #         status_code=status.HTTP_400_BAD_REQUEST,
-        #         headers={"code": "FILE_SIZE_ERR"},
-        #         detail=messages["FILE_SIZE_ERR"],
-        #     )
-
-        # s3_upload_path = make_s3_path(
-        #     "profile", auth_user["id"], profile_image.filename
-        # )
-        s3_upload_path = make_s3_path("profile", auth_user["id"], "111.jpg")
+        if profile_image.file.__sizeof__() > settings.FILE_UPLOAD_SIZE_LIMIT:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                headers={"code": "FILE_SIZE_ERR"},
+                detail=messages["FILE_SIZE_ERR"],
+            )
+        # S3 업로드 경로 생성
+        s3_upload_path = make_s3_path(
+            "profile", auth_user["id"], profile_image.filename
+        )
+        # 파일 읽기
         file_content = await profile_image.read()
         # 파일 S3 업로드
         uploader = S3ImageUploader()
