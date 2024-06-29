@@ -59,18 +59,20 @@ class S3ImageUploader(ImageUploader):
                     # 리사이즈된 이미지 정보 가져오기
                     image_width = image.width
                     image_height = image.height
+
                 # 리사이즈된 이미지를 BytesIO 형태로 저장
                 with BytesIO() as buffer:
                     # 리사이즈된 이미지 저장
                     image.save(buffer, format=image_format)
                     # 버퍼 처음 위치로 재설정
                     buffer.seek(0)
-                    # 이미지 사이즈 가져오기
-                    image_size = len(buffer.read())
-                    # 버퍼 처음 위치로 재설정
-                    buffer.seek(0)
                     # S3에 이미지 업로드
                     self.upload(buffer, s3_path)
+                    # 버퍼의 끝이로 이동
+                    buffer.seek(0, 2)
+                    # 이미지 사이즈 가져오기
+                    image_size = buffer.tell()
+
                 # 이미지 파일명, 확장자, 사이즈 리턴
                 return {
                     "url": s3_path,
