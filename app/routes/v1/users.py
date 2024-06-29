@@ -152,7 +152,12 @@ async def read_user_me(
     return ResUserMe(user=get_user)
 
 
-@router.put("/users/{user_id}", tags=[tags], status_code=status.HTTP_204_NO_CONTENT)
+@router.put(
+    "/users/{user_id}",
+    tags=[tags],
+    status_code=status.HTTP_200_OK,
+    response_model=ResUserMe,
+)
 async def update_user_me(
     response: Response,
     nickname: Optional[str] = Form(None),
@@ -208,16 +213,18 @@ async def update_user_me(
         if s3_uploaded_file:
             req_user.profile_image = s3_uploaded_file["url"]
     # 유저 업데이트
-    result = await queryset.update_user(db, auth_user["id"], req_user)
+    updated = await queryset.update_user(db, auth_user["id"], req_user)
     # DB 업데이트 실패
-    if not result:
+    if not updated:
         response.headers["code"] = "USER_UPDATE_FAIL"
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=messages["USER_UPDATE_FAIL"],
         )
+    updated_user = await queryset.read_user_by_id(db, auth_user["id"])
     # Response Header code
     response.headers["code"] = "USER_UPDATE_SUCC"
+    return ResUserMe(user=updated_user)
 
 
 @router.delete("/users/{user_id}", tags=[tags], status_code=status.HTTP_204_NO_CONTENT)
