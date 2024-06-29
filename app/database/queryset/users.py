@@ -95,18 +95,6 @@ async def read_user_by_id(db: AsyncSession, user_id: int):
 
 async def update_user(db: AsyncSession, user_id: int, user: ReqUserUpdate):
     try:
-        # update_values = dict()
-        # for key, value in user.dict(exclude_unset=True).items():
-        #     if value:
-        #         update_values[key] = value
-        # stmt = (
-        #     update(User).
-        #     where(User.id == user_id).
-        #     values(update_values).
-        #     execution_options(synchronize_session="fetch")
-        # )
-        # await db.execute(stmt)
-        # await db.commit()
         get_user = await db.scalar(select(User).filter_by(id=user_id))
         if get_user:
             for key, value in user.dict(exclude_unset=True).items():
