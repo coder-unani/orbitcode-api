@@ -186,6 +186,26 @@ async def update_user_me(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail=messages["USER_UPDATE_NOT_FOUND"],
         )
+    # 닉네임 입력이 있을 경우
+    if req_user.nickname:
+        valid_nick_code = validator.validate_nickname(req_user.nickname)
+        if valid_nick_code != "VALID_NICK_SUCC":
+            response.headers["code"] = valid_nick_code
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=messages[valid_nick_code],
+            )
+    # 패스워드 입력이 있을 경우
+    if req_user.password:
+        # 비밀번호 유효성 검사
+        valid_pwd_code = validator.validate_password(req_user.password)
+        if valid_pwd_code != "VALID_PWD_SUCC":
+            response.headers["code"] = valid_pwd_code
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST, detail=messages[valid_pwd_code]
+            )
+        # 비밀번호 암호화
+        req_user.password = Password.create_password_hash(req_user.password)
     # 프로필 이미지 입력 확인
     if profile_image:
         # 파일 타입 확인

@@ -94,14 +94,14 @@ async def read_user_by_id(db: AsyncSession, user_id: int):
 
 
 async def update_user(db: AsyncSession, user_id: int, user: ReqUserUpdate):
+    user_data = {
+        k: v for k, v in user.model_dump().items() if v is not None and v != ""
+    }
     try:
-        get_user = await db.scalar(select(User).filter_by(id=user_id))
-        if get_user:
-            for key, value in user.dict(exclude_unset=True).items():
-                if value:
-                    setattr(get_user, key, value)
-            await db.commit()
-            return True
+        stmt = update(User).where(User.id == user_id).values(**user_data)
+        await db.execute(stmt)
+        await db.commit()
+        return True
     except Exception as e:
         print(e)
         raise HTTPException(
