@@ -179,7 +179,9 @@ async def update_user_me(
         is_marketing_agree=is_marketing_agree,
     )
 
-    print("request", request)
+    print("request headers", request.headers)
+    print("request form", request.form)
+    print("request body", request.body)
     print("nickname", nickname)
     print("password", password)
     print("birth_year", birth_year)
