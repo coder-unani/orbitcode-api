@@ -199,12 +199,12 @@ async def update_user_me(
     # 프로필 이미지 입력 확인
     if profile_image:
         # 파일 타입 확인
-        if profile_image.content_type not in settings.FILE_UPLOAD_TYPE_ALLOWED:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                headers={"code": "FILE_TYPE_ERR"},
-                detail=messages["FILE_TYPE_ERR"],
-            )
+        # if profile_image.content_type not in settings.FILE_UPLOAD_TYPE_ALLOWED:
+        #     raise HTTPException(
+        #         status_code=status.HTTP_400_BAD_REQUEST,
+        #         headers={"code": "FILE_TYPE_ERR"},
+        #         detail=messages["FILE_TYPE_ERR"],
+        #     )
         # 파일 용량 체크
         # if profile_image.spool > settings.FILE_UPLOAD_SIZE_LIMIT:
         #     raise HTTPException(
@@ -213,9 +213,10 @@ async def update_user_me(
         #         detail=messages["FILE_SIZE_ERR"],
         #     )
 
-        s3_upload_path = make_s3_path(
-            "profile", auth_user["id"], profile_image.filename
-        )
+        # s3_upload_path = make_s3_path(
+        #     "profile", auth_user["id"], profile_image.filename
+        # )
+        s3_upload_path = make_s3_path("profile", auth_user["id"], "111.jpg")
         file_content = await profile_image.read()
         # 파일 S3 업로드
         uploader = S3ImageUploader()
