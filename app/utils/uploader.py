@@ -69,9 +69,10 @@ class S3ImageUploader(ImageUploader):
                     # S3에 이미지 업로드
                     self.upload(buffer, s3_path)
                     # 버퍼의 끝이로 이동
-                    buffer.seek(0, 2)
+                    # buffer.seek(0, 2)
                     # 이미지 사이즈 가져오기
-                    image_size = buffer.tell()
+                    # image_size = buffer.tell()
+                    image_size = 0
 
                 # 이미지 파일명, 확장자, 사이즈 리턴
                 return {
