@@ -48,7 +48,7 @@ class S3ImageUploader(ImageUploader):
         try:
             print(s3_path)
             # 파일 오픈
-            with Image.open(file) as image:
+            with Image.open(BytesIO(file)) as image:
                 image_format = image.format
                 image_width, image_height = image.size
                 # 이미지 리사이즈
@@ -104,7 +104,7 @@ class S3ImageUploader(ImageUploader):
                 image_size = len(response.content)
                 image_data.seek(0)
                 # S3에 이미지 업로드
-                self.upload(image_data, s3_path)
+                self.uploader.upload_fileobj(image, self.bucket, s3_path)
                 # 이미지 확장자, 사이즈 리턴
                 return {
                     "url": s3_path,

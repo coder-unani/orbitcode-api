@@ -212,12 +212,13 @@ async def update_user_me(
                 headers={"code": "FILE_SIZE_ERR"},
                 detail=messages["FILE_SIZE_ERR"],
             )
-        # 파일 S3 업로드
-        uploader = S3ImageUploader()
+
         s3_upload_path = make_s3_path(
             "profile", auth_user["id"], profile_image.filename
         )
         file_content = await profile_image.read()
+        # 파일 S3 업로드
+        uploader = S3ImageUploader()
         s3_uploaded_file = uploader.upload_from_file(file_content, s3_upload_path)
         # 리사이즈
         # s3_uploaded_file = uploader.upload_from_file(profile_image.file, s3_upload_path, 300)
