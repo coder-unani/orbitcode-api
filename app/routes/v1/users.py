@@ -206,12 +206,12 @@ async def update_user_me(
                 detail=messages["FILE_TYPE_ERR"],
             )
         # 파일 용량 체크
-        if profile_image.file.__sizeof__() > settings.FILE_UPLOAD_SIZE_LIMIT:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                headers={"code": "FILE_SIZE_ERR"},
-                detail=messages["FILE_SIZE_ERR"],
-            )
+        # if profile_image.spool > settings.FILE_UPLOAD_SIZE_LIMIT:
+        #     raise HTTPException(
+        #         status_code=status.HTTP_400_BAD_REQUEST,
+        #         headers={"code": "FILE_SIZE_ERR"},
+        #         detail=messages["FILE_SIZE_ERR"],
+        #     )
 
         s3_upload_path = make_s3_path(
             "profile", auth_user["id"], profile_image.filename
