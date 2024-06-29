@@ -1,6 +1,9 @@
+from fastapi import UploadFile, File
 from typing import Optional
 from datetime import datetime
 from pydantic import BaseModel, field_validator
+
+from app.config.settings import settings
 
 
 class User(BaseModel):
@@ -22,6 +25,12 @@ class User(BaseModel):
             domain_name[0] + "*" * (len(domain_name) - 1) + "." + domain_extension
         )
         return masked_user + "@" + masked_domain
+
+    @field_validator("profile_image")
+    def image_add_host(cls, value: str) -> str:
+        if value is None:
+            return value
+        return f"{settings.THUMBNAIL_BASE_URL}{value}"
 
     class Config:
         from_attributes = True
