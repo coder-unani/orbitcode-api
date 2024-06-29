@@ -159,6 +159,7 @@ async def read_user_me(
     response_model=ResUserMe,
 )
 async def update_user_me(
+    request: Request,
     response: Response,
     nickname: Optional[str] = Form(None),
     password: Optional[str] = Form(None),
@@ -178,6 +179,7 @@ async def update_user_me(
         is_marketing_agree=is_marketing_agree,
     )
 
+    print("request", request)
     print("nickname", nickname)
     print("password", password)
     print("birth_year", birth_year)
