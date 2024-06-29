@@ -217,7 +217,8 @@ async def update_user_me(
         s3_upload_path = make_s3_path(
             "profile", auth_user["id"], profile_image.filename
         )
-        s3_uploaded_file = uploader.upload_from_file(profile_image.file, s3_upload_path)
+        file_content = await profile_image.read()
+        s3_uploaded_file = uploader.upload_from_file(file_content, s3_upload_path)
         # 리사이즈
         # s3_uploaded_file = uploader.upload_from_file(profile_image.file, s3_upload_path, 300)
         uploader.close()
