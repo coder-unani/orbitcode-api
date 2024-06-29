@@ -30,8 +30,10 @@ def create_api() -> FastAPI:
         # allow_origins=settings.CORS_ORIGINS,
         allow_origins=["*"],  # 모든 Origin 허용
         allow_credentials=True,  # cross-origin request에서 cookie를 허용
-        allow_methods=["*"],  # 모든 HTTP 메서드 허용
-        allow_headers=["*"],  # 모든 HTTP 헤더 허용
+        # allow_methods=["*"],  # 모든 HTTP 메서드 허용
+        # allow_headers=["*"],  # 모든 HTTP 헤더 허용
+        allow_methods=["GET", "POST", "PUT", "OPTIONS"],
+        allow_headers=["Content-Type", "Authorization", "X-Requested-With"],
         expose_headers=["ACCESS-ORIGIN-EXPOSED-HEADERS"],  # Custom Header 허용
     )
 
