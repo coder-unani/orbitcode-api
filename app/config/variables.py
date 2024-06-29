@@ -9,6 +9,7 @@ messages["NO_PERMISSION"] = "권한이 없습니다."
 messages["FILE_NOT_FOUND"] = "파일을 찾을 수 없습니다."
 messages["FILE_STORE_FAIL"] = "파일 저장에 실패하였습니다."
 messages["FILE_TYPE_ERR"] = "지원하지 않는 파일 형식입니다."
+messages["FILE_SIZE_ERR"] = "파일 크기가 너무 큽니다."
 messages["SEARCH_SUCC"] = "검색결과를 반환 합니다."
 messages["SEARCH_NOT_FOUND"] = "검색 결과가 없습니다."
 # access token 관련
