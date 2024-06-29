@@ -27,7 +27,8 @@ def create_api() -> FastAPI:
     # CORS Middleware 정의
     api.add_middleware(
         CORSMiddleware,
-        allow_origins=settings.CORS_ORIGINS,
+        # allow_origins=settings.CORS_ORIGINS,
+        allow_origins=["*"],  # 모든 Origin 허용
         allow_credentials=True,  # cross-origin request에서 cookie를 허용
         allow_methods=["*"],  # 모든 HTTP 메서드 허용
         allow_headers=["*"],  # 모든 HTTP 헤더 허용
