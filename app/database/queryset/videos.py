@@ -605,8 +605,6 @@ async def read_video_my_review(db: AsyncSession, video_id: int, user_id: int):
 
 async def read_video_my_review_like(db: AsyncSession, video_id: int, user_id: int):
     try:
-        print("read_video_my_review_like start")
-
         # Alias for the VideoReview table to be used in join
         video_review_alias = aliased(VideoReview)
 
@@ -632,7 +630,6 @@ async def read_video_my_review_like(db: AsyncSession, video_id: int, user_id: in
             )
         )
         result = review_like_ids.scalars().all()
-        print("read_video_my_review_like end")
         return result
     except Exception as e:
         print(e)
