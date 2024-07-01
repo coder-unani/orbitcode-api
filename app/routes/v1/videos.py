@@ -112,13 +112,15 @@ async def content_videos(
             genre_id=gid,
             order_by=ob,
         )
-        # 비디오 목록이 없을 경우
-        if total <= 0 or not videos:
-            response.headers["code"] = "VIDEO_NOT_FOUND"
-            response.status_code = status.HTTP_204_NO_CONTENT
-            return
+
         # 가져온 비디오 컨텐츠 카운트
         count = len(list(videos))
+
+        # 비디오 목록이 없을 경우
+        if total <= 0 or not videos or count <= 0:
+            response.headers["code"] = "VIDEO_NOT_FOUND"
+            response.status_code = status.HTTP_204_NO_CONTENT
+            return ResVideos(total=total, count=0, page=p, data=[])
         # Response Header Code
         response.headers["code"] = "VIDEO_SEARCH_SUCC"
         # 비디오 목록 반환
