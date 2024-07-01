@@ -12,9 +12,6 @@ from app.database.model.videos import (
     Genre,
     Actor,
     Staff,
-    VideoGenre,
-    VideoActor,
-    VideoStaff,
     VideoViewLog,
     VideoLike,
     VideoReview,
@@ -258,7 +255,9 @@ async def read_video_review_list_with_rating(
 
 async def read_video_review(db: AsyncSession, review_id: int):
     try:
-        stmt = select(VideoReview).filter_by(id=review_id, is_block=False)
+        stmt = select(VideoReview).filter_by(
+            id=review_id, is_block=False, is_private=False
+        )
         review: VideoReview = await db.scalar(stmt)
         return review
     except Exception as e:
@@ -272,7 +271,7 @@ async def read_video_review(db: AsyncSession, review_id: int):
 async def read_video_review_by_user(db: AsyncSession, video_id: int, user_id: int):
     try:
         stmt = select(VideoReview).filter_by(
-            video_id=video_id, user_id=user_id, is_block=False
+            video_id=video_id, user_id=user_id, is_block=False, is_private=False
         )
         review: VideoReview = await db.scalar(stmt)
         return review
