@@ -346,7 +346,13 @@ async def read_video_myinfo(
             disp_review = {
                 "id": my_review.id,
                 "title": my_review.title,
-                "content": my_review.content,
+                "content": (
+                    my_review.content
+                    if not my_review.is_spoiler and not my_review.is_private
+                    else ""
+                ),
+                "is_spoiler": my_review.is_spoiler,
+                "is_private": my_review.is_private,
             }
         else:
             disp_review = {}
