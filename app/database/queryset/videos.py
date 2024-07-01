@@ -191,7 +191,7 @@ async def read_video_review_list(
     offset = (page - 1) * unit_per_page
     try:
         # QuerySet 생성
-        stmt = select(VideoReview).filter_by(video_id=video_id)
+        stmt = select(VideoReview).filter_by(video_id=video_id, is_block=False)
         if is_private is not None:
             stmt = stmt.filter_by(is_private=is_private)
         if is_block is not None:
@@ -258,7 +258,7 @@ async def read_video_review_list_with_rating(
 
 async def read_video_review(db: AsyncSession, review_id: int):
     try:
-        stmt = select(VideoReview).filter_by(id=review_id)
+        stmt = select(VideoReview).filter_by(id=review_id, is_block=False)
         review: VideoReview = await db.scalar(stmt)
         return review
     except Exception as e:
@@ -271,7 +271,9 @@ async def read_video_review(db: AsyncSession, review_id: int):
 
 async def read_video_review_by_user(db: AsyncSession, video_id: int, user_id: int):
     try:
-        stmt = select(VideoReview).filter_by(video_id=video_id, user_id=user_id)
+        stmt = select(VideoReview).filter_by(
+            video_id=video_id, user_id=user_id, is_block=False
+        )
         review: VideoReview = await db.scalar(stmt)
         return review
     except Exception as e:
@@ -587,11 +589,11 @@ async def read_video_my_is_like(db: AsyncSession, video_id: int, user_id: int):
 
 async def read_video_my_review(db: AsyncSession, video_id: int, user_id: int):
     try:
-        print("read_video_my_review_id start")
         review = await db.scalar(
-            select(VideoReview).filter_by(video_id=video_id, user_id=user_id)
+            select(VideoReview).filter_by(
+                video_id=video_id, user_id=user_id, is_block=False
+            )
         )
-        print("read_video_my_review_id end")
         return review
     except Exception as e:
         print(e)
